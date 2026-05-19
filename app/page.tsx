@@ -3,6 +3,7 @@ import { TheShift } from "@/components/sections/the-shift"
 import { Convictions } from "@/components/sections/convictions"
 import { Values } from "@/components/sections/values"
 import { DeliveryCycle } from "@/components/sections/delivery-cycle"
+import { Team } from "@/components/sections/team"
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <Convictions />
       <Values />
       <DeliveryCycle />
+      <Team />
     </main>
   )
 }
