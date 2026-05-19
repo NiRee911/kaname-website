@@ -5,7 +5,7 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Kaname — Specification-Driven Delivery",
+  title: "Kaname: Specification-Driven Delivery",
   description:
     "A specification-driven, flow-based methodology for AI-augmented software delivery.",
   openGraph: {

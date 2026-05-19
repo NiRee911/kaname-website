@@ -44,7 +44,7 @@ const roles: Role[] = [
     title: "Delivery Coach",
     artifact: null,
     description:
-      "Accountable for the health of the delivery system — policies, WIP limits, gate criteria, and board state. The primary guardian of human gates in AI-augmented delivery.",
+      "Accountable for the health of the delivery system: policies, WIP limits, gate criteria, and board state. The primary guardian of human gates in AI-augmented delivery.",
     fullWidth: true,
   },
 ]

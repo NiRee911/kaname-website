@@ -26,7 +26,7 @@ const steps: CycleStep[] = [
     type: "gate",
     label: "3",
     description:
-      "Gate 1 — Specification Gate: human judgment approves selected Use Cases before technical planning begins.",
+      "Specification Gate: human judgment approves selected Use Cases before technical planning begins.",
   },
   {
     id: "step-4",
@@ -47,14 +47,14 @@ const steps: CycleStep[] = [
     type: "gate",
     label: "6",
     description:
-      "Gate 4 — Delivery Gate: the system is verified against all Use Cases before release.",
+      "Delivery Gate: the system is verified against all Use Cases before release.",
   },
   {
     id: "repeat",
     type: "repeat",
     label: "↺",
     description:
-      "Repeat. Steps 2–7 constitute one delivery cycle — scope-defined, not time-boxed.",
+      "Repeat. Steps 2-7 constitute one delivery cycle, scope-defined, not time-boxed.",
   },
 ]
 
