@@ -39,8 +39,9 @@ const html = `<!DOCTYPE html>
     background: #ffffff;
   }
 
-  /* COVER PAGE */
+  /* COVER PAGE - named page so @page coverPage { margin:0 } applies only here */
   .cover {
+    page: coverPage;
     width: 100%;
     height: 100vh;
     display: flex;
@@ -100,7 +101,7 @@ const html = `<!DOCTYPE html>
     letter-spacing: 0.5px;
   }
 
-  /* CONTENT PAGES - margins handled by Puppeteer */
+  /* CONTENT PAGES - @page margin handles all page margins */
   .content {
     padding: 0;
   }
@@ -158,7 +159,6 @@ const html = `<!DOCTYPE html>
     margin: 32px 0;
   }
 
-  /* Blockquote for the definition */
   blockquote {
     border-left: 3px solid #d8b4fe;
     padding: 12px 20px;
@@ -169,10 +169,16 @@ const html = `<!DOCTYPE html>
     font-style: italic;
   }
 
-  /* Page numbers */
-  @page {
+  /* Cover page: full-bleed, no margins */
+  @page coverPage {
     size: A4;
     margin: 0;
+  }
+
+  /* All other pages: proper margins on every page */
+  @page {
+    size: A4;
+    margin: 56px 72px;
   }
 
   @media print {
@@ -216,19 +222,9 @@ await page.setContent(html, { waitUntil: 'networkidle0' })
 // Wait for Google Fonts to load
 await new Promise(r => setTimeout(r, 2000))
 
-const footerTemplate = `
-  <div style="width:100%;padding:0 72px;font-size:7.5pt;color:#94a3b8;display:flex;justify-content:space-between;border-top:1px solid #e2e8f0;padding-top:6px;font-family:'Inter',sans-serif;">
-    <span>KANAME: Specification-Driven Delivery</span>
-    <span>Kavinsky &amp; Smolkova &middot; v1.0 &middot; CC BY-SA 4.0</span>
-  </div>`
-
 const pdf = await page.pdf({
   format: 'A4',
   printBackground: true,
-  margin: { top: '56px', right: '72px', bottom: '48px', left: '72px' },
-  displayHeaderFooter: true,
-  headerTemplate: '<span></span>',
-  footerTemplate,
 })
 
 await browser.close()
