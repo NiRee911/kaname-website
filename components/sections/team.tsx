@@ -51,7 +51,8 @@ const roles: Role[] = [
 
 export function Team() {
   const standard = roles.filter((r) => !r.fullWidth)
-  const coach = roles.find((r) => r.fullWidth)!
+  const coach = roles.find((r) => r.fullWidth)
+  if (!coach) return null
 
   return (
     <section className="border-y border-slate-800 px-6 py-20 md:px-16">

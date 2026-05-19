@@ -1,6 +1,7 @@
 type StepType = "start" | "step" | "gate" | "repeat"
 
 interface CycleStep {
+  id: string
   type: StepType
   label: string
   description: string
@@ -8,45 +9,52 @@ interface CycleStep {
 
 const steps: CycleStep[] = [
   {
+    id: "step-1",
     type: "start",
     label: "1",
     description:
       "Spec Owner authors a specification that precisely defines system behavior.",
   },
   {
+    id: "step-2",
     type: "step",
     label: "2",
     description: "Spec-Ready Use Cases are selected for the delivery cycle.",
   },
   {
+    id: "gate-1",
     type: "gate",
-    label: "⬡",
+    label: "3",
     description:
       "Gate 1 — Specification Gate: human judgment approves selected Use Cases before technical planning begins.",
   },
   {
+    id: "step-4",
     type: "step",
     label: "4",
     description:
       "AI agents generate a technical plan; the Plan Reviewer approves it before tasks are generated.",
   },
   {
+    id: "step-5",
     type: "step",
     label: "5",
     description:
       "Task Implementers pull tasks and verify AI-generated code against the specification at each merge.",
   },
   {
+    id: "gate-4",
     type: "gate",
-    label: "⬡",
+    label: "6",
     description:
       "Gate 4 — Delivery Gate: the system is verified against all Use Cases before release.",
   },
   {
+    id: "repeat",
     type: "repeat",
     label: "↺",
     description:
-      "Repeat. Steps 2–6 constitute one delivery cycle — scope-defined, not time-boxed.",
+      "Repeat. Steps 2–7 constitute one delivery cycle — scope-defined, not time-boxed.",
   },
 ]
 
@@ -81,7 +89,7 @@ export function DeliveryCycle() {
         </p>
         <div className="flex flex-col">
           {steps.map((step, i) => (
-            <div key={i}>
+            <div key={step.id}>
               <div className="flex items-start gap-4">
                 <StepMarker type={step.type} label={step.label} />
                 <p
