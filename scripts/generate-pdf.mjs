@@ -100,9 +100,9 @@ const html = `<!DOCTYPE html>
     letter-spacing: 0.5px;
   }
 
-  /* CONTENT PAGES */
+  /* CONTENT PAGES - margins handled by Puppeteer */
   .content {
-    padding: 56px 72px;
+    padding: 0;
   }
 
   h2 {
@@ -179,19 +179,6 @@ const html = `<!DOCTYPE html>
     .cover { height: 297mm; }
   }
 
-  /* Footer on content pages */
-  .page-footer {
-    position: fixed;
-    bottom: 24px;
-    left: 72px;
-    right: 72px;
-    font-size: 7.5pt;
-    color: #94a3b8;
-    display: flex;
-    justify-content: space-between;
-    border-top: 1px solid #e2e8f0;
-    padding-top: 8px;
-  }
 </style>
 </head>
 <body>
@@ -208,7 +195,7 @@ const html = `<!DOCTYPE html>
     A specification-driven, flow-based methodology<br>for AI-augmented software delivery.
   </div>
   <div class="cover-meta">
-    Jakub Kavinsky &amp; Slavimira Smolkova &nbsp;&middot;&nbsp; v1.0 &nbsp;&middot;&nbsp; May 2026<br>
+    Jakub Kavinsky &amp; Slavomira Smolkova &nbsp;&middot;&nbsp; v1.0 &nbsp;&middot;&nbsp; May 2026<br>
     CC BY-SA 4.0 &nbsp;&middot;&nbsp; Free to use and share with attribution
   </div>
 </div>
@@ -216,11 +203,6 @@ const html = `<!DOCTYPE html>
 <!-- CONTENT -->
 <div class="content">
   ${body}
-</div>
-
-<div class="page-footer">
-  <span>KANAME: Specification-Driven Delivery</span>
-  <span>Kavinsky &amp; Smolkova &middot; v1.0 &middot; CC BY-SA 4.0</span>
 </div>
 
 </body>
@@ -234,11 +216,19 @@ await page.setContent(html, { waitUntil: 'networkidle0' })
 // Wait for Google Fonts to load
 await new Promise(r => setTimeout(r, 2000))
 
+const footerTemplate = `
+  <div style="width:100%;padding:0 72px;font-size:7.5pt;color:#94a3b8;display:flex;justify-content:space-between;border-top:1px solid #e2e8f0;padding-top:6px;font-family:'Inter',sans-serif;">
+    <span>KANAME: Specification-Driven Delivery</span>
+    <span>Kavinsky &amp; Smolkova &middot; v1.0 &middot; CC BY-SA 4.0</span>
+  </div>`
+
 const pdf = await page.pdf({
   format: 'A4',
   printBackground: true,
-  margin: { top: '0', right: '0', bottom: '0', left: '0' },
-  displayHeaderFooter: false,
+  margin: { top: '56px', right: '72px', bottom: '48px', left: '72px' },
+  displayHeaderFooter: true,
+  headerTemplate: '<span></span>',
+  footerTemplate,
 })
 
 await browser.close()
