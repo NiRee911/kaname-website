@@ -58,7 +58,7 @@ const html = `<!DOCTYPE html>
     font-weight: 600;
     letter-spacing: 4px;
     text-transform: uppercase;
-    color: #d8b4fe;
+    color: #f59e0b;
     margin-bottom: 24px;
   }
 
@@ -74,7 +74,7 @@ const html = `<!DOCTYPE html>
   .cover-kanji {
     font-size: 42pt;
     font-weight: 300;
-    color: #d8b4fe;
+    color: #f59e0b;
     opacity: 0.7;
     margin-bottom: 36px;
   }
@@ -82,7 +82,7 @@ const html = `<!DOCTYPE html>
   .cover-rule {
     width: 56px;
     height: 2px;
-    background: #d8b4fe;
+    background: #f59e0b;
     margin-bottom: 28px;
   }
 
@@ -113,7 +113,7 @@ const html = `<!DOCTYPE html>
     margin-top: 48px;
     margin-bottom: 6px;
     padding-bottom: 10px;
-    border-bottom: 2px solid #e9d5ff;
+    border-bottom: 2px solid #fde68a;
     letter-spacing: -0.5px;
   }
 
@@ -122,7 +122,7 @@ const html = `<!DOCTYPE html>
   h3 {
     font-size: 12pt;
     font-weight: 600;
-    color: #6d28d9;
+    color: #b45309;
     margin-top: 28px;
     margin-bottom: 8px;
     letter-spacing: -0.2px;
@@ -160,12 +160,12 @@ const html = `<!DOCTYPE html>
   }
 
   blockquote {
-    border-left: 3px solid #d8b4fe;
+    border-left: 3px solid #f59e0b;
     padding: 12px 20px;
     margin: 16px 0;
-    background: #faf5ff;
+    background: #fffbeb;
     border-radius: 0 6px 6px 0;
-    color: #4c1d95;
+    color: #78350f;
     font-style: italic;
   }
 
