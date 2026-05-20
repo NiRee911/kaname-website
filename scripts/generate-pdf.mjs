@@ -115,9 +115,13 @@ const html = `<!DOCTYPE html>
     padding-bottom: 10px;
     border-bottom: 2px solid #fde68a;
     letter-spacing: -0.5px;
+    break-before: page;
   }
 
-  h2:first-child { margin-top: 0; }
+  h2:first-of-type {
+    break-before: auto;
+    margin-top: 0;
+  }
 
   h3 {
     font-size: 12pt;
