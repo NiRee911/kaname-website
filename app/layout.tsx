@@ -28,6 +28,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <script dangerouslySetInnerHTML={{__html: `try{if(localStorage.getItem('theme')==='light')document.documentElement.classList.add('light')}catch(e){}`}} />
+      </head>
       <body
         className={`${inter.className} ${fraunces.variable} bg-[#0f172a] text-slate-50 antialiased`}
       >

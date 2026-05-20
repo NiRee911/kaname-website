@@ -8,3 +8,80 @@ html {
 h2 {
   font-family: var(--font-fraunces), Georgia, serif;
 }
+
+/* ── Color tokens ──────────────────────────────────────────── */
+:root {
+  --color-nav-bg: rgba(15, 23, 42, 0.9);
+  --color-gradient-from: #160c00;
+}
+
+html.light {
+  --color-nav-bg: rgba(248, 250, 252, 0.9);
+  --color-gradient-from: #fffbeb;
+}
+
+/* ── Light mode overrides ──────────────────────────────────── */
+
+/* Body and hardcoded hex surfaces */
+html.light body { background-color: #f8fafc; }
+html.light [class*="bg-[#0f172a]"] { background-color: #f8fafc; }
+html.light [class*="bg-[#0a0f1e]"] {
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Primary text */
+html.light .text-slate-50  { color: #0f172a; }
+html.light .text-slate-300 { color: #334155; }
+html.light .text-slate-400 { color: #475569; }
+html.light .text-slate-500 { color: #334155; }
+
+/* Amber accent text - must be darker for contrast on white */
+html.light .text-amber-400      { color: #d97706; }
+html.light .text-amber-400\/70  { color: rgba(217, 119, 6, 0.8); }
+
+/* Hover text */
+html.light .hover\:text-slate-300:hover { color: #1e293b; }
+html.light .hover\:text-slate-200:hover { color: #0f172a; }
+html.light .hover\:text-amber-300:hover { color: #b45309; }
+html.light .group:hover .group-hover\:text-amber-400 { color: #d97706; }
+
+/* Borders */
+html.light .border-slate-800           { border-color: #e2e8f0; }
+html.light .border-slate-700           { border-color: #cbd5e1; }
+html.light .hover\:border-slate-500:hover { border-color: #94a3b8; }
+html.light .hover\:border-slate-600:hover { border-color: #94a3b8; }
+
+/* Timeline connector line */
+html.light .bg-slate-800 { background-color: #e2e8f0; }
+
+/* Conviction / values anti-pattern red box */
+html.light .bg-red-950\/20      { background-color: rgba(254, 242, 242, 0.9); }
+html.light .border-red-900\/30  { border-color: rgba(185, 28, 28, 0.2); }
+html.light .text-red-400\/70    { color: rgba(185, 28, 28, 0.85); }
+
+/* Gates cost-of-failure grid */
+html.light .bg-emerald-950\/20      { background-color: rgba(240, 253, 244, 0.9); }
+html.light .border-emerald-900\/40  { border-color: rgba(16, 185, 129, 0.3); }
+html.light .text-emerald-400\/70    { color: rgba(5, 150, 105, 0.9); }
+
+html.light .bg-yellow-950\/20      { background-color: rgba(254, 252, 232, 0.9); }
+html.light .border-yellow-900\/40  { border-color: rgba(161, 98, 7, 0.35); }
+html.light .text-yellow-400\/70    { color: rgba(161, 98, 7, 0.9); }
+
+html.light .bg-orange-950\/20      { background-color: rgba(255, 247, 237, 0.9); }
+html.light .border-orange-900\/40  { border-color: rgba(194, 65, 12, 0.35); }
+html.light .text-orange-400\/70    { color: rgba(194, 65, 12, 0.9); }
+
+html.light .bg-red-950\/20         { background-color: rgba(254, 242, 242, 0.9); }
+html.light .border-red-900\/40     { border-color: rgba(185, 28, 28, 0.35); }
+html.light .text-red-400\/70       { color: rgba(185, 28, 28, 0.9); }
+
+html.light .bg-red-900\/20         { background-color: rgba(254, 226, 226, 0.9); }
+html.light .border-red-700\/50     { border-color: rgba(185, 28, 28, 0.4); }
+html.light .text-red-300\/80       { color: rgba(153, 27, 27, 0.9); }
+
+/* Gates amber info box */
+html.light .bg-amber-950\/20       { background-color: rgba(255, 251, 235, 0.9); }
+html.light .border-amber-400\/20   { border-color: rgba(180, 83, 9, 0.25); }
+

@@ -5,7 +5,7 @@ export function DownloadCta() {
       className="border-y border-slate-800 px-6 py-20 md:px-16"
     >
       <div className="mx-auto max-w-5xl">
-        <div className="rounded-xl border border-amber-400/20 bg-gradient-to-br from-[#160c00] to-[#0f172a] p-10 text-center">
+        <div className="rounded-xl border border-amber-400/20 bg-gradient-to-br from-[var(--color-gradient-from)] to-[#0f172a] p-10 text-center">
           <p className="mb-3 text-[10px] font-semibold tracking-[4px] text-amber-400 uppercase">
             The Full Guide
           </p>
