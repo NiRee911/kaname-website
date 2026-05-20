@@ -1,3 +1,4 @@
+import { Nav } from "@/components/nav"
 import { Hero } from "@/components/sections/hero"
 import { TheShift } from "@/components/sections/the-shift"
 import { Convictions } from "@/components/sections/convictions"
@@ -11,6 +12,7 @@ import { Footer } from "@/components/sections/footer"
 export default function Home() {
   return (
     <main>
+      <Nav />
       <Hero />
       <TheShift />
       <Convictions />

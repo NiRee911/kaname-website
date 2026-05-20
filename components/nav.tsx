@@ -18,12 +18,12 @@ export function Nav() {
         >
           KANAME <span className="font-light text-purple-300/60">要</span>
         </Link>
-        <div className="hidden items-center gap-5 md:flex">
+        <div className="flex items-center gap-4 overflow-x-auto">
           {sections.map((s) => (
             <Link
               key={s.href}
               href={s.href}
-              className="text-[10px] font-medium tracking-widest text-slate-500 uppercase transition-colors hover:text-slate-300"
+              className="shrink-0 text-[10px] font-medium tracking-widest text-slate-500 uppercase transition-colors hover:text-slate-300"
             >
               {s.label}
             </Link>
