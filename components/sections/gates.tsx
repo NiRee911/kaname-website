@@ -54,6 +54,14 @@ export function Gates() {
           No AI output advances through the delivery system without passing a
           human gate.
         </p>
+        <div className="mt-6 text-right">
+          <a
+            href="/gates"
+            className="text-[10px] font-semibold tracking-[3px] text-purple-300/50 uppercase transition-colors hover:text-purple-300"
+          >
+            Explore in depth →
+          </a>
+        </div>
       </div>
     </section>
   )

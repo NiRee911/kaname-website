@@ -23,6 +23,14 @@ export function Values() {
             </span>
           ))}
         </div>
+        <div className="mt-8 text-right">
+          <a
+            href="/values"
+            className="text-[10px] font-semibold tracking-[3px] text-purple-300/50 uppercase transition-colors hover:text-purple-300"
+          >
+            Explore in depth →
+          </a>
+        </div>
       </div>
     </section>
   )
