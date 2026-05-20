@@ -4,7 +4,7 @@ export function DownloadCta() {
       id="download"
       className="border-y border-slate-800 px-6 py-20 md:px-16"
     >
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-5xl">
         <div className="rounded-xl border border-purple-300/20 bg-gradient-to-br from-[#1a0a2e] to-[#0f172a] p-10 text-center">
           <p className="mb-3 text-[10px] font-semibold tracking-[4px] text-purple-300 uppercase">
             The Full Guide

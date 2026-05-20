@@ -2,7 +2,7 @@ export function Hero() {
   return (
     <section className="relative overflow-hidden px-6 py-24 md:px-16 md:py-36">
       <div className="pointer-events-none absolute -right-24 -top-24 h-[480px] w-[480px] rounded-full bg-[radial-gradient(circle,_#d8b4fe15,_transparent_70%)]" />
-      <div className="relative mx-auto max-w-3xl">
+      <div className="relative mx-auto max-w-5xl">
         <p className="mb-5 text-[10px] font-semibold tracking-[4px] text-purple-300 uppercase">
           A Methodology for the AI Age
         </p>

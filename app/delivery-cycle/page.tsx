@@ -209,7 +209,7 @@ export default function DeliveryCyclePage() {
 
       {/* Hero */}
       <section className="px-6 py-20 md:px-16 md:py-28">
-        <div className="mx-auto max-w-3xl">
+        <div className="mx-auto max-w-5xl">
           <p className="mb-4 text-[10px] font-semibold tracking-[4px] text-purple-300 uppercase">
             Kaname Delivery
           </p>
@@ -312,7 +312,7 @@ export default function DeliveryCyclePage() {
 
       {/* Artifact chain */}
       <section className="border-t border-slate-800 bg-[#0a0f1e] px-6 py-14 md:px-16">
-        <div className="mx-auto max-w-3xl">
+        <div className="mx-auto max-w-5xl">
           <p className="mb-8 text-[10px] font-semibold tracking-[3px] text-slate-600 uppercase">
             The Artifact Chain
           </p>
@@ -352,7 +352,7 @@ export default function DeliveryCyclePage() {
 
       {/* Stage by stage */}
       <section className="border-t border-slate-800">
-        <div className="mx-auto max-w-3xl px-6 py-14 md:px-16">
+        <div className="mx-auto max-w-5xl px-6 py-14 md:px-16">
           <p className="mb-10 text-[10px] font-semibold tracking-[3px] text-slate-600 uppercase">
             Stage by Stage
           </p>
@@ -364,7 +364,7 @@ export default function DeliveryCyclePage() {
               i % 2 === 1 ? "bg-[#0a0f1e]" : ""
             }`}
           >
-            <div className="mx-auto max-w-3xl">
+            <div className="mx-auto max-w-5xl">
               <div className="mb-6 flex items-center gap-4">
                 <h2 className="text-xl font-bold text-slate-50">
                   {stage.label}
@@ -430,7 +430,7 @@ export default function DeliveryCyclePage() {
 
       {/* Events */}
       <section className="border-t border-slate-800 bg-[#0a0f1e] px-6 py-16 md:px-16">
-        <div className="mx-auto max-w-3xl">
+        <div className="mx-auto max-w-5xl">
           <p className="mb-4 text-[10px] font-semibold tracking-[3px] text-slate-600 uppercase">
             Six Events
           </p>
@@ -469,7 +469,7 @@ export default function DeliveryCyclePage() {
 
       {/* CTA */}
       <section className="border-t border-slate-800 px-6 py-16 md:px-16">
-        <div className="mx-auto flex max-w-3xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mx-auto flex max-w-5xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-slate-500">
             The four human gates are defined in detail in the Gates section.
           </p>

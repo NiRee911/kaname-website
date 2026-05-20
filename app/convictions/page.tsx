@@ -69,7 +69,7 @@ export default function ConvictionsPage() {
 
       {/* Hero */}
       <section className="px-6 py-20 md:px-16 md:py-28">
-        <div className="mx-auto max-w-3xl">
+        <div className="mx-auto max-w-5xl">
           <p className="mb-4 text-[10px] font-semibold tracking-[4px] text-purple-300 uppercase">
             Kaname Theory
           </p>
@@ -94,7 +94,7 @@ export default function ConvictionsPage() {
               i % 2 === 1 ? "bg-[#0a0f1e]" : ""
             }`}
           >
-            <div className="mx-auto max-w-3xl">
+            <div className="mx-auto max-w-5xl">
               {/* Numeral + title */}
               <div className="mb-8 flex items-baseline gap-4">
                 <span className="text-3xl font-light text-purple-300">
@@ -180,7 +180,7 @@ export default function ConvictionsPage() {
 
       {/* CTA */}
       <section className="px-6 py-16 md:px-16">
-        <div className="mx-auto flex max-w-3xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mx-auto flex max-w-5xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-slate-500">
             The full guide covers all five roles, the delivery cycle, and human
             gates.

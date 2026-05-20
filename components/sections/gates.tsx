@@ -28,7 +28,7 @@ const gates = [
 export function Gates() {
   return (
     <section className="px-6 py-20 md:px-16">
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-5xl">
         <p className="mb-10 text-[10px] font-semibold tracking-[3px] text-slate-600 uppercase">
           Four Human Gates
         </p>

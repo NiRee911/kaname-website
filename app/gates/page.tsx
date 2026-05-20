@@ -121,7 +121,7 @@ export default function GatesPage() {
 
       {/* Hero */}
       <section className="px-6 py-20 md:px-16 md:py-28">
-        <div className="mx-auto max-w-3xl">
+        <div className="mx-auto max-w-5xl">
           <p className="mb-4 text-[10px] font-semibold tracking-[4px] text-purple-300 uppercase">
             Human Governance
           </p>
@@ -146,7 +146,7 @@ export default function GatesPage() {
 
       {/* Cost of failure gradient */}
       <section className="border-t border-slate-800 bg-[#0a0f1e] px-6 py-12 md:px-16">
-        <div className="mx-auto max-w-3xl">
+        <div className="mx-auto max-w-5xl">
           <p className="mb-8 text-[10px] font-semibold tracking-[3px] text-slate-600 uppercase">
             Cost of Failure
           </p>
@@ -185,7 +185,7 @@ export default function GatesPage() {
 
       {/* Gate sequence */}
       <section className="border-t border-slate-800 px-6 py-10 md:px-16">
-        <div className="mx-auto max-w-3xl">
+        <div className="mx-auto max-w-5xl">
           <div className="overflow-x-auto pb-2">
             <div className="flex min-w-max items-center gap-0">
               {[
@@ -245,7 +245,7 @@ export default function GatesPage() {
               i % 2 === 1 ? "bg-[#0a0f1e]" : ""
             }`}
           >
-            <div className="mx-auto max-w-3xl">
+            <div className="mx-auto max-w-5xl">
               {/* Header */}
               <div className="mb-8 flex flex-wrap items-baseline gap-3">
                 <span className="text-4xl font-extrabold tracking-[-2px] text-purple-300/30">
@@ -332,7 +332,7 @@ export default function GatesPage() {
 
       {/* Gate violations */}
       <section className="border-t border-slate-800 bg-[#0a0f1e] px-6 py-16 md:px-16">
-        <div className="mx-auto max-w-3xl">
+        <div className="mx-auto max-w-5xl">
           <p className="mb-4 text-[10px] font-semibold tracking-[3px] text-slate-600 uppercase">
             Gate Violations
           </p>
@@ -364,7 +364,7 @@ export default function GatesPage() {
 
       {/* Constitutional veto */}
       <section className="border-t border-slate-800 px-6 py-16 md:px-16">
-        <div className="mx-auto max-w-3xl">
+        <div className="mx-auto max-w-5xl">
           <p className="mb-4 text-[10px] font-semibold tracking-[3px] text-slate-600 uppercase">
             Beyond the Four Gates
           </p>
@@ -406,7 +406,7 @@ export default function GatesPage() {
 
       {/* CTA */}
       <section className="border-t border-slate-800 bg-[#0a0f1e] px-6 py-16 md:px-16">
-        <div className="mx-auto flex max-w-3xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mx-auto flex max-w-5xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-slate-500">
             All five roles, gate ownerships, and accountability boundaries are
             in the full guide.

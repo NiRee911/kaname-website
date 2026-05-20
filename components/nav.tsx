@@ -11,7 +11,7 @@ const sections = [
 export function Nav() {
   return (
     <nav className="sticky top-0 z-50 border-b border-slate-800 bg-[#0f172a]/90 px-6 py-4 backdrop-blur md:px-16">
-      <div className="mx-auto flex max-w-3xl items-center justify-between gap-6">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-6">
         <Link href="/" className="flex shrink-0 items-center gap-2.5 group">
           <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white transition-transform group-hover:scale-105">
             <span className="text-[15px] font-light leading-none text-[#0f172a]">
