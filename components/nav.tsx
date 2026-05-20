@@ -12,11 +12,15 @@ export function Nav() {
   return (
     <nav className="sticky top-0 z-50 border-b border-slate-800 bg-[#0f172a]/90 px-6 py-4 backdrop-blur md:px-16">
       <div className="mx-auto flex max-w-3xl items-center justify-between gap-6">
-        <Link
-          href="/"
-          className="text-sm font-bold tracking-[-0.5px] text-slate-50 hover:text-purple-300 transition-colors"
-        >
-          KANAME <span className="font-light text-purple-300/60">要</span>
+        <Link href="/" className="flex shrink-0 items-center gap-2.5 group">
+          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white transition-transform group-hover:scale-105">
+            <span className="text-[15px] font-light leading-none text-[#0f172a]">
+              要
+            </span>
+          </div>
+          <span className="text-sm font-bold tracking-[-0.5px] text-slate-50 transition-colors group-hover:text-purple-300">
+            KANAME
+          </span>
         </Link>
         <div className="flex items-center gap-4 overflow-x-auto">
           {sections.map((s) => (
