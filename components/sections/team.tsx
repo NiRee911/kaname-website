@@ -66,7 +66,7 @@ export function Team() {
               key={role.number}
               className="rounded-lg border border-slate-800 bg-[#0a0f1e] p-5"
             >
-              <p className="mb-2 text-[9px] font-semibold tracking-[2px] text-purple-300 uppercase">
+              <p className="mb-2 text-[11px] font-semibold tracking-[2px] text-purple-300 uppercase">
                 Role {role.number}
               </p>
               <p className="mb-0.5 text-sm font-semibold text-slate-50">
@@ -83,7 +83,7 @@ export function Team() {
             </div>
           ))}
           <div className="col-span-full rounded-lg border border-purple-300/20 bg-[#0a0f1e] p-5">
-            <p className="mb-2 text-[9px] font-semibold tracking-[2px] text-purple-300 uppercase">
+            <p className="mb-2 text-[11px] font-semibold tracking-[2px] text-purple-300 uppercase">
               Role {coach.number}
             </p>
             <p className="mb-2 text-sm font-semibold text-slate-50">

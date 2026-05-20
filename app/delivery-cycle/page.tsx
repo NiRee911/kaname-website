@@ -269,19 +269,19 @@ export default function DeliveryCyclePage() {
                         {item.label}
                       </p>
                       {item.role && (
-                        <p className="mt-1 text-[9px] text-slate-600 whitespace-nowrap">
+                        <p className="mt-1 text-[11px] text-slate-600 whitespace-nowrap">
                           {item.role}
                         </p>
                       )}
                       {item.artifact && (
-                        <p className="mt-0.5 font-mono text-[9px] text-purple-300/50 whitespace-nowrap">
+                        <p className="mt-0.5 font-mono text-[11px] text-purple-300/50 whitespace-nowrap">
                           {item.artifact}
                         </p>
                       )}
                     </div>
                     {i < stages.length - 1 &&
                       stages[i + 1]?.type !== "gate" && (
-                        <div className="px-1 text-slate-700">
+                        <div className="px-1 text-slate-500">
                           <svg
                             width="16"
                             height="16"
@@ -303,7 +303,7 @@ export default function DeliveryCyclePage() {
               })}
             </div>
           </div>
-          <p className="mt-4 text-[10px] text-slate-700">
+          <p className="mt-4 text-[10px] text-slate-500">
             Vertical lines are human gates - work cannot cross them without
             named human approval.
           </p>
@@ -331,7 +331,7 @@ export default function DeliveryCyclePage() {
                   <code className="rounded bg-slate-800/60 px-2 py-0.5 text-[11px] text-purple-300">
                     {a.file}
                   </code>
-                  <span className="text-[9px] font-semibold tracking-[2px] text-slate-700 uppercase">
+                  <span className="text-[11px] font-semibold tracking-[2px] text-slate-500 uppercase">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                 </div>
@@ -341,7 +341,7 @@ export default function DeliveryCyclePage() {
                 <p className="mb-3 text-xs leading-relaxed text-slate-500">
                   {a.description}
                 </p>
-                <p className="text-[9px] text-slate-700">
+                <p className="text-[11px] text-slate-500">
                   Owner: {a.owner}
                 </p>
               </div>
@@ -370,7 +370,7 @@ export default function DeliveryCyclePage() {
                   {stage.label}
                 </h2>
                 {stage.role && (
-                  <span className="rounded border border-slate-700 px-2 py-0.5 text-[9px] tracking-widest text-slate-500 uppercase">
+                  <span className="rounded border border-slate-700 px-2 py-0.5 text-[11px] tracking-widest text-slate-500 uppercase">
                     {stage.role}
                   </span>
                 )}
@@ -385,7 +385,7 @@ export default function DeliveryCyclePage() {
               </p>
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="rounded border border-slate-800 px-4 py-3">
-                  <p className="mb-1 text-[9px] font-semibold tracking-[2px] text-slate-700 uppercase">
+                  <p className="mb-1 text-[11px] font-semibold tracking-[2px] text-slate-500 uppercase">
                     Entry
                   </p>
                   <p className="text-xs leading-relaxed text-slate-500">
@@ -393,7 +393,7 @@ export default function DeliveryCyclePage() {
                   </p>
                 </div>
                 <div className="rounded border border-slate-800 px-4 py-3">
-                  <p className="mb-1 text-[9px] font-semibold tracking-[2px] text-slate-700 uppercase">
+                  <p className="mb-1 text-[11px] font-semibold tracking-[2px] text-slate-500 uppercase">
                     Exit
                   </p>
                   <p className="text-xs leading-relaxed text-slate-500">
@@ -409,7 +409,7 @@ export default function DeliveryCyclePage() {
                 if (!nextGate || nextGate.type !== "gate") return null
                 return (
                   <div className="mt-4 flex items-start gap-3 rounded-lg border border-purple-300/20 bg-purple-950/20 px-4 py-3">
-                    <span className="mt-0.5 text-[9px] font-bold tracking-[2px] text-purple-300 uppercase whitespace-nowrap">
+                    <span className="mt-0.5 text-[11px] font-bold tracking-[2px] text-purple-300 uppercase whitespace-nowrap">
                       {nextGate.label}
                     </span>
                     <div>
@@ -450,15 +450,15 @@ export default function DeliveryCyclePage() {
                   {event.name}
                 </p>
                 <p className="mb-3 text-[10px] text-slate-600">
-                  <span className="text-slate-700">Trigger:</span>{" "}
+                  <span className="text-slate-500">Trigger:</span>{" "}
                   {event.trigger} &middot;{" "}
-                  <span className="text-slate-700">Facilitated by:</span>{" "}
+                  <span className="text-slate-500">Facilitated by:</span>{" "}
                   {event.facilitator}
                 </p>
                 <p className="mb-3 text-xs leading-relaxed text-slate-500">
                   {event.purpose}
                 </p>
-                <p className="text-[10px] text-slate-700">
+                <p className="text-[10px] text-slate-500">
                   Output: {event.output}
                 </p>
               </div>

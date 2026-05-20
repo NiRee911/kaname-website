@@ -211,7 +211,7 @@ export default function TeamPage() {
                     {role.number}
                   </span>
                   {role.artifact && (
-                    <code className="rounded bg-slate-800/60 px-1.5 py-0.5 text-[9px] text-purple-300/70">
+                    <code className="rounded bg-slate-800/60 px-1.5 py-0.5 text-[11px] text-purple-300/70">
                       {role.artifact}
                     </code>
                   )}
@@ -222,7 +222,7 @@ export default function TeamPage() {
                 <p className="text-xs leading-relaxed text-slate-500">
                   {role.oneLiner}
                 </p>
-                <p className="mt-3 text-[9px] text-slate-700">
+                <p className="mt-3 text-[11px] text-slate-500">
                   Owns: {role.gate}
                 </p>
               </div>
@@ -232,7 +232,7 @@ export default function TeamPage() {
                 <span className="font-mono text-xs font-semibold tracking-widest text-purple-300/50">
                   {roles[4].number}
                 </span>
-                <span className="text-[9px] font-semibold tracking-[2px] text-purple-300/50 uppercase">
+                <span className="text-[11px] font-semibold tracking-[2px] text-purple-300/50 uppercase">
                   No primary artifact
                 </span>
               </div>
@@ -242,7 +242,7 @@ export default function TeamPage() {
               <p className="text-xs leading-relaxed text-slate-500">
                 {roles[4].oneLiner}
               </p>
-              <p className="mt-3 text-[9px] text-slate-700">
+              <p className="mt-3 text-[11px] text-slate-500">
                 Owns: {roles[4].gate}
               </p>
             </div>
@@ -285,7 +285,7 @@ export default function TeamPage() {
               <div className="grid gap-8 md:grid-cols-2">
                 {/* Accountable for */}
                 <div>
-                  <p className="mb-3 text-[9px] font-semibold tracking-[3px] text-slate-600 uppercase">
+                  <p className="mb-3 text-[11px] font-semibold tracking-[3px] text-slate-600 uppercase">
                     Accountable for
                   </p>
                   <ul className="space-y-2">
@@ -303,7 +303,7 @@ export default function TeamPage() {
 
                 {/* Not accountable for */}
                 <div>
-                  <p className="mb-3 text-[9px] font-semibold tracking-[3px] text-slate-600 uppercase">
+                  <p className="mb-3 text-[11px] font-semibold tracking-[3px] text-slate-600 uppercase">
                     Not accountable for
                   </p>
                   <ul className="space-y-2">
@@ -323,7 +323,7 @@ export default function TeamPage() {
               {/* Events + Note */}
               <div className="mt-8 grid gap-4 md:grid-cols-2">
                 <div className="rounded-lg border border-slate-800 bg-[#0a0f1e] p-4">
-                  <p className="mb-2 text-[9px] font-semibold tracking-[2px] text-slate-700 uppercase">
+                  <p className="mb-2 text-[11px] font-semibold tracking-[2px] text-slate-500 uppercase">
                     Events
                   </p>
                   <ul className="space-y-1">
@@ -335,7 +335,7 @@ export default function TeamPage() {
                   </ul>
                 </div>
                 <div className="rounded-lg border border-purple-300/10 bg-purple-950/10 p-4">
-                  <p className="mb-2 text-[9px] font-semibold tracking-[2px] text-slate-700 uppercase">
+                  <p className="mb-2 text-[11px] font-semibold tracking-[2px] text-slate-500 uppercase">
                     Key principle
                   </p>
                   <p className="text-xs leading-relaxed text-slate-500 italic">

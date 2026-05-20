@@ -167,14 +167,14 @@ export default function GatesPage() {
                 key={item.label}
                 className={`rounded-lg border p-4 text-center ${item.color}`}
               >
-                <p className="mb-1 text-[9px] font-semibold tracking-widest uppercase opacity-80">
+                <p className="mb-1 text-[11px] font-semibold tracking-widest uppercase opacity-80">
                   {item.label}
                 </p>
                 <p className="text-xs font-medium">{item.cost}</p>
               </div>
             ))}
           </div>
-          <p className="mt-4 text-[10px] text-slate-700">
+          <p className="mt-4 text-[10px] text-slate-500">
             These are relative costs for catching the same class of problem at
             different stages. Problems caught in production carry additional
             costs: user impact, emergency response, and fixes applied without
@@ -203,7 +203,7 @@ export default function GatesPage() {
                   {item.type === "gate" ? (
                     <div className="flex flex-col items-center px-1.5">
                       <div className="rounded border border-purple-300/40 bg-purple-950/40 px-2.5 py-2 text-center">
-                        <p className="text-[9px] font-bold tracking-widest text-purple-300 uppercase whitespace-nowrap">
+                        <p className="text-[11px] font-bold tracking-widest text-purple-300 uppercase whitespace-nowrap">
                           {item.label}
                         </p>
                         <p className="text-[8px] text-purple-300/50 whitespace-nowrap">
@@ -229,7 +229,7 @@ export default function GatesPage() {
               ))}
             </div>
           </div>
-          <p className="mt-3 text-[10px] text-slate-700">
+          <p className="mt-3 text-[10px] text-slate-500">
             Gates run in sequence. Gate 3 cannot be cleared before Gate 2. Work
             does not skip stages.
           </p>
@@ -258,7 +258,7 @@ export default function GatesPage() {
 
               {/* Reviewers */}
               <div className="mb-6 flex flex-wrap items-center gap-2">
-                <span className="text-[9px] font-semibold tracking-[2px] text-slate-700 uppercase">
+                <span className="text-[11px] font-semibold tracking-[2px] text-slate-500 uppercase">
                   Reviewers:
                 </span>
                 {gate.reviewers.map((r) => (
@@ -270,7 +270,7 @@ export default function GatesPage() {
                   </span>
                 ))}
                 {gate.requiresBoth && (
-                  <span className="rounded border border-purple-300/20 bg-purple-950/20 px-2 py-0.5 text-[9px] text-purple-300/70">
+                  <span className="rounded border border-purple-300/20 bg-purple-950/20 px-2 py-0.5 text-[11px] text-purple-300/70">
                     Both must approve
                   </span>
                 )}
@@ -286,7 +286,7 @@ export default function GatesPage() {
               <div className="grid gap-8 md:grid-cols-2">
                 {/* What they verify */}
                 <div>
-                  <p className="mb-3 text-[9px] font-semibold tracking-[3px] text-slate-600 uppercase">
+                  <p className="mb-3 text-[11px] font-semibold tracking-[3px] text-slate-600 uppercase">
                     What they verify
                   </p>
                   <ul className="space-y-2.5">
@@ -305,18 +305,18 @@ export default function GatesPage() {
                 {/* On failure */}
                 <div className="space-y-3">
                   <div className="rounded-lg border border-slate-800 p-4">
-                    <p className="mb-2 text-[9px] font-semibold tracking-[2px] text-slate-700 uppercase">
+                    <p className="mb-2 text-[11px] font-semibold tracking-[2px] text-slate-500 uppercase">
                       If this gate fails
                     </p>
                     <p className="text-sm leading-relaxed text-slate-500">
                       {gate.onFailure}
                     </p>
-                    <p className="mt-2 text-[9px] text-slate-700">
+                    <p className="mt-2 text-[11px] text-slate-500">
                       Returns to: {gate.onFailurePath}
                     </p>
                   </div>
                   <div className="rounded-lg border border-red-900/30 bg-red-950/20 p-4">
-                    <p className="mb-2 text-[9px] font-semibold tracking-[2px] text-red-400/70 uppercase">
+                    <p className="mb-2 text-[11px] font-semibold tracking-[2px] text-red-400/70 uppercase">
                       If this gate is skipped
                     </p>
                     <p className="text-sm leading-relaxed text-slate-500 italic">
@@ -380,7 +380,7 @@ export default function GatesPage() {
           </p>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="rounded-lg border border-slate-800 bg-[#0a0f1e] p-5">
-              <p className="mb-2 text-[9px] font-semibold tracking-[2px] text-slate-600 uppercase">
+              <p className="mb-2 text-[11px] font-semibold tracking-[2px] text-slate-600 uppercase">
                 The veto is absolute
               </p>
               <p className="text-sm leading-relaxed text-slate-500">
@@ -390,7 +390,7 @@ export default function GatesPage() {
               </p>
             </div>
             <div className="rounded-lg border border-slate-800 bg-[#0a0f1e] p-5">
-              <p className="mb-2 text-[9px] font-semibold tracking-[2px] text-slate-600 uppercase">
+              <p className="mb-2 text-[11px] font-semibold tracking-[2px] text-slate-600 uppercase">
                 The veto is specific
               </p>
               <p className="text-sm leading-relaxed text-slate-500">

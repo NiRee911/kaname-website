@@ -1,8 +1,13 @@
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+import { Inter, Fraunces } from "next/font/google"
 import "./globals.css"
 
 const inter = Inter({ subsets: ["latin"] })
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-fraunces",
+  weight: ["300", "400", "700", "900"],
+})
 
 export const metadata: Metadata = {
   title: "Kaname: Specification-Driven Delivery",
@@ -24,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.className} bg-[#0f172a] text-slate-50 antialiased`}
+        className={`${inter.className} ${fraunces.variable} bg-[#0f172a] text-slate-50 antialiased`}
       >
         {children}
       </body>

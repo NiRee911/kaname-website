@@ -31,7 +31,7 @@ export function Hero() {
             ↓ Download PDF
           </a>
         </div>
-        <p className="mt-6 text-[10px] tracking-wide text-slate-700">
+        <p className="mt-6 text-[10px] tracking-wide text-slate-500">
           v1.0 · Jakub Kavinsky & Slavomira Smolkova · CC BY-SA 4.0
         </p>
       </div>

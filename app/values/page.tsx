@@ -144,7 +144,7 @@ export default function ValuesPage() {
               <div className="grid gap-8 md:grid-cols-2">
                 {/* Why */}
                 <div>
-                  <p className="mb-3 text-[9px] font-semibold tracking-[3px] text-slate-600 uppercase">
+                  <p className="mb-3 text-[11px] font-semibold tracking-[3px] text-slate-600 uppercase">
                     Why this value
                   </p>
                   <p className="text-sm leading-relaxed text-slate-400">
@@ -154,7 +154,7 @@ export default function ValuesPage() {
 
                 {/* In practice */}
                 <div>
-                  <p className="mb-3 text-[9px] font-semibold tracking-[3px] text-slate-600 uppercase">
+                  <p className="mb-3 text-[11px] font-semibold tracking-[3px] text-slate-600 uppercase">
                     In practice
                   </p>
                   <ul className="space-y-2.5">
@@ -173,7 +173,7 @@ export default function ValuesPage() {
 
               {/* Anti-pattern */}
               <div className="mt-8 rounded-lg border border-red-900/30 bg-red-950/20 p-5">
-                <p className="mb-2 text-[9px] font-semibold tracking-[3px] text-red-400/70 uppercase">
+                <p className="mb-2 text-[11px] font-semibold tracking-[3px] text-red-400/70 uppercase">
                   Without this value
                 </p>
                 <p className="text-sm leading-relaxed text-slate-500 italic">
