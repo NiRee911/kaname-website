@@ -201,7 +201,7 @@ const html = `<!DOCTYPE html>
     A specification-driven, flow-based methodology<br>for AI-augmented software delivery.
   </div>
   <div class="cover-meta">
-    Jakub Kavinsky &amp; Slavomira Smolkova &nbsp;&middot;&nbsp; v1.0 &nbsp;&middot;&nbsp; May 2026<br>
+    v1.0 &nbsp;&middot;&nbsp; May 2026<br>
     CC BY-SA 4.0 &nbsp;&middot;&nbsp; Free to use and share with attribution
   </div>
 </div>
