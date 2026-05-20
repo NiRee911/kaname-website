@@ -4,12 +4,7 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Serif headings - breaks the "AI site" Inter-everywhere pattern */
-h1, h2 {
+/* Serif on section headings only - h1 wordmarks stay Inter */
+h2 {
   font-family: var(--font-fraunces), Georgia, serif;
-}
-
-/* KANAME wordmark in hero stays sharp - override back to Inter */
-.wordmark {
-  font-family: var(--font-inter, ui-sans-serif), system-ui, sans-serif;
 }
