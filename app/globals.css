@@ -13,11 +13,13 @@ h2 {
 :root {
   --color-nav-bg: rgba(15, 23, 42, 0.9);
   --color-gradient-from: #160c00;
+  --color-gradient-to: #0f172a;
 }
 
 html.light {
   --color-nav-bg: rgba(248, 250, 252, 0.9);
   --color-gradient-from: #fffbeb;
+  --color-gradient-to: #f1f5f9;
 }
 
 /* ── Light mode overrides ──────────────────────────────────── */
@@ -81,7 +83,18 @@ html.light .bg-red-900\/20         { background-color: rgba(254, 226, 226, 0.9);
 html.light .border-red-700\/50     { border-color: rgba(185, 28, 28, 0.4); }
 html.light .text-red-300\/80       { color: rgba(153, 27, 27, 0.9); }
 
-/* Gates amber info box */
-html.light .bg-amber-950\/20       { background-color: rgba(255, 251, 235, 0.9); }
+/* Amber surfaces - amber-950 is near-black, must flip to light amber in light mode */
+html.light .bg-amber-950\/20       { background-color: rgba(245, 158, 11, 0.07); }
+html.light .bg-amber-950\/30       { background-color: rgba(245, 158, 11, 0.07); }
+html.light .bg-amber-950\/40       { background-color: rgba(245, 158, 11, 0.12); }
 html.light .border-amber-400\/20   { border-color: rgba(180, 83, 9, 0.25); }
+html.light .border-amber-400\/30   { border-color: rgba(180, 83, 9, 0.3); }
+
+/* Code snippet backgrounds */
+html.light .bg-slate-800\/60       { background-color: rgba(226, 232, 240, 0.7); }
+
+/* Amber text with opacity */
+html.light .text-amber-400\/80     { color: rgba(180, 83, 9, 0.9); }
+html.light .text-amber-400\/70     { color: rgba(180, 83, 9, 0.85); }
+html.light .text-amber-400\/50     { color: rgba(180, 83, 9, 0.65); }
 
