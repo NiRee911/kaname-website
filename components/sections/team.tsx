@@ -94,12 +94,12 @@ export function Team() {
             </p>
           </div>
         </div>
-        <div className="mt-8 text-right">
+        <div className="mt-8 flex justify-end">
           <a
             href="/team"
-            className="text-[10px] font-semibold tracking-[3px] text-purple-300/50 uppercase transition-colors hover:text-purple-300"
+            className="rounded border border-slate-700 px-4 py-2 text-[11px] tracking-widest text-slate-400 uppercase transition-colors hover:border-slate-500 hover:text-slate-200"
           >
-            Explore in depth →
+            Full breakdown →
           </a>
         </div>
       </div>
