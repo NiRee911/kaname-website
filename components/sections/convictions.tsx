@@ -29,7 +29,7 @@ export function Convictions() {
               key={c.numeral}
               className="rounded-lg border border-slate-800 bg-[#0a0f1e] p-5"
             >
-              <p className="mb-3 text-xl font-light text-purple-300">
+              <p className="mb-3 text-xl font-light text-amber-400">
                 {c.numeral}
               </p>
               <h3 className="mb-2 text-sm font-semibold text-slate-50">

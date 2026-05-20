@@ -18,7 +18,7 @@ export function Nav() {
               要
             </span>
           </div>
-          <span className="text-sm font-bold tracking-[-0.5px] text-slate-50 transition-colors group-hover:text-purple-300">
+          <span className="text-sm font-bold tracking-[-0.5px] text-slate-50 transition-colors group-hover:text-amber-400">
             KANAME
           </span>
         </Link>
@@ -36,7 +36,7 @@ export function Nav() {
         <a
           href="/kaname-guide.pdf"
           download
-          className="text-[10px] font-semibold tracking-widest text-purple-300 uppercase transition-colors hover:text-purple-200"
+          className="text-[10px] font-semibold tracking-widest text-amber-400 uppercase transition-colors hover:text-amber-300"
         >
           ↓ PDF
         </a>

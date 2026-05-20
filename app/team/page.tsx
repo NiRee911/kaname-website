@@ -168,7 +168,7 @@ export default function TeamPage() {
       {/* Hero */}
       <section className="px-6 py-20 md:px-16 md:py-28">
         <div className="mx-auto max-w-5xl">
-          <p className="mb-4 text-[10px] font-semibold tracking-[4px] text-purple-300 uppercase">
+          <p className="mb-4 text-[10px] font-semibold tracking-[4px] text-amber-400 uppercase">
             Kaname Team
           </p>
           <h1 className="mb-6 text-5xl font-extrabold tracking-[-2px] text-slate-50 md:text-6xl">
@@ -187,7 +187,7 @@ export default function TeamPage() {
             <div className="rounded border border-slate-800 px-3 py-1.5 text-[10px] text-slate-500">
               One person may hold multiple roles
             </div>
-            <div className="rounded border border-purple-300/20 bg-purple-950/20 px-3 py-1.5 text-[10px] text-purple-300/70">
+            <div className="rounded border border-amber-400/20 bg-amber-950/20 px-3 py-1.5 text-[10px] text-amber-400/70">
               Accountability cannot be shared or left unassigned
             </div>
           </div>
@@ -207,11 +207,11 @@ export default function TeamPage() {
                 className="rounded-lg border border-slate-800 bg-[#0f172a] p-5"
               >
                 <div className="mb-3 flex items-start justify-between">
-                  <span className="font-mono text-xs font-semibold tracking-widest text-purple-300/50">
+                  <span className="font-mono text-xs font-semibold tracking-widest text-amber-400/50">
                     {role.number}
                   </span>
                   {role.artifact && (
-                    <code className="rounded bg-slate-800/60 px-1.5 py-0.5 text-[11px] text-purple-300/70">
+                    <code className="rounded bg-slate-800/60 px-1.5 py-0.5 text-[11px] text-amber-400/70">
                       {role.artifact}
                     </code>
                   )}
@@ -227,12 +227,12 @@ export default function TeamPage() {
                 </p>
               </div>
             ))}
-            <div className="col-span-full rounded-lg border border-purple-300/20 bg-[#0f172a] p-5">
+            <div className="col-span-full rounded-lg border border-amber-400/20 bg-[#0f172a] p-5">
               <div className="mb-3 flex items-start justify-between">
-                <span className="font-mono text-xs font-semibold tracking-widest text-purple-300/50">
+                <span className="font-mono text-xs font-semibold tracking-widest text-amber-400/50">
                   {roles[4].number}
                 </span>
-                <span className="text-[11px] font-semibold tracking-[2px] text-purple-300/50 uppercase">
+                <span className="text-[11px] font-semibold tracking-[2px] text-amber-400/50 uppercase">
                   No primary artifact
                 </span>
               </div>
@@ -262,21 +262,21 @@ export default function TeamPage() {
             <div className="mx-auto max-w-5xl">
               {/* Header */}
               <div className="mb-8 flex flex-wrap items-baseline gap-3">
-                <span className="font-mono text-xs font-semibold tracking-widest text-purple-300/50">
+                <span className="font-mono text-xs font-semibold tracking-widest text-amber-400/50">
                   {role.number}
                 </span>
                 <h2 className="text-2xl font-bold tracking-[-0.5px] text-slate-50 md:text-3xl">
                   {role.name}
                 </h2>
                 {role.artifact && (
-                  <code className="rounded bg-slate-800/60 px-2 py-0.5 text-[11px] text-purple-300">
+                  <code className="rounded bg-slate-800/60 px-2 py-0.5 text-[11px] text-amber-400">
                     {role.artifact}
                   </code>
                 )}
               </div>
 
               {/* Description */}
-              <blockquote className="mb-10 border-l-2 border-purple-300 pl-6">
+              <blockquote className="mb-10 border-l-2 border-amber-400 pl-6">
                 <p className="text-base leading-relaxed text-slate-300">
                   {role.fullDescription}
                 </p>
@@ -294,7 +294,7 @@ export default function TeamPage() {
                         key={j}
                         className="flex gap-3 text-sm leading-relaxed text-slate-400"
                       >
-                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-purple-300/50" />
+                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400/50" />
                         {item}
                       </li>
                     ))}
@@ -334,7 +334,7 @@ export default function TeamPage() {
                     ))}
                   </ul>
                 </div>
-                <div className="rounded-lg border border-purple-300/10 bg-purple-950/10 p-4">
+                <div className="rounded-lg border border-amber-400/10 bg-amber-950/10 p-4">
                   <p className="mb-2 text-[11px] font-semibold tracking-[2px] text-slate-500 uppercase">
                     Key principle
                   </p>
@@ -418,7 +418,7 @@ export default function TeamPage() {
             <a
               href="/kaname-guide.pdf"
               download
-              className="rounded bg-purple-300 px-4 py-2 text-[10px] font-bold tracking-widest text-[#0f172a] uppercase transition-colors hover:bg-purple-200"
+              className="rounded bg-amber-400 px-4 py-2 text-[10px] font-bold tracking-widest text-[#0f172a] uppercase transition-colors hover:bg-amber-300"
             >
               ↓ Full Guide PDF
             </a>

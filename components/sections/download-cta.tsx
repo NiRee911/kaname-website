@@ -5,8 +5,8 @@ export function DownloadCta() {
       className="border-y border-slate-800 px-6 py-20 md:px-16"
     >
       <div className="mx-auto max-w-5xl">
-        <div className="rounded-xl border border-purple-300/20 bg-gradient-to-br from-[#1a0a2e] to-[#0f172a] p-10 text-center">
-          <p className="mb-3 text-[10px] font-semibold tracking-[4px] text-purple-300 uppercase">
+        <div className="rounded-xl border border-amber-400/20 bg-gradient-to-br from-[#160c00] to-[#0f172a] p-10 text-center">
+          <p className="mb-3 text-[10px] font-semibold tracking-[4px] text-amber-400 uppercase">
             The Full Guide
           </p>
           <h2 className="mb-3 text-2xl font-bold text-slate-50">
@@ -19,7 +19,7 @@ export function DownloadCta() {
             <a
               href="/kaname-guide.pdf"
               download
-              className="rounded bg-purple-300 px-6 py-3 text-[11px] font-bold tracking-widest text-[#0f172a] uppercase transition-colors hover:bg-purple-200"
+              className="rounded bg-amber-400 px-6 py-3 text-[11px] font-bold tracking-widest text-[#0f172a] uppercase transition-colors hover:bg-amber-300"
             >
               ↓ Download PDF
             </a>

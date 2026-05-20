@@ -210,7 +210,7 @@ export default function DeliveryCyclePage() {
       {/* Hero */}
       <section className="px-6 py-20 md:px-16 md:py-28">
         <div className="mx-auto max-w-5xl">
-          <p className="mb-4 text-[10px] font-semibold tracking-[4px] text-purple-300 uppercase">
+          <p className="mb-4 text-[10px] font-semibold tracking-[4px] text-amber-400 uppercase">
             Kaname Delivery
           </p>
           <h1 className="mb-6 text-5xl font-extrabold tracking-[-2px] text-slate-50 md:text-6xl">
@@ -240,13 +240,13 @@ export default function DeliveryCyclePage() {
                       key={item.id}
                       className="flex flex-col items-center justify-center px-2"
                     >
-                      <div className="h-full w-px bg-purple-300/20" />
-                      <div className="my-1 rounded border border-purple-300/30 bg-purple-950/40 px-2 py-1 text-center">
-                        <p className="text-[8px] font-bold tracking-[2px] text-purple-300 uppercase whitespace-nowrap">
+                      <div className="h-full w-px bg-amber-400/20" />
+                      <div className="my-1 rounded border border-amber-400/30 bg-amber-950/40 px-2 py-1 text-center">
+                        <p className="text-[8px] font-bold tracking-[2px] text-amber-400 uppercase whitespace-nowrap">
                           {item.label}
                         </p>
                       </div>
-                      <div className="h-full w-px bg-purple-300/20" />
+                      <div className="h-full w-px bg-amber-400/20" />
                     </div>
                   )
                 }
@@ -255,14 +255,14 @@ export default function DeliveryCyclePage() {
                     <div
                       className={`rounded-lg border px-5 py-4 ${
                         item.id === "done"
-                          ? "border-purple-300/30 bg-purple-950/30"
+                          ? "border-amber-400/30 bg-amber-950/30"
                           : "border-slate-800 bg-[#0a0f1e]"
                       }`}
                     >
                       <p
                         className={`text-xs font-semibold whitespace-nowrap ${
                           item.id === "done"
-                            ? "text-purple-300"
+                            ? "text-amber-400"
                             : "text-slate-300"
                         }`}
                       >
@@ -274,7 +274,7 @@ export default function DeliveryCyclePage() {
                         </p>
                       )}
                       {item.artifact && (
-                        <p className="mt-0.5 font-mono text-[11px] text-purple-300/50 whitespace-nowrap">
+                        <p className="mt-0.5 font-mono text-[11px] text-amber-400/50 whitespace-nowrap">
                           {item.artifact}
                         </p>
                       )}
@@ -328,14 +328,14 @@ export default function DeliveryCyclePage() {
                 className="rounded-lg border border-slate-800 bg-[#0f172a] p-5"
               >
                 <div className="mb-3 flex items-center justify-between">
-                  <code className="rounded bg-slate-800/60 px-2 py-0.5 text-[11px] text-purple-300">
+                  <code className="rounded bg-slate-800/60 px-2 py-0.5 text-[11px] text-amber-400">
                     {a.file}
                   </code>
                   <span className="text-[11px] font-semibold tracking-[2px] text-slate-500 uppercase">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                 </div>
-                <p className="mb-1 text-[10px] font-semibold tracking-[1px] text-purple-300/70 uppercase">
+                <p className="mb-1 text-[10px] font-semibold tracking-[1px] text-amber-400/70 uppercase">
                   {a.commitment}
                 </p>
                 <p className="mb-3 text-xs leading-relaxed text-slate-500">
@@ -375,7 +375,7 @@ export default function DeliveryCyclePage() {
                   </span>
                 )}
                 {stage.artifact && (
-                  <code className="rounded bg-slate-800/60 px-2 py-0.5 text-[10px] text-purple-300">
+                  <code className="rounded bg-slate-800/60 px-2 py-0.5 text-[10px] text-amber-400">
                     {stage.artifact}
                   </code>
                 )}
@@ -408,12 +408,12 @@ export default function DeliveryCyclePage() {
                 const nextGate = stages[stageIndex + 1]
                 if (!nextGate || nextGate.type !== "gate") return null
                 return (
-                  <div className="mt-4 flex items-start gap-3 rounded-lg border border-purple-300/20 bg-purple-950/20 px-4 py-3">
-                    <span className="mt-0.5 text-[11px] font-bold tracking-[2px] text-purple-300 uppercase whitespace-nowrap">
+                  <div className="mt-4 flex items-start gap-3 rounded-lg border border-amber-400/20 bg-amber-950/20 px-4 py-3">
+                    <span className="mt-0.5 text-[11px] font-bold tracking-[2px] text-amber-400 uppercase whitespace-nowrap">
                       {nextGate.label}
                     </span>
                     <div>
-                      <p className="text-[10px] font-semibold text-purple-300/80">
+                      <p className="text-[10px] font-semibold text-amber-400/80">
                         {nextGate.gateName}
                       </p>
                       <p className="mt-0.5 text-[10px] text-slate-600">
@@ -483,7 +483,7 @@ export default function DeliveryCyclePage() {
             <a
               href="/kaname-guide.pdf"
               download
-              className="rounded bg-purple-300 px-4 py-2 text-[10px] font-bold tracking-widest text-[#0f172a] uppercase transition-colors hover:bg-purple-200"
+              className="rounded bg-amber-400 px-4 py-2 text-[10px] font-bold tracking-widest text-[#0f172a] uppercase transition-colors hover:bg-amber-300"
             >
               ↓ Full Guide PDF
             </a>

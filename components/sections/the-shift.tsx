@@ -7,8 +7,8 @@ export function TheShift() {
       <blockquote className="mx-auto max-w-2xl text-lg font-semibold italic leading-relaxed text-slate-50 md:text-xl">
         &ldquo;Artificial intelligence has relocated the primary delivery
         constraint from{" "}
-        <span className="text-purple-300">implementation capacity</span> to{" "}
-        <span className="text-purple-300">requirements clarity.</span>&rdquo;
+        <span className="text-amber-400">implementation capacity</span> to{" "}
+        <span className="text-amber-400">requirements clarity.</span>&rdquo;
       </blockquote>
     </section>
   )

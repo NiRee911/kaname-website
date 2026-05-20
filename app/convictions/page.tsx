@@ -70,7 +70,7 @@ export default function ConvictionsPage() {
       {/* Hero */}
       <section className="px-6 py-20 md:px-16 md:py-28">
         <div className="mx-auto max-w-5xl">
-          <p className="mb-4 text-[10px] font-semibold tracking-[4px] text-purple-300 uppercase">
+          <p className="mb-4 text-[10px] font-semibold tracking-[4px] text-amber-400 uppercase">
             Kaname Theory
           </p>
           <h1 className="mb-6 text-5xl font-extrabold tracking-[-2px] text-slate-50 md:text-6xl">
@@ -97,7 +97,7 @@ export default function ConvictionsPage() {
             <div className="mx-auto max-w-5xl">
               {/* Numeral + title */}
               <div className="mb-8 flex items-baseline gap-4">
-                <span className="text-3xl font-light text-purple-300">
+                <span className="text-3xl font-light text-amber-400">
                   {c.numeral}
                 </span>
                 <h2 className="text-2xl font-bold tracking-[-0.5px] text-slate-50 md:text-3xl">
@@ -106,7 +106,7 @@ export default function ConvictionsPage() {
               </div>
 
               {/* Statement */}
-              <blockquote className="mb-10 border-l-2 border-purple-300 pl-6">
+              <blockquote className="mb-10 border-l-2 border-amber-400 pl-6">
                 <p className="text-base leading-relaxed text-slate-300 md:text-lg">
                   {c.statement}
                 </p>
@@ -131,7 +131,7 @@ export default function ConvictionsPage() {
                   <ul className="space-y-2">
                     {c.inPractice.map((point, j) => (
                       <li key={j} className="flex gap-3 text-sm leading-relaxed text-slate-400">
-                        <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-purple-300/50" />
+                        <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400/50" />
                         {point}
                       </li>
                     ))}
@@ -155,7 +155,7 @@ export default function ConvictionsPage() {
                   <span className="text-[11px] font-semibold tracking-[2px] text-slate-500 uppercase">
                     Primary artifact
                   </span>
-                  <span className="rounded border border-slate-800 bg-[#0a0f1e] px-2 py-0.5 font-mono text-[10px] text-purple-300">
+                  <span className="rounded border border-slate-800 bg-[#0a0f1e] px-2 py-0.5 font-mono text-[10px] text-amber-400">
                     {c.artifact}
                   </span>
                   <span className="text-[11px] text-slate-500">
@@ -195,7 +195,7 @@ export default function ConvictionsPage() {
             <a
               href="/kaname-guide.pdf"
               download
-              className="rounded bg-purple-300 px-4 py-2 text-[10px] font-bold tracking-widest text-[#0f172a] uppercase transition-colors hover:bg-purple-200"
+              className="rounded bg-amber-400 px-4 py-2 text-[10px] font-bold tracking-widest text-[#0f172a] uppercase transition-colors hover:bg-amber-300"
             >
               ↓ Full Guide PDF
             </a>

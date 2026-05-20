@@ -38,7 +38,7 @@ export function Gates() {
               key={gate.number}
               className="rounded-lg border border-slate-800 bg-[#0a0f1e] p-4"
             >
-              <p className="mb-2 text-2xl font-bold text-purple-300">
+              <p className="mb-2 text-2xl font-bold text-amber-400">
                 {gate.number}
               </p>
               <p className="mb-1 text-xs font-semibold text-slate-50">

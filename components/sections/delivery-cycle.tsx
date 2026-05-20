@@ -61,14 +61,14 @@ const steps: CycleStep[] = [
 function StepMarker({ type, label }: { type: StepType; label: string }) {
   if (type === "start") {
     return (
-      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-purple-300 text-xs font-bold text-[#0f172a]">
+      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-amber-400 text-xs font-bold text-[#0f172a]">
         {label}
       </div>
     )
   }
   if (type === "gate" || type === "repeat") {
     return (
-      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-purple-300/40 bg-purple-300/10 text-xs font-bold text-purple-300">
+      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-amber-400/40 bg-amber-400/10 text-xs font-bold text-amber-400">
         {label}
       </div>
     )
@@ -95,7 +95,7 @@ export function DeliveryCycle() {
                 <p
                   className={`pt-1 text-sm leading-relaxed ${
                     step.type === "gate" || step.type === "repeat"
-                      ? "text-purple-300"
+                      ? "text-amber-400"
                       : "text-slate-400"
                   }`}
                 >

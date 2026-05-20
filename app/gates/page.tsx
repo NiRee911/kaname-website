@@ -122,7 +122,7 @@ export default function GatesPage() {
       {/* Hero */}
       <section className="px-6 py-20 md:px-16 md:py-28">
         <div className="mx-auto max-w-5xl">
-          <p className="mb-4 text-[10px] font-semibold tracking-[4px] text-purple-300 uppercase">
+          <p className="mb-4 text-[10px] font-semibold tracking-[4px] text-amber-400 uppercase">
             Human Governance
           </p>
           <h1 className="mb-6 text-5xl font-extrabold tracking-[-2px] text-slate-50 md:text-6xl">
@@ -134,7 +134,7 @@ export default function GatesPage() {
             work across a gate boundary. Gates cannot be bypassed by any role,
             including the roles that own the upstream artifacts.
           </p>
-          <div className="rounded-lg border border-purple-300/20 bg-purple-950/20 p-5 max-w-xl">
+          <div className="rounded-lg border border-amber-400/20 bg-amber-950/20 p-5 max-w-xl">
             <p className="text-sm leading-relaxed text-slate-400">
               Gates are not bureaucratic checkpoints. They are the mechanism by
               which human intent is preserved across generations of AI-generated
@@ -202,19 +202,19 @@ export default function GatesPage() {
                 <div key={i} className="flex items-center">
                   {item.type === "gate" ? (
                     <div className="flex flex-col items-center px-1.5">
-                      <div className="rounded border border-purple-300/40 bg-purple-950/40 px-2.5 py-2 text-center">
-                        <p className="text-[11px] font-bold tracking-widest text-purple-300 uppercase whitespace-nowrap">
+                      <div className="rounded border border-amber-400/40 bg-amber-950/40 px-2.5 py-2 text-center">
+                        <p className="text-[11px] font-bold tracking-widest text-amber-400 uppercase whitespace-nowrap">
                           {item.label}
                         </p>
-                        <p className="text-[8px] text-purple-300/50 whitespace-nowrap">
+                        <p className="text-[8px] text-amber-400/50 whitespace-nowrap">
                           {item.sub}
                         </p>
                       </div>
                     </div>
                   ) : (
                     <div className="flex items-center gap-0">
-                      <div className={`rounded border border-slate-800 px-4 py-3 ${item.label === "Done" ? "border-purple-300/20 bg-purple-950/20" : "bg-[#0a0f1e]"}`}>
-                        <p className={`text-xs font-medium whitespace-nowrap ${item.label === "Done" ? "text-purple-300" : "text-slate-400"}`}>
+                      <div className={`rounded border border-slate-800 px-4 py-3 ${item.label === "Done" ? "border-amber-400/20 bg-amber-950/20" : "bg-[#0a0f1e]"}`}>
+                        <p className={`text-xs font-medium whitespace-nowrap ${item.label === "Done" ? "text-amber-400" : "text-slate-400"}`}>
                           {item.label}
                         </p>
                       </div>
@@ -248,7 +248,7 @@ export default function GatesPage() {
             <div className="mx-auto max-w-5xl">
               {/* Header */}
               <div className="mb-8 flex flex-wrap items-baseline gap-3">
-                <span className="text-4xl font-extrabold tracking-[-2px] text-purple-300/30">
+                <span className="text-4xl font-extrabold tracking-[-2px] text-amber-400/30">
                   {gate.number}
                 </span>
                 <h2 className="text-2xl font-bold tracking-[-0.5px] text-slate-50 md:text-3xl">
@@ -270,14 +270,14 @@ export default function GatesPage() {
                   </span>
                 ))}
                 {gate.requiresBoth && (
-                  <span className="rounded border border-purple-300/20 bg-purple-950/20 px-2 py-0.5 text-[11px] text-purple-300/70">
+                  <span className="rounded border border-amber-400/20 bg-amber-950/20 px-2 py-0.5 text-[11px] text-amber-400/70">
                     Both must approve
                   </span>
                 )}
               </div>
 
               {/* Purpose */}
-              <blockquote className="mb-10 border-l-2 border-purple-300 pl-6">
+              <blockquote className="mb-10 border-l-2 border-amber-400 pl-6">
                 <p className="text-base leading-relaxed text-slate-300">
                   {gate.purpose}
                 </p>
@@ -295,7 +295,7 @@ export default function GatesPage() {
                         key={j}
                         className="flex gap-3 text-sm leading-relaxed text-slate-400"
                       >
-                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-purple-300/50" />
+                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400/50" />
                         {item}
                       </li>
                     ))}
@@ -421,7 +421,7 @@ export default function GatesPage() {
             <a
               href="/kaname-guide.pdf"
               download
-              className="rounded bg-purple-300 px-4 py-2 text-[10px] font-bold tracking-widest text-[#0f172a] uppercase transition-colors hover:bg-purple-200"
+              className="rounded bg-amber-400 px-4 py-2 text-[10px] font-bold tracking-widest text-[#0f172a] uppercase transition-colors hover:bg-amber-300"
             >
               ↓ Full Guide PDF
             </a>

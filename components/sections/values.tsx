@@ -17,7 +17,7 @@ export function Values() {
           {values.map((v) => (
             <span
               key={v}
-              className="rounded-full border border-purple-300/20 bg-purple-300/5 px-4 py-1.5 text-[10px] font-semibold tracking-[2px] text-purple-300 uppercase"
+              className="rounded-full border border-amber-400/20 bg-amber-400/5 px-4 py-1.5 text-[10px] font-semibold tracking-[2px] text-amber-400 uppercase"
             >
               {v}
             </span>
