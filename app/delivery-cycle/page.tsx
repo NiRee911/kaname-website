@@ -280,8 +280,7 @@ export default function DeliveryCyclePage() {
                       )}
                     </div>
                     {i < stages.length - 1 &&
-                      stages[i + 1]?.type !== "gate" &&
-                      item.type !== "gate" && (
+                      stages[i + 1]?.type !== "gate" && (
                         <div className="px-1 text-slate-700">
                           <svg
                             width="16"
