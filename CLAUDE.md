@@ -85,6 +85,20 @@ Nav order: Manifesto · Convictions · Values · Delivery Cycle · Artifacts · 
 
 ---
 
+## Dev workflow
+
+**Simplicity First** — make every change as simple as possible. Touch only what's necessary. Avoid introducing side effects.
+
+**No laziness** — find root causes. No temporary fixes. Senior developer standards.
+
+**Verification before done** — always run `npm run build` before pushing. Never mark something complete without proving it works.
+
+**Demand elegance** — for non-trivial changes, pause and ask "is there a more elegant way?" Skip for simple obvious fixes.
+
+**Autonomous bug fixing** — when given a bug: just fix it. Point at the error, resolve it, no hand-holding required.
+
+---
+
 ## Current values (updated 2026-05-21)
 
 1. Specification clarity over implementation velocity
