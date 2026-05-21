@@ -30,7 +30,7 @@ const convictions = [
     numeral: "II",
     title: "Flow over Cadence",
     statement:
-      "Work moves continuously through defined stages governed by explicit policies - stated rules about how work enters, advances, and exits each stage. Time-boxed iterations are not required. Work is pulled, not pushed. Limiting work in progress improves delivery more reliably than increasing effort.",
+      "Work moves continuously through defined stages governed by explicit policies - stated rules about how work enters, advances, and exits each stage. Time-boxed iterations are not required. Work is pulled, not pushed. Limiting work in progress - the count of active items in any stage - improves delivery more reliably than increasing effort.",
     why: "Sprints impose artificial rhythm. In AI-augmented delivery, a single spec can generate a full task list in minutes and implementation can follow in hours. Sprint boundaries become obstacles rather than checkpoints. Flow exposes real bottlenecks - a blocked gate, an overloaded reviewer, an ambiguous spec - rather than hiding them behind a two-week cadence.",
     inPractice: [
       "Work is pulled from the backlog when capacity exists, not batched into iterations.",

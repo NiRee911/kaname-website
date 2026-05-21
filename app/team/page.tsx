@@ -24,7 +24,6 @@ const roles = [
       "Reviewing AI-generated output for constitutional compliance",
       "Approving all changes to constitutional constraints",
       "Vetoing implementations that violate architectural or security boundaries",
-      "Jointly clearing Gate 1 alongside the Spec Owner",
     ],
     notAccountableFor: [
       "Authoring spec.md or deciding what features to build - that is the Spec Owner's domain",
@@ -45,15 +44,12 @@ const roles = [
     oneLiner:
       "Accountable for the completeness and precision of behavioral specifications.",
     fullDescription:
-      "The Spec Owner translates stakeholder intent into a form that both humans and AI agents can act on without ambiguity. They are the bridge between what stakeholders want and what the team builds. A specification that requires clarification during implementation is an incomplete specification - and that is a Spec Owner failure, not an implementation failure.",
+      "The Spec Owner translates stakeholder intent into a form that both humans and AI agents can act on without ambiguity. They determine how stakeholder intent is encoded. A specification that requires clarification during implementation is an incomplete specification.",
     accountableFor: [
-      "Authoring and maintaining spec.md and all Use Cases",
+      "Authoring and maintaining the specification",
       "Ensuring each Use Case defines complete inputs, outputs, variants, and acceptance criteria",
       "Reviewing AI-generated output for specification alignment",
       "Approving specification changes before implementation proceeds",
-      "Jointly clearing Gate 1 with the Constitution Guardian",
-      "Performing end-to-end verification of all Use Cases at Gate 4",
-      "Facilitating Spec Review Sessions and Delivery Reviews",
     ],
     notAccountableFor: [
       "Technical architecture decisions - those belong to the Plan Reviewer",
@@ -68,7 +64,7 @@ const roles = [
       "Delivery Review (facilitates)",
     ],
     note:
-      "Stakeholders may express intent. The Spec Owner determines how that intent is encoded. This distinction is what makes the specification authoritative.",
+      "The Spec Owner owns the specification. Stakeholders may express intent. The Spec Owner determines how that intent is encoded. A specification that requires clarification during implementation is an incomplete specification.",
   },
   {
     number: "03",
@@ -136,9 +132,8 @@ const roles = [
     fullDescription:
       "The Delivery Coach owns the delivery system itself - not what the system produces, but how it operates. In AI-augmented delivery, this role is the primary guardian of human gates: the speed of AI generation creates constant pressure to move faster and skip governance. The Delivery Coach holds that line. They do not make content decisions. Specification, architecture, and implementation remain with the roles that own them.",
     accountableFor: [
-      "Facilitating the Flow Review and Queue Replenishment",
-      "Ensuring all Kaname events are held as defined",
-      "Ensuring all gates are exercised without exception",
+      "Facilitating the Flow Review",
+      "Ensuring all Kaname events are held as defined and all gates are exercised without exception",
       "Monitoring board health, WIP limits, and blocked items between events",
       "Surfacing impediments and escalating those that cannot be resolved within the team",
       "Coaching team members on Kaname practices and values",

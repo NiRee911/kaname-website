@@ -47,8 +47,8 @@ const gates = [
       "No architectural pattern is introduced that constitution.md has not approved",
     ],
     onFailure:
-      "If architecturally unsound: AI regenerates the plan under corrected constraints. Plan Reviewer reviews again. If Use Case coverage is missing: gap is identified, AI regenerates the missing plan sections. Work stays in the Plan stage.",
-    onFailurePath: "Plan stage",
+      "If architecturally unsound: AI regenerates the plan under corrected constraints. Plan Reviewer reviews again. If plan generation reveals specification gaps, the Spec Owner resolves them before approval proceeds. Use Cases whose gaps cannot be resolved without significant rework are withdrawn from the current delivery cycle and returned to the specification stage.",
+    onFailurePath: "Plan stage (or back to Specify if spec gaps are the root cause)",
     costIfMissed:
       "Architectural violations discovered mid-implementation. Code has been written against a plan that contradicts constitution.md. Rework begins. In worst cases, the data model is wrong and all tasks built on it must be redone.",
   },
@@ -68,8 +68,8 @@ const gates = [
       "The Task Implementer can point to specific acceptance criteria that each material code change satisfies",
     ],
     onFailure:
-      "Code returns to implementation. Task Implementer re-runs the AI agent with better context or constraints. If the failure reveals genuine specification ambiguity - not an implementation error but a spec gap - the task is escalated to the Spec Owner. The Use Case may need to return through Gate 1.",
-    onFailurePath: "Implement stage (or Specify if spec is the problem)",
+      "Code returns to implementation. Task Implementer re-runs the AI agent with better context or constraints. If the failure reveals genuine specification ambiguity, the task is escalated to the Spec Owner. When escalation reveals a specification change rather than an ambiguity, the Spec Owner assesses urgency: non-critical changes are queued for the next Spec Review Session; changes that affect the current delivery cycle are escalated to the Delivery Coach, who determines whether the affected Use Cases are withdrawn from the cycle.",
+    onFailurePath: "Implement stage - or Specify if spec change affects the cycle",
     costIfMissed:
       "Incorrect code is merged into the codebase. Later tasks may build on incorrect foundations. Gate 4 catches this - but now the cost is end-to-end verification failure plus rework across multiple tasks, not a single task revision.",
   },

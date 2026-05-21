@@ -1,6 +1,7 @@
 import { Nav } from "@/components/nav"
 import { Hero } from "@/components/sections/hero"
 import { TheShift } from "@/components/sections/the-shift"
+import { ManifestoValues } from "@/components/sections/manifesto-values"
 import { Convictions } from "@/components/sections/convictions"
 import { Values } from "@/components/sections/values"
 import { DeliveryCycle } from "@/components/sections/delivery-cycle"
@@ -15,6 +16,7 @@ export default function Home() {
       <Nav />
       <Hero />
       <TheShift />
+      <ManifestoValues />
       <Convictions />
       <Values />
       <DeliveryCycle />

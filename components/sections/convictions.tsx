@@ -2,17 +2,17 @@ const convictions = [
   {
     numeral: "I",
     title: "Specification Primacy",
-    body: "The specification is the source of truth. Code is a derived, regenerable output. When specification and code conflict, the specification governs.",
+    body: "The specification is the source of truth. Code is a derived, regenerable output. Specifications endure; implementations are replaced. When specification and code conflict, the specification governs.",
   },
   {
     numeral: "II",
     title: "Flow over Cadence",
-    body: "Work moves continuously through defined stages governed by explicit policies. Time-boxed iterations are not required. Work is pulled, not pushed.",
+    body: "Work moves continuously through defined stages governed by explicit policies - stated rules about how work enters, advances, and exits each stage. Time-boxed iterations are not required. Work is pulled, not pushed.",
   },
   {
     numeral: "III",
     title: "Human Governance over AI Autonomy",
-    body: "AI generates code at speed and scale. Human judgment governs intent, architecture, and acceptance. No AI output advances without passing a human gate.",
+    body: "Artificial intelligence generates code at speed and scale. Human judgment governs intent, architecture, and acceptance. No AI output advances without passing a human gate.",
   },
 ]
 

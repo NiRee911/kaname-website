@@ -54,7 +54,7 @@ const steps: CycleStep[] = [
     type: "repeat",
     label: "↺",
     description:
-      "Repeat. Steps 2-7 constitute one delivery cycle, scope-defined, not time-boxed.",
+      "Repeat. Steps 2-6 constitute one delivery cycle, scope-defined, not time-boxed.",
   },
 ]
 
@@ -108,7 +108,19 @@ export function DeliveryCycle() {
             </div>
           ))}
         </div>
-        <div className="mt-8 flex justify-end">
+        <div className="mt-8 flex flex-wrap gap-3 justify-end">
+          <a
+            href="/artifacts"
+            className="rounded border border-slate-700 px-4 py-2 text-[11px] tracking-widest text-slate-400 uppercase transition-colors hover:border-slate-500 hover:text-slate-200"
+          >
+            Four Artifacts →
+          </a>
+          <a
+            href="/events"
+            className="rounded border border-slate-700 px-4 py-2 text-[11px] tracking-widest text-slate-400 uppercase transition-colors hover:border-slate-500 hover:text-slate-200"
+          >
+            Six Events →
+          </a>
           <a
             href="/delivery-cycle"
             className="rounded border border-slate-700 px-4 py-2 text-[11px] tracking-widest text-slate-400 uppercase transition-colors hover:border-slate-500 hover:text-slate-200"

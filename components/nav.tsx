@@ -2,11 +2,14 @@ import Link from "next/link"
 import { ThemeToggle } from "@/components/theme-toggle"
 
 const sections = [
+  { label: "Manifesto", href: "/manifesto" },
   { label: "Convictions", href: "/convictions" },
   { label: "Values", href: "/values" },
   { label: "Delivery Cycle", href: "/delivery-cycle" },
-  { label: "Team", href: "/team" },
+  { label: "Artifacts", href: "/artifacts" },
   { label: "Gates", href: "/gates" },
+  { label: "Events", href: "/events" },
+  { label: "Team", href: "/team" },
 ]
 
 export function Nav() {
