@@ -14,11 +14,10 @@ const markdown = readFileSync(
 
 // Strip the H1 title - we have a custom cover page
 const content = markdown
-  .replace(/^# Kaname.*\n/, '')
-  .replace(/^\*\*The Definitive.*\*\*\n/, '')
-  .replace(/^Jakub Kavinsky.*\n/, '')
-  .replace(/^---\n/, '')
-  .replace(/\*©[^\n]*\n?/g, '')
+  .replace(/^# Kaname[^\n]*\n/m, '')
+  .replace(/^\*\*The Definitive[^\n]*\n/m, '')
+  .replace(/^[^\n]*Kavinsky[^\n]*\n?/gm, '')
+  .replace(/^---\n/m, '')
   .replace(/—/g, '-')
 
 const body = marked.parse(content)
