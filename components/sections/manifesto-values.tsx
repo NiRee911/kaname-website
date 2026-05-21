@@ -1,8 +1,8 @@
 const pairs = [
   { left: "Specification clarity", right: "implementation velocity" },
   { left: "Human judgment", right: "AI momentum" },
-  { left: "Living specification", right: "regenerable code" },
-  { left: "Specification evolution", right: "frozen requirements" },
+  { left: "Living specification", right: "the codebase as truth" },
+  { left: "Verified intent", right: "working code" },
 ]
 
 export function ManifestoValues() {

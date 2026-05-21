@@ -23,15 +23,15 @@ const values = [
   },
   {
     left: "Living specification",
-    right: "regenerable code",
+    right: "the codebase as truth",
     explanation:
-      "Specifications endure; implementations are replaced. Code derived from a clear specification can be regenerated when requirements evolve, when tools improve, or when the system must be rebuilt. We value the specification above the code it generates - not because working software is unimportant, but because the specification is what working software must conform to. When they conflict, the specification governs.",
+      "Living specification over the codebase as truth. Most engineering teams treat the codebase as the source of truth: what the software does is defined by what the code does. Kaname inverts this. The specification is the source of truth; the codebase is a derived artifact. When they conflict, the specification governs - the code must be corrected, not the specification amended to match behavior. A specification that remains authoritative can regenerate implementations as requirements evolve, tools improve, or systems must be rebuilt. A codebase that has drifted from its specification is not a truth - it is an approximation.",
   },
   {
-    left: "Specification evolution",
-    right: "frozen requirements",
+    left: "Verified intent",
+    right: "working code",
     explanation:
-      "Specifications evolve as teams learn. Requirements that seemed clear become more precise; requirements that seemed complete reveal gaps. We expect this and build for it. A specification change cascades through the plan and task breakdown; AI agents regenerate the affected artifacts; implementation resumes. Governing the path of evolution is not overhead - it is how intent stays faithful to reality.",
+      "Verified intent over working code. The Agile Manifesto values working software - software that runs. Kaname requires more: software that not only runs but has been verified against the Use Cases that defined it. Code can compile and pass tests while diverging from the specification. AI-generated code amplifies this gap: it produces functional-looking output that may approximate intent rather than embody it. The Delivery Gate exists because working is not sufficient - verified is the standard. A human reviewer who has confirmed software against explicit acceptance criteria is the signal that delivery is complete.",
   },
 ]
 
@@ -50,21 +50,33 @@ const principles = [
   "At defined intervals, inspect the delivery system - not just the work items - and adjust its policies. The path from specification to verified software is the system. Improving this path is ongoing work, never complete.",
 ]
 
+function splitFirst(text: string): { first: string; rest: string } {
+  const idx = text.search(/\.\s+[A-Z]/)
+  if (idx === -1) return { first: text, rest: "" }
+  return { first: text.slice(0, idx + 1), rest: text.slice(idx + 2) }
+}
+
 export default function ManifestoPage() {
   return (
     <div className="min-h-screen bg-[#0f172a] text-slate-50">
       <Nav />
 
       {/* Hero */}
-      <section className="px-6 py-20 md:px-16 md:py-28">
-        <div className="mx-auto max-w-5xl">
+      <section className="px-6 py-16 md:px-16 md:py-24">
+        <div className="mx-auto flex max-w-5xl flex-col items-center text-center">
+          <div
+            className="mb-6 select-none font-light leading-none text-amber-400"
+            style={{ fontSize: "clamp(120px, 18vw, 220px)" }}
+          >
+            要
+          </div>
           <p className="mb-4 text-[10px] font-semibold tracking-[4px] text-amber-400 uppercase">
             Kaname Manifesto
           </p>
-          <h1 className="mb-6 text-5xl font-extrabold tracking-[-2px] text-slate-50 md:text-6xl">
-            Manifesto for<br />AI-Augmented Delivery
+          <h1 className="mb-6 text-4xl font-extrabold tracking-[-2px] text-slate-50 md:text-5xl">
+            Manifesto for AI-Augmented Delivery
           </h1>
-          <p className="max-w-xl text-base leading-relaxed text-slate-400">
+          <p className="max-w-xl text-left text-base leading-relaxed text-slate-400">
             We are uncovering better ways of delivering software in an age when
             artificial intelligence generates code faster than humans can ensure
             it reflects their intent. The risk is not that AI builds the wrong
@@ -111,30 +123,38 @@ export default function ManifestoPage() {
         </div>
       </section>
 
-      {/* On These Values */}
+      {/* On These Values — accordion */}
       <section className="border-t border-slate-800 bg-[#0a0f1e] px-6 py-16 md:px-16">
         <div className="mx-auto max-w-5xl">
-          <p className="mb-10 text-[10px] font-semibold tracking-[3px] text-slate-600 uppercase">
+          <p className="mb-8 text-[10px] font-semibold tracking-[3px] text-slate-600 uppercase">
             On These Values
           </p>
-          <div className="space-y-10">
+          <div className="divide-y divide-slate-800/60">
             {values.map((v, i) => (
-              <div key={i} className="border-l-2 border-amber-400/30 pl-6">
-                <p className="mb-3 text-sm font-semibold text-slate-50">
-                  {v.left}{" "}
-                  <span className="font-normal text-slate-600">over</span>{" "}
-                  {v.right}
-                </p>
-                <p className="text-sm leading-relaxed text-slate-400">
+              <details key={i} className="group py-5">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">
+                  <p className="text-sm font-semibold text-slate-400 transition-colors group-open:text-slate-100">
+                    {v.left}{" "}
+                    <span className="font-normal text-slate-700">over</span>{" "}
+                    {v.right}
+                  </p>
+                  <span className="shrink-0 text-[9px] tracking-[2px] text-slate-600 uppercase group-open:hidden">
+                    expand
+                  </span>
+                  <span className="hidden shrink-0 text-[9px] tracking-[2px] text-slate-600 uppercase group-open:inline">
+                    collapse
+                  </span>
+                </summary>
+                <p className="mt-4 text-sm leading-relaxed text-slate-400">
                   {v.explanation}
                 </p>
-              </div>
+              </details>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Principles */}
+      {/* Principles — progressive disclosure */}
       <section className="border-t border-slate-800 px-6 py-16 md:px-16">
         <div className="mx-auto max-w-5xl">
           <p className="mb-4 text-[10px] font-semibold tracking-[3px] text-slate-600 uppercase">
@@ -144,14 +164,33 @@ export default function ManifestoPage() {
             Twelve Principles Behind the Kaname Manifesto
           </h2>
           <div className="space-y-6">
-            {principles.map((p, i) => (
-              <div key={i} className="flex gap-6">
-                <span className="mt-0.5 shrink-0 font-mono text-xs font-semibold tracking-widest text-amber-400/50">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <p className="text-sm leading-relaxed text-slate-400">{p}</p>
-              </div>
-            ))}
+            {principles.map((p, i) => {
+              const { first, rest } = splitFirst(p)
+              return (
+                <div key={i} className="flex gap-6">
+                  <span className="mt-0.5 shrink-0 font-mono text-xs font-semibold tracking-widest text-amber-400/50">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  {rest ? (
+                    <details className="group min-w-0 flex-1">
+                      <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                        <p className="text-sm leading-relaxed text-slate-400">
+                          {first}
+                          <span className="ml-1 text-slate-600 group-open:hidden">
+                            ...
+                          </span>
+                        </p>
+                      </summary>
+                      <p className="mt-2 text-sm leading-relaxed text-slate-500">
+                        {rest}
+                      </p>
+                    </details>
+                  ) : (
+                    <p className="text-sm leading-relaxed text-slate-400">{p}</p>
+                  )}
+                </div>
+              )
+            })}
           </div>
         </div>
       </section>
