@@ -10,14 +10,20 @@ const fraunces = Fraunces({
 })
 
 export const metadata: Metadata = {
-  title: "Kaname: Specification-Driven Delivery",
+  metadataBase: new URL("https://kaname.guide"),
+  title: {
+    template: "%s — Kaname",
+    default: "Kaname — Specification-Driven AI Delivery",
+  },
   description:
-    "A specification-driven, flow-based methodology for AI-augmented software delivery.",
+    "A specification-driven, flow-based methodology for AI-augmented software delivery. Four artifacts, six events, four human gates.",
   openGraph: {
-    title: "Kaname",
+    title: "Kaname — Specification-Driven AI Delivery",
     description:
       "A specification-driven, flow-based methodology for AI-augmented software delivery.",
     type: "website",
+    url: "https://kaname.guide",
+    siteName: "Kaname",
   },
 }
 
