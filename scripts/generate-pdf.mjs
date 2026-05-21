@@ -18,6 +18,7 @@ const content = markdown
   .replace(/^\*\*The Definitive.*\*\*\n/, '')
   .replace(/^Jakub Kavinsky.*\n/, '')
   .replace(/^---\n/, '')
+  .replace(/\*©[^\n]*\n?/g, '')
   .replace(/—/g, '-')
 
 const body = marked.parse(content)
