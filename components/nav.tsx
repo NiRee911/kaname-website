@@ -1,4 +1,7 @@
+'use client'
+
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { ThemeToggle } from "@/components/theme-toggle"
 
 const sections = [
@@ -13,6 +16,8 @@ const sections = [
 ]
 
 export function Nav() {
+  const pathname = usePathname()
+
   return (
     <nav
       className="sticky top-0 z-50 border-b border-slate-800 px-6 py-4 backdrop-blur md:px-16"
@@ -34,7 +39,11 @@ export function Nav() {
             <Link
               key={s.href}
               href={s.href}
-              className="shrink-0 text-[10px] font-medium tracking-widest text-slate-500 uppercase transition-colors hover:text-slate-300"
+              className={`shrink-0 text-[10px] font-medium tracking-widest uppercase transition-colors ${
+                pathname === s.href
+                  ? "text-amber-400"
+                  : "text-slate-500 hover:text-slate-300"
+              }`}
             >
               {s.label}
             </Link>
