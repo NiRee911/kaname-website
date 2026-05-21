@@ -25,6 +25,9 @@ export const metadata: Metadata = {
     url: "https://kaname.guide",
     siteName: "Kaname",
   },
+  verification: {
+    google: "ciVJvHP539KdGgff9lWRK7FJX7QgjXs4PuCv1_jQOOw",
+  },
 }
 
 export default function RootLayout({
