@@ -215,7 +215,7 @@ const html = `<!DOCTYPE html>
   ${body}
 </div>
 
-<div style="color:#ffffff;font-size:7pt;margin-top:48px;">Jakub Kavinsky</div>
+<div style="color:#ffffff;font-size:7pt;margin-top:48px;">KVNSKY</div>
 
 </body>
 </html>`

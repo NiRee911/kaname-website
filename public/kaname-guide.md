@@ -2,7 +2,7 @@
 
 **The Definitive Guide to Kaname: The Rules of the System**
 
-Jakub Kavinsky & Slavka Smolková | v1.0 | May 2026
+KVNSKY | v1.0 | May 2026
 
 ---
 
@@ -261,6 +261,6 @@ Kaname operates alongside existing engineering practices, CI/CD pipelines, and A
 
 ---
 
-*© 2026 Jakub Kavinsky & Slavka Smolková*
+*© 2026 KVNSKY*
 
 *Kaname is offered for free use under the Attribution Share-Alike license of Creative Commons (CC BY-SA 4.0).*
