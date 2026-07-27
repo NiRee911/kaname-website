@@ -126,7 +126,7 @@ code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radi
 <div class="flow">
 
   <div class="col" id="leg1">
-    <h2><b>Leg 1</b> · Target</h2>
+    <h2><b>Leg 1</b> · Target &amp; sources</h2>
     <div class="card src" id="target">
       <h3>Any repository</h3>
       <p>No instrumentation, no registration - the audit runs cold on whatever it is pointed at.</p>
@@ -272,7 +272,6 @@ code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radi
     svg.innerHTML='';
     const R=svg.getBoundingClientRect();
     const core=document.getElementById('core').getBoundingClientRect();
-    const target=document.getElementById('target').getBoundingClientRect();
     const cy=core.top-R.top+core.height/2;
     let i=0;
     function wire(x1,y1,x2,y2){
@@ -289,8 +288,11 @@ code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radi
       }
       i++;
     }
-    // leg1 -> locker
-    wire(target.right-R.left, target.top-R.top+18, core.left-R.left, cy);
+    // leg1 -> locker: every source card feeds the evidence locker
+    document.querySelectorAll('#leg1 .src').forEach(c=>{
+      const r=c.getBoundingClientRect();
+      wire(r.right-R.left, r.top-R.top+18, core.left-R.left, cy);
+    });
     // locker -> agents
     const ags=[...document.querySelectorAll('#agents .ag')];
     ags.forEach(c=>{
