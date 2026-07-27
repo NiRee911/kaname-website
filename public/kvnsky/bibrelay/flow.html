@@ -115,7 +115,7 @@ code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radi
   <h1>Audit data flow</h1>
   <p>Deterministic tools measure, the agent interprets, every claim keeps a link to its evidence.</p>
   <div class="modes" aria-label="Audit modes">
-    <span class="hot">handover</span><span>health</span><span>onboarding</span><span>offboarding</span>
+    <span class="hot">handover</span><span>health</span><span>onboarding</span><span>offboarding</span><span>pre-live</span>
   </div>
   <a href="demo.html">Watch the demo →</a>
 </header>
@@ -142,6 +142,11 @@ code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radi
       <p>Jira issues, Confluence pages, Slack archive - who asks, who answers, what is blocked.</p>
       <span class="badge">via MCP · read-only</span>
       <span class="gap">names anonymized - GDPR/LGPD</span>
+    </div>
+    <div class="card src">
+      <h3>Cloud configuration</h3>
+      <p>What is actually set up: alarms, dashboards, log retention, paging routes - straight from the provider API, scored against an internal go-live standard.</p>
+      <span class="badge">aws / azure · read-only audit role</span>
     </div>
     <div class="note">Next source: PagerDuty / on-call history - plugs into the same evidence locker.</div>
   </div>
@@ -171,7 +176,7 @@ code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radi
 
   <div class="col" id="agents">
     <h2><b>Leg 3</b> · Subagents</h2>
-    <div class="par">6 × in parallel, isolated context</div>
+    <div class="par">7 × in parallel, isolated context</div>
     <div class="card agentcard ag">
       <h3>vcs-archeolog</h3>
       <p>Bus factor, knowledge islands, churn hotspots, abandoned areas.</p>
@@ -201,6 +206,11 @@ code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radi
       <h3>knowledge-map</h3>
       <p>Confluence staleness + Slack answer graph: who the de-facto experts are.</p>
       <span class="ev">findings/knowledge.md</span>
+    </div>
+    <div class="card agentcard ag">
+      <h3>ops-observability</h3>
+      <p>Alarm coverage vs the go-live standard: what pages someone, what fails silently.</p>
+      <span class="ev">findings/observability.md</span>
     </div>
   </div>
 

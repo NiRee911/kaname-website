@@ -186,6 +186,9 @@ h3:first-child{margin-top:0}
           <span class="dom reveal" data-r="know">Knowledge map</span>
           <span class="meter reveal" data-r="know"><i class="f-bad"></i><i></i><i></i><i></i><i></i></span>
           <span class="num reveal" data-r="know">1/5</span>
+          <span class="dom reveal" data-r="obs">Observability</span>
+          <span class="meter reveal" data-r="obs"><i class="f-bad"></i><i></i><i></i><i></i><i></i></span>
+          <span class="num reveal" data-r="obs">1/5</span>
         </div>
 
         <h3 class="reveal" data-r="vcs">Findings</h3>
@@ -234,6 +237,16 @@ h3:first-child{margin-top:0}
           <p>The Slack answer graph confirms what git suggested: the de-facto expert map has a single node. Names anonymized in real runs (GDPR/LGPD) - shown here as mock data.</p>
           <span class="evtag">raw/slack-help.txt</span>
         </div>
+        <div class="finding reveal" data-r="obs">
+          <div class="row"><span class="sev high">high</span><b>No alarm on consumer lag or ingest error rate</b></div>
+          <p>The service's core failure mode - the one behind stale-position incidents - would page nobody. Straight from the provider API, not from opinion.</p>
+          <span class="evtag">raw/cloud-config.json - aws cloudwatch describe-alarms</span>
+        </div>
+        <div class="finding reveal" data-r="obs">
+          <div class="row"><span class="sev med">med</span><b>4 of 9 checks from the internal go-live standard covered</b></div>
+          <p>Compared against <span style="font-family:var(--mono)">standard.yaml</span>: alarms on golden signals, dashboard per service, log retention, paging route. The audit turns descriptive into a go/no-go gate.</p>
+          <span class="evtag">raw/cloud-config.json · standard.yaml</span>
+        </div>
 
         <h3 class="reveal" data-r="gaps">Gaps - UNKNOWN, not guessed</h3>
         <ul class="gaplist reveal" data-r="gaps">
@@ -247,7 +260,7 @@ h3:first-child{margin-top:0}
 
       <!-- ---- questions ---- -->
       <div data-pane="questions" hidden>
-        <div class="qnote">24 questions generated, risk-sorted - top 9 shown. Questions, not tasks:
+        <div class="qnote">25 questions generated, risk-sorted - top 10 shown. Questions, not tasks:
         the outgoing team will give 2 hours of answers, never weeks of remediation work.</div>
         <div class="q high">
           <b>Who besides M. Silva understands <span style="font-family:var(--mono)">pricing/</span>?</b>
@@ -284,6 +297,10 @@ h3:first-child{margin-top:0}
         <div class="q med">
           <b>The ops runbook points to fleet-sync, which is gone - what is the real procedure now?</b>
           <p>The written knowledge is wrong; the correct one exists only in someone's head. <span class="who">ask: m.silva</span></p>
+        </div>
+        <div class="q high">
+          <b>Consumer lag has no alarm - deliberate decision, or forgotten?</b>
+          <p>It is the exact metric behind stale-position incidents, and the internal standard requires it. <span class="who">ask: outgoing team lead</span></p>
         </div>
       </div>
 
@@ -339,6 +356,7 @@ const S=[
  ['leg','▸ leg 1 · tool inventory',350],
  ['dim','  git ✓  grep ✓  wc ✓  scc ✗  gitleaks ✗  trivy ✗',300],
  ['dim','  mcp: jira ✓  confluence ✓  slack ✓  pagerduty ✗',300],
+ ['dim','  cloud: aws cli ✓ - read-only audit role',300],
  ['gap','  ⚠ 3 tools + pagerduty missing → recorded as gaps, continuing with fallbacks',500],
  ['leg','▸ leg 2 · deterministic scans + MCP extracts → raw/',350],
  ['dim','  authors.txt          312 commits · 6 authors',180],
@@ -349,19 +367,21 @@ const S=[
  ['dim','  largest-files.txt    top 10 by line count',180],
  ['dim','  jira-issues.json     214 issues · 6 months (via MCP)',180],
  ['dim','  confluence.json      38 pages · space ROUTE (via MCP)',180],
- ['dim','  slack-help.txt       #routemaster-help · 8 months · names anonymized',450],
- ['leg','▸ leg 3 · dispatching 6 subagents in parallel',400,'score'],
- ['dim','  ⧖ vcs-archeolog · code-health · security · docs · delivery-signals · knowledge-map',900],
+ ['dim','  slack-help.txt       #routemaster-help · 8 months · names anonymized',180],
+ ['dim','  cloud-config.json    aws: 7 alarms · 3 dashboards · log retention (read-only API)',450],
+ ['leg','▸ leg 3 · dispatching 7 subagents in parallel',400,'score'],
+ ['dim','  ⧖ vcs-archeolog · code-health · security · docs · delivery-signals · knowledge-map · ops-observability',900],
  ['ok','  ✓ vcs-archeolog     bus factor 1 - m.silva 78% of all commits',700,'vcs'],
  ['ok','  ✓ security          .env tracked in git - DB credentials (redacted)',700,'sec'],
  ['ok','  ✓ code-health       4 test files vs 210 source files',700,'code'],
  ['ok','  ✓ docs              README untouched 31 months, code changed 412× since',700,'docs'],
  ['ok','  ✓ delivery-signals  61% of open bugs cluster in pricing/ + dispatch/ - matches git churn',700,'del'],
  ['ok','  ✓ knowledge-map     82% of #routemaster-help answers come from one person - confirms bus factor',700,'know'],
+ ['ok','  ✓ ops-observability 0 alarms on consumer lag - 4 of 9 internal go-live checks covered',700,'obs'],
  ['leg','▸ leg 4 · synthesis',400],
  ['hot','  ✗ 2 claims arrived without evidence → discarded, logged as gaps',500,'gaps'],
- ['dim','  report.md ✓   questions.md ✓ (24)   orientation.md ✓',400,'files'],
- ['ok','done in 6m 03s - 19 findings · 5 gaps · 24 questions',0,'done'],
+ ['dim','  report.md ✓   questions.md ✓ (25)   orientation.md ✓',400,'files'],
+ ['ok','done in 6m 03s - 21 findings · 5 gaps · 25 questions',0,'done'],
 ];
 
 function line(cls,txt){
@@ -377,7 +397,7 @@ function reveal(key){
   if($('.tab[data-tab="report"]').getAttribute('aria-selected')==='true')
     $('[data-pane="report"]').hidden=false;
   $$('[data-r="'+key+'"]').forEach(e=>e.classList.add('on'));
-  if(key==='files'||key==='done'){ $('#qn').textContent='· 24'; }
+  if(key==='files'||key==='done'){ $('#qn').textContent='· 25'; }
 }
 function tick(){
   if(step>=S.length){ finish(); return; }
