@@ -180,6 +180,12 @@ h3:first-child{margin-top:0}
           <span class="dom reveal" data-r="docs">Documentation</span>
           <span class="meter reveal" data-r="docs"><i class="f-bad"></i><i></i><i></i><i></i><i></i></span>
           <span class="num reveal" data-r="docs">1/5</span>
+          <span class="dom reveal" data-r="del">Delivery / Jira</span>
+          <span class="meter reveal" data-r="del"><i class="f-warn"></i><i class="f-warn"></i><i></i><i></i><i></i></span>
+          <span class="num reveal" data-r="del">2/5</span>
+          <span class="dom reveal" data-r="know">Knowledge map</span>
+          <span class="meter reveal" data-r="know"><i class="f-bad"></i><i></i><i></i><i></i><i></i></span>
+          <span class="num reveal" data-r="know">1/5</span>
         </div>
 
         <h3 class="reveal" data-r="vcs">Findings</h3>
@@ -213,6 +219,21 @@ h3:first-child{margin-top:0}
           <p>Setup guide references Node 14 (EOL). A newcomer following the docs cannot start the service.</p>
           <span class="evtag">git log -1 -- README.md</span>
         </div>
+        <div class="finding reveal" data-r="del">
+          <div class="row"><span class="sev med">med</span><b>61% of open bugs cluster in <span style="font-family:var(--mono)">pricing/</span> and <span style="font-family:var(--mono)">dispatch/</span></b></div>
+          <p>Jira independently confirms the git churn hotspots - two data sources, one conclusion. 14 tickets sit in Blocked for over 90 days.</p>
+          <span class="evtag">raw/jira-issues.json</span>
+        </div>
+        <div class="finding reveal" data-r="del">
+          <div class="row"><span class="sev high">high</span><b>Confluence ops runbook references <span style="font-family:var(--mono)">fleet-sync</span> - a service that no longer exists</b></div>
+          <p>Last updated 26 months ago. Following it during an incident would send the on-call engineer to a dead system.</p>
+          <span class="evtag">confluence ROUTE/ops-runbook</span>
+        </div>
+        <div class="finding reveal" data-r="know">
+          <div class="row"><span class="sev high">high</span><b>82% of answers in #routemaster-help come from one person</b></div>
+          <p>The Slack answer graph confirms what git suggested: the de-facto expert map has a single node. Names anonymized in real runs (GDPR/LGPD) - shown here as mock data.</p>
+          <span class="evtag">raw/slack-help.txt</span>
+        </div>
 
         <h3 class="reveal" data-r="gaps">Gaps - UNKNOWN, not guessed</h3>
         <ul class="gaplist reveal" data-r="gaps">
@@ -220,14 +241,13 @@ h3:first-child{margin-top:0}
           <li>CVE scan of dependencies <small>- trivy not installed on this machine</small></li>
           <li>Verified secret scan <small>- gitleaks missing; grep heuristic only</small></li>
           <li>CI/CD pipeline <small>- no CI config found anywhere in the repo</small></li>
-          <li>Deploy &amp; rollback procedure <small>- no evidence in repo; question raised</small></li>
-          <li>On-call &amp; incident history <small>- phase 2 source (PagerDuty/Jira via MCP)</small></li>
+          <li>On-call &amp; incident history <small>- PagerDuty not connected</small></li>
         </ul>
       </div>
 
       <!-- ---- questions ---- -->
       <div data-pane="questions" hidden>
-        <div class="qnote">18 questions generated, risk-sorted - top 7 shown. Questions, not tasks:
+        <div class="qnote">24 questions generated, risk-sorted - top 9 shown. Questions, not tasks:
         the outgoing team will give 2 hours of answers, never weeks of remediation work.</div>
         <div class="q high">
           <b>Who besides M. Silva understands <span style="font-family:var(--mono)">pricing/</span>?</b>
@@ -257,6 +277,14 @@ h3:first-child{margin-top:0}
           <b>Which parts of <span style="font-family:var(--mono)">legacy-sync/</span> are still alive?</b>
           <p>No commits in 19 months, but still imported from 7 places. <span class="who">ask: j.oliveira</span></p>
         </div>
+        <div class="q high">
+          <b>What are the 14 tickets in Blocked actually waiting for?</b>
+          <p>Oldest is 14 months. If they block the new team too, that is inherited debt with no owner. <span class="who">ask: outgoing team lead</span></p>
+        </div>
+        <div class="q med">
+          <b>The ops runbook points to fleet-sync, which is gone - what is the real procedure now?</b>
+          <p>The written knowledge is wrong; the correct one exists only in someone's head. <span class="who">ask: m.silva</span></p>
+        </div>
       </div>
 
       <!-- ---- orientation ---- -->
@@ -278,6 +306,10 @@ h3:first-child{margin-top:0}
             <code>api/</code><span>REST surface</span><span class="pct">j.oliveira 64%</span>
             <code>legacy-sync/</code><span>old fleet importer - possibly dead</span><span class="pct">a.reyes 88% (left)</span>
           </div>
+
+          <h3>Who actually knows what - from the Slack answer graph</h3>
+          <p class="mut">m.silva answers 82% of questions (everything) · j.oliveira answers API and deploy questions ·
+          pricing questions have no second responder at all. Names anonymized in real runs (GDPR/LGPD); these are mock.</p>
 
           <h3>Top risks for the incoming team</h3>
           <div class="risk">Everything routes through one person's head - schedule Q&amp;A before their availability ends.</div>
@@ -306,24 +338,30 @@ const S=[
  ['dim','  audits/routemaster/2026-07-26/ created',450],
  ['leg','▸ leg 1 · tool inventory',350],
  ['dim','  git ✓  grep ✓  wc ✓  scc ✗  gitleaks ✗  trivy ✗',300],
- ['gap','  ⚠ 3 tools missing → recorded as gaps, continuing with native fallbacks',500],
- ['leg','▸ leg 2 · deterministic scans → raw/',350],
+ ['dim','  mcp: jira ✓  confluence ✓  slack ✓  pagerduty ✗',300],
+ ['gap','  ⚠ 3 tools + pagerduty missing → recorded as gaps, continuing with fallbacks',500],
+ ['leg','▸ leg 2 · deterministic scans + MCP extracts → raw/',350],
  ['dim','  authors.txt          312 commits · 6 authors',180],
  ['dim','  ownership-*.txt      9 top-level directories',180],
  ['dim','  churn-6m.txt         148 commits in the last 6 months',180],
  ['dim','  secret-suspects.txt  4 candidate lines',180],
  ['dim','  todos.txt            86 TODO/FIXME markers',180],
- ['dim','  largest-files.txt    top 10 by line count',450],
- ['leg','▸ leg 3 · dispatching 4 subagents in parallel',400,'score'],
- ['dim','  ⧖ vcs-archeolog · code-health · security · docs - isolated contexts, read-only',900],
- ['ok','  ✓ vcs-archeolog   bus factor 1 - m.silva 78% of all commits',700,'vcs'],
- ['ok','  ✓ security        .env tracked in git - DB credentials (redacted)',700,'sec'],
- ['ok','  ✓ code-health     4 test files vs 210 source files',700,'code'],
- ['ok','  ✓ docs            README untouched 31 months, code changed 412× since',700,'docs'],
+ ['dim','  largest-files.txt    top 10 by line count',180],
+ ['dim','  jira-issues.json     214 issues · 6 months (via MCP)',180],
+ ['dim','  confluence.json      38 pages · space ROUTE (via MCP)',180],
+ ['dim','  slack-help.txt       #routemaster-help · 8 months · names anonymized',450],
+ ['leg','▸ leg 3 · dispatching 6 subagents in parallel',400,'score'],
+ ['dim','  ⧖ vcs-archeolog · code-health · security · docs · delivery-signals · knowledge-map',900],
+ ['ok','  ✓ vcs-archeolog     bus factor 1 - m.silva 78% of all commits',700,'vcs'],
+ ['ok','  ✓ security          .env tracked in git - DB credentials (redacted)',700,'sec'],
+ ['ok','  ✓ code-health       4 test files vs 210 source files',700,'code'],
+ ['ok','  ✓ docs              README untouched 31 months, code changed 412× since',700,'docs'],
+ ['ok','  ✓ delivery-signals  61% of open bugs cluster in pricing/ + dispatch/ - matches git churn',700,'del'],
+ ['ok','  ✓ knowledge-map     82% of #routemaster-help answers come from one person - confirms bus factor',700,'know'],
  ['leg','▸ leg 4 · synthesis',400],
  ['hot','  ✗ 2 claims arrived without evidence → discarded, logged as gaps',500,'gaps'],
- ['dim','  report.md ✓   questions.md ✓ (18)   orientation.md ✓',400,'files'],
- ['ok','done in 4m 12s - 14 findings · 6 gaps · 18 questions',0,'done'],
+ ['dim','  report.md ✓   questions.md ✓ (24)   orientation.md ✓',400,'files'],
+ ['ok','done in 6m 03s - 19 findings · 5 gaps · 24 questions',0,'done'],
 ];
 
 function line(cls,txt){
@@ -339,7 +377,7 @@ function reveal(key){
   if($('.tab[data-tab="report"]').getAttribute('aria-selected')==='true')
     $('[data-pane="report"]').hidden=false;
   $$('[data-r="'+key+'"]').forEach(e=>e.classList.add('on'));
-  if(key==='files'||key==='done'){ $('#qn').textContent='· 18'; }
+  if(key==='files'||key==='done'){ $('#qn').textContent='· 24'; }
 }
 function tick(){
   if(step>=S.length){ finish(); return; }
