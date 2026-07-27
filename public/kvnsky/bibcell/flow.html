@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BibCell - Incident data flow</title>
+<style>
+:root{
+  --bg:#fafafa; --card:#fff; --border:#e4e4e7; --ink:#09090b; --muted:#71717a;
+  --secondary:#f4f4f5; --green:#16a34a; --amber:#d97706; --red:#dc2626;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace; --radius:8px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{font:13px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  margin:0;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
+
+/* ---------- header ---------- */
+header{padding:12px 24px;border-bottom:1px solid var(--border);background:var(--card);
+  display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.eyebrow{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+header h1{font-size:17px;font-weight:600;letter-spacing:-.02em;margin:0}
+header p{margin:0;color:var(--muted);font-size:12.5px;flex:1}
+header a{font-size:12px;color:var(--ink);text-decoration:none;border:1px solid var(--border);
+  border-radius:99px;padding:2px 11px;background:var(--card);white-space:nowrap}
+header a:hover{background:var(--secondary)}
+header a:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+/* ---------- flow ---------- */
+.wrap{position:relative;flex:1;min-height:0}
+#wires{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.flow{display:grid;grid-template-columns:1fr 1.08fr 1.35fr;gap:42px;padding:12px 24px;align-items:start;height:100%}
+.col>h2{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 7px}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:8px 12px;margin-bottom:8px;box-shadow:0 1px 2px #0000000d}
+.card h3{font-size:13px;font-weight:600;margin:0}
+.card p{margin:1px 0 0;font-size:11.5px;color:var(--muted)}
+.badge{display:inline-block;font:10px var(--mono);background:var(--secondary);
+  border:1px solid var(--border);color:#3f3f46;border-radius:99px;padding:0 8px;margin-top:5px}
+.badge.trigger{color:var(--red);border-color:#fecaca;background:#fef2f2}
+.value{font-size:11.5px;color:var(--green);margin-top:4px}
+.value::before{content:"↳ "}
+.gate{display:inline-block;font:10px var(--mono);color:var(--amber);background:#fffbeb;
+  border:1px dashed var(--amber);border-radius:6px;padding:0 8px;margin-top:5px;margin-left:5px}
+.note{font-size:11px;color:var(--muted);border:1px dashed var(--border);
+  border-radius:var(--radius);padding:6px 10px;margin-bottom:8px}
+
+/* ---------- core ---------- */
+.cell{background:#09090b;color:#a1a1aa;border-radius:12px;padding:13px 13px 10px}
+.cell .agent{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;
+  text-align:center;color:#e4e4e7;margin-bottom:9px}
+.nucleus{background:var(--card);color:var(--ink);border:1px solid var(--border);
+  border-radius:9px;padding:9px 12px;text-align:center}
+.nucleus h3{margin:0;font-size:14px;font-weight:600}
+.nucleus .sub{font-size:11px;color:var(--muted)}
+.ipass{display:flex;gap:4px;justify-content:center;margin-top:6px}
+.ipass span{font:10px var(--mono);background:var(--secondary);border:1px solid var(--border);
+  border-radius:5px;padding:1px 6px}
+.rules{list-style:none;margin:9px 0 0;padding:0;font-size:11.5px}
+.rules li{margin:4px 0;padding-left:14px;position:relative}
+.rules li::before{content:"";position:absolute;left:1px;top:6px;width:5px;height:5px;
+  border-radius:99px;background:var(--green)}
+.cell .one{margin:9px 2px 0;font-size:11px;color:#71717a;text-align:center}
+
+/* ---------- bottom ---------- */
+.bottom{border-top:1px solid var(--border);background:var(--card);padding:8px 24px 10px}
+.strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.strip .v{border:1px solid var(--border);border-radius:var(--radius);padding:6px 11px}
+.strip b{display:block;font-size:12px;font-weight:600}
+.strip p{margin:0;font-size:11px;color:var(--muted)}
+.meta-row{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:8px}
+details summary{cursor:pointer;font:10px var(--mono);letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);list-style:none}
+details summary::before{content:"▸ "}
+details[open] summary::before{content:"▾ "}
+table{border-collapse:separate;border-spacing:0;width:100%;background:var(--card);
+  border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;font-size:12px;margin-top:6px}
+th,td{border-bottom:1px solid var(--border);padding:4px 11px;text-align:left}
+th{background:var(--secondary);font-size:11px;font-weight:600}
+tr:last-child td{border-bottom:none}
+code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radius:4px}
+.foot{font-size:11px;color:var(--muted);white-space:nowrap}
+
+@media (max-width:900px){
+  .flow{grid-template-columns:1fr;gap:16px;height:auto}
+  #wires{display:none}
+  .strip{grid-template-columns:1fr 1fr}
+  body{height:auto}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="eyebrow">BibCell · internal PoC</span>
+  <h1>Incident data flow</h1>
+  <p>The agent reads Slack, Teams and cloud alerts, maintains one incident record, and renders every output from it.</p>
+  <a href="demo.html">Watch the demo →</a>
+</header>
+
+<div class="wrap">
+<svg id="wires" aria-hidden="true"></svg>
+<div class="flow">
+
+  <div class="col" id="sources">
+    <h2>Sources</h2>
+    <div class="card src">
+      <h3>Slack</h3>
+      <p>War room - hypotheses, actions, results, numbers.</p>
+      <span class="badge">on new activity</span>
+    </div>
+    <div class="card src">
+      <h3>Microsoft Teams</h3>
+      <p>Parallel threads - management questions, cross-posts.</p>
+      <span class="badge">on new activity</span>
+    </div>
+    <div class="note">Some topics live only in Slack, some only in Teams, some in both -
+      the agent aligns both by timestamp into one timeline.</div>
+    <div class="card src">
+      <h3>Cloud alerts</h3>
+      <p>CloudWatch / Azure Monitor - opens the incident.</p>
+      <span class="badge trigger">instant - trigger</span>
+    </div>
+    <div class="card src">
+      <h3>Jira / Bitbucket</h3>
+      <p>Deploys, commits, tickets referenced in the channels.</p>
+      <span class="badge">on reference</span>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2>Core</h2>
+    <div class="cell" id="core">
+      <div class="agent">Agent - Claude Code</div>
+      <div class="nucleus">
+        <h3>incident.md</h3>
+        <div class="sub">single source of truth</div>
+        <div class="ipass"><span>I</span><span>P</span><span>A</span><span>S</span><span>S</span></div>
+      </div>
+      <ul class="rules">
+        <li>Merges Slack + Teams by timestamp, drops duplicates</li>
+        <li>Append-only timeline - nothing is rewritten</li>
+        <li>Every entry links back to its source message</li>
+        <li>Unsourced claims are marked unverified</li>
+        <li>Executive updates held until approved</li>
+      </ul>
+      <div class="one">Every output on the right is rendered from this file.</div>
+    </div>
+  </div>
+
+  <div class="col" id="outputs">
+    <h2>Outputs</h2>
+    <div class="card out">
+      <h3>Live dashboard</h3>
+      <span class="badge">every change · 5 s refresh</span>
+      <div class="value">answers "what's the status?" before anyone asks</div>
+    </div>
+    <div class="card out">
+      <h3>Onboarding brief - I-PASS</h3>
+      <span class="badge">on demand</span>
+      <div class="value">handoff framework with −23% errors in clinical use (NEJM)</div>
+    </div>
+    <div class="card out">
+      <h3>CTO update</h3>
+      <span class="badge">hourly / severity change</span><span class="gate">draft until human approval</span>
+      <div class="value">predictable cadence calms leadership more than detail</div>
+    </div>
+    <div class="card out">
+      <h3>Engineering Manager update</h3>
+      <span class="badge">on change · auto</span>
+      <div class="value">staffing and blockers without reading the whole channel</div>
+    </div>
+    <div class="card out">
+      <h3>PM / PO update</h3>
+      <span class="badge">hourly / milestone · auto</span>
+      <div class="value">different messages per role - no market tool does this</div>
+    </div>
+    <div class="card out">
+      <h3>Live RCA - Confluence</h3>
+      <span class="badge">continuous during incident</span>
+      <div class="value">RCA is done when the incident closes, not a week later</div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<div class="bottom">
+  <div class="strip">
+    <div class="v"><b>Role-specific content</b><p>Market tools segment by coarse groups at best.</p></div>
+    <div class="v"><b>Persistent onboarding brief</b><p>Competitors: ephemeral "catch me up" only.</p></div>
+    <div class="v"><b>Zero interruptions</b><p>Broadcast instead of "any update?" pings.</p></div>
+    <div class="v"><b>No per-seat licensing</b><p>$40–45/user/mo + AI add-ons from $415/mo.</p></div>
+  </div>
+  <div class="meta-row">
+    <details>
+      <summary>Demo today vs. production</summary>
+      <table>
+        <tr><th>Flow</th><th>Demo (offline, mock)</th><th>Production</th></tr>
+        <tr><td>Slack / Teams</td><td>local .md transcripts</td><td>internal Slack app + Graph API via MCP</td></tr>
+        <tr><td>Alerts</td><td>text prompt</td><td>CloudWatch SNS / Azure Action Group webhook</td></tr>
+        <tr><td>Confluence RCA</td><td>rca.md in the incident folder</td><td>Atlassian Remote MCP</td></tr>
+        <tr><td>Update cadence</td><td>manual prompts</td><td>trigger-based <code>claude -p</code> loop</td></tr>
+      </table>
+    </details>
+    <span class="foot">BibCell · internal PoC · 2026</span>
+  </div>
+</div>
+
+<script>
+(function(){
+  const svg=document.getElementById('wires'), NS='http://www.w3.org/2000/svg';
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function el(n,a){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);return e;}
+  function draw(){
+    if(getComputedStyle(svg).display==='none')return;
+    svg.innerHTML='';
+    const R=svg.getBoundingClientRect(), core=document.getElementById('core').getBoundingClientRect();
+    const cy=core.top-R.top+core.height/2;
+    let i=0;
+    function wire(x1,y1,x2,y2){
+      const mx=(x1+x2)/2, d=`M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
+      const p=el('path',{d,fill:'none',stroke:'#d4d4d8','stroke-width':1.5,id:'w'+i});
+      svg.appendChild(p);
+      if(!reduced){
+        for(let j=0;j<2;j++){
+          const dot=el('circle',{r:2.4,fill:'#18181b',opacity:.75});
+          const m=el('animateMotion',{dur:'2.8s',repeatCount:'indefinite',begin:(i*0.33+j*1.4)+'s'});
+          m.appendChild(el('mpath',{href:'#w'+i}));
+          dot.appendChild(m); svg.appendChild(dot);
+        }
+      }
+      i++;
+    }
+    document.querySelectorAll('#sources .src').forEach(c=>{
+      const r=c.getBoundingClientRect();
+      wire(r.right-R.left, r.top-R.top+18, core.left-R.left, cy);
+    });
+    document.querySelectorAll('#outputs .out').forEach(c=>{
+      const r=c.getBoundingClientRect();
+      wire(core.right-R.left, cy, r.left-R.left, r.top-R.top+18);
+    });
+  }
+  addEventListener('load',draw);
+  let t;addEventListener('resize',()=>{clearTimeout(t);t=setTimeout(draw,150)});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BibRelay - Live demo (simulated run)</title>
+<style>
+:root{
+  --bg:#0b0d10; --panel:#12151a; --panel2:#171b21; --border:#242a32;
+  --ink:#e6e8eb; --muted:#8b939e; --dim:#5c6570;
+  --good:#34d399; --warn:#fbbf24; --bad:#f87171; --acc:#7dd3fc;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace; --radius:10px;
+}
+*{box-sizing:border-box}
+body{font:13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  margin:0;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+
+/* ---------- header ---------- */
+header{padding:12px 24px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.eyebrow{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+header h1{font-size:16px;font-weight:600;letter-spacing:-.01em;margin:0}
+header p{margin:0;color:var(--muted);font-size:12px;flex:1;min-width:200px}
+header a{font-size:12px;color:var(--ink);text-decoration:none;border:1px solid var(--border);
+  border-radius:99px;padding:3px 12px}
+header a:hover{background:var(--panel2)}
+button{font:12.5px inherit;color:var(--bg);background:var(--ink);border:0;border-radius:99px;
+  padding:5px 16px;cursor:pointer;font-weight:600}
+button.ghost{background:transparent;color:var(--muted);border:1px solid var(--border);font-weight:400}
+button:hover{opacity:.9}
+button.ghost:hover{color:var(--ink);opacity:1}
+button:focus-visible,header a:focus-visible,.tab:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+button[disabled]{opacity:.4;cursor:default}
+
+/* ---------- layout ---------- */
+main{flex:1;display:grid;grid-template-columns:minmax(380px,44%) 1fr;gap:16px;padding:16px 24px;min-height:0}
+
+/* ---------- terminal ---------- */
+.term{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+  display:flex;flex-direction:column;min-height:420px;max-height:calc(100vh - 140px);overflow:hidden}
+.term-bar{display:flex;align-items:center;gap:6px;padding:9px 13px;border-bottom:1px solid var(--border)}
+.term-bar i{width:10px;height:10px;border-radius:99px;background:var(--border);display:inline-block}
+.term-bar span{font:11px var(--mono);color:var(--dim);margin-left:8px}
+.term-body{font:12px/1.7 var(--mono);padding:12px 15px;overflow-y:auto;flex:1;white-space:pre-wrap;word-break:break-word}
+.tl{opacity:0;transform:translateY(2px);transition:opacity .25s,transform .25s;display:block}
+.tl.on{opacity:1;transform:none}
+.tl.cmd{color:var(--ink)} .tl.cmd::before{content:"$ ";color:var(--dim)}
+.tl.leg{color:var(--acc);margin-top:6px}
+.tl.ok{color:var(--good)}
+.tl.gap{color:var(--warn)}
+.tl.dim{color:var(--muted)}
+.tl.hot{color:var(--bad)}
+.cursor{display:inline-block;width:7px;height:13px;background:var(--ink);
+  vertical-align:-2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+@media (prefers-reduced-motion: reduce){
+  .tl{transition:none}
+  .cursor{animation:none}
+}
+
+/* ---------- artifacts panel ---------- */
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+  display:flex;flex-direction:column;min-height:420px;max-height:calc(100vh - 140px);overflow:hidden}
+.tabs{display:flex;gap:2px;padding:8px 10px 0;border-bottom:1px solid var(--border)}
+.tab{font:12px var(--mono);color:var(--muted);background:none;border:1px solid transparent;
+  border-bottom:0;border-radius:8px 8px 0 0;padding:6px 14px;cursor:pointer;font-weight:400}
+.tab[aria-selected="true"]{color:var(--ink);background:var(--panel2);border-color:var(--border)}
+.tab .n{color:var(--dim)}
+.panel-body{padding:14px 16px;overflow-y:auto;flex:1}
+.placeholder{color:var(--dim);font-size:12.5px;text-align:center;margin-top:80px}
+.placeholder b{display:block;color:var(--muted);font-size:13px;margin-bottom:4px}
+.reveal{opacity:0;transform:translateY(4px);transition:opacity .35s,transform .35s}
+.reveal.on{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){.reveal{transition:none}}
+h3{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+  margin:16px 0 8px;font-weight:400}
+h3:first-child{margin-top:0}
+
+/* scorecard */
+.score{display:grid;grid-template-columns:110px 1fr 34px;gap:8px 10px;align-items:center}
+.score .dom{font-size:12.5px}
+.meter{display:flex;gap:3px}
+.meter i{height:8px;flex:1;border-radius:3px;background:var(--border)}
+.meter i.f-bad{background:var(--bad)} .meter i.f-warn{background:var(--warn)}
+.meter i.f-mid{background:var(--acc)} .meter i.f-good{background:var(--good)}
+.score .num{font:12px var(--mono);color:var(--muted);text-align:right}
+.score-note{font-size:11px;color:var(--dim);margin-top:8px}
+
+/* findings */
+.finding{border:1px solid var(--border);border-radius:8px;padding:8px 11px;margin-bottom:7px;background:var(--panel2)}
+.finding .row{display:flex;gap:8px;align-items:baseline}
+.sev{font:9.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;border-radius:4px;
+  padding:1px 7px;flex-shrink:0}
+.sev.high{color:var(--bad);border:1px solid color-mix(in srgb,var(--bad) 40%,transparent)}
+.sev.med{color:var(--warn);border:1px solid color-mix(in srgb,var(--warn) 40%,transparent)}
+.sev.low{color:var(--muted);border:1px solid var(--border)}
+.finding b{font-size:12.5px;font-weight:600}
+.finding p{margin:3px 0 0;font-size:11.5px;color:var(--muted)}
+.evtag{display:inline-block;font:10px var(--mono);color:var(--good);
+  border:1px solid color-mix(in srgb,var(--good) 30%,transparent);
+  border-radius:5px;padding:0 7px;margin-top:6px}
+.evtag::before{content:"⌁ "}
+.gaplist{list-style:none;margin:0;padding:0;font-size:11.5px;color:var(--warn)}
+.gaplist li{padding-left:16px;position:relative;margin:4px 0}
+.gaplist li::before{content:"◦";position:absolute;left:2px}
+.gaplist small{color:var(--dim)}
+
+/* questions */
+.q{border-left:2px solid var(--border);padding:2px 0 2px 12px;margin-bottom:12px}
+.q.high{border-color:var(--bad)} .q.med{border-color:var(--warn)}
+.q b{font-size:12.5px;font-weight:600}
+.q p{margin:2px 0 0;font-size:11.5px;color:var(--muted)}
+.q .who{font:10.5px var(--mono);color:var(--acc)}
+.qnote{font-size:11.5px;color:var(--dim);border:1px dashed var(--border);border-radius:8px;
+  padding:7px 11px;margin-bottom:12px}
+
+/* orientation */
+.orient p{font-size:12.5px;color:var(--ink);margin:0 0 8px}
+.orient p.mut{color:var(--muted)}
+.own{display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;font-size:12px;align-items:baseline}
+.own code{font:11px var(--mono);color:var(--acc);background:none;padding:0}
+.own .pct{font:11px var(--mono);color:var(--muted)}
+.risk{font-size:12px;margin:4px 0;padding-left:16px;position:relative}
+.risk::before{content:"▲";position:absolute;left:0;font-size:9px;color:var(--bad);top:3px}
+
+@media (max-width:900px){
+  main{grid-template-columns:1fr}
+  .term,.panel{max-height:none}
+  .term{min-height:300px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="eyebrow">BibRelay · internal PoC</span>
+  <h1>Live demo - simulated audit run</h1>
+  <p>A scripted replay of a handover audit: <span style="font-family:var(--mono)">routemaster</span>, a LATAM fleet-routing service being taken over by an EU team.</p>
+  <button id="run">Run audit</button>
+  <button id="skip" class="ghost" disabled>Skip to result</button>
+  <a href="flow.html">← Data flow</a>
+</header>
+
+<main>
+
+  <!-- ============ terminal ============ -->
+  <section class="term" aria-label="Terminal replay">
+    <div class="term-bar"><i></i><i></i><i></i><span>claude - BibRelay</span></div>
+    <div class="term-body" id="tbody"><span class="cursor" id="cur"></span></div>
+  </section>
+
+  <!-- ============ artifacts ============ -->
+  <section class="panel" aria-label="Generated artifacts">
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-tab="report">report.md</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="questions">questions.md <span class="n" id="qn"></span></button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="orientation">orientation.md</button>
+    </div>
+    <div class="panel-body">
+
+      <div id="placeholder" class="placeholder">
+        <b>No artifacts yet</b>
+        Press "Run audit" - the report builds itself as the evidence comes in.
+      </div>
+
+      <!-- ---- report ---- -->
+      <div data-pane="report" hidden>
+        <h3 class="reveal" data-r="score">Scorecard - risk prioritization, not a team ranking</h3>
+        <div class="score">
+          <span class="dom reveal" data-r="vcs">VCS / bus factor</span>
+          <span class="meter reveal" data-r="vcs"><i class="f-bad"></i><i></i><i></i><i></i><i></i></span>
+          <span class="num reveal" data-r="vcs">1/5</span>
+          <span class="dom reveal" data-r="sec">Security</span>
+          <span class="meter reveal" data-r="sec"><i class="f-warn"></i><i class="f-warn"></i><i></i><i></i><i></i></span>
+          <span class="num reveal" data-r="sec">2/5</span>
+          <span class="dom reveal" data-r="code">Code health</span>
+          <span class="meter reveal" data-r="code"><i class="f-mid"></i><i class="f-mid"></i><i class="f-mid"></i><i></i><i></i></span>
+          <span class="num reveal" data-r="code">3/5</span>
+          <span class="dom reveal" data-r="docs">Documentation</span>
+          <span class="meter reveal" data-r="docs"><i class="f-bad"></i><i></i><i></i><i></i><i></i></span>
+          <span class="num reveal" data-r="docs">1/5</span>
+        </div>
+
+        <h3 class="reveal" data-r="vcs">Findings</h3>
+        <div class="finding reveal" data-r="vcs">
+          <div class="row"><span class="sev high">high</span><b>Bus factor 1 - m.silva wrote 78% of all commits</b></div>
+          <p>One person carries the project. If they are unavailable after handover, there is no safety net. Estimate from commit data - verify in Q&amp;A.</p>
+          <span class="evtag">raw/authors.txt</span>
+        </div>
+        <div class="finding reveal" data-r="vcs">
+          <div class="row"><span class="sev high">high</span><b>Knowledge island: <span style="font-family:var(--mono)">pricing/</span> is 96% single-author</b></div>
+          <p>Fare calculation - the revenue-critical module - has effectively one author and no tests touching it.</p>
+          <span class="evtag">raw/ownership-pricing.txt</span>
+        </div>
+        <div class="finding reveal" data-r="sec">
+          <div class="row"><span class="sev high">high</span><b>.env with database credentials tracked in git</b></div>
+          <p>Values redacted in the report. Whether they are production credentials - and whether they were ever rotated - is a question, not a guess.</p>
+          <span class="evtag">git ls-files → .env:3</span>
+        </div>
+        <div class="finding reveal" data-r="code">
+          <div class="row"><span class="sev med">med</span><b>4 test files vs 210 source files</b></div>
+          <p>Test coverage unknown (tests not executed - target is read-only), but the census alone says the safety net is thin.</p>
+          <span class="evtag">raw/filecount.txt</span>
+        </div>
+        <div class="finding reveal" data-r="code">
+          <div class="row"><span class="sev med">med</span><b>Churn hotspot: <span style="font-family:var(--mono)">dispatch/engine.js</span> - 41 changes in 6 months, 2,340 lines</b></div>
+          <p>The most-edited file is also the largest. Where change concentrates, complexity lives - first candidate for a deep-dive session.</p>
+          <span class="evtag">raw/churn-6m.txt · raw/largest-files.txt</span>
+        </div>
+        <div class="finding reveal" data-r="docs">
+          <div class="row"><span class="sev high">high</span><b>README untouched for 31 months - code changed 412× since</b></div>
+          <p>Setup guide references Node 14 (EOL). A newcomer following the docs cannot start the service.</p>
+          <span class="evtag">git log -1 -- README.md</span>
+        </div>
+
+        <h3 class="reveal" data-r="gaps">Gaps - UNKNOWN, not guessed</h3>
+        <ul class="gaplist reveal" data-r="gaps">
+          <li>Test coverage <small>- tests not executed, target is read-only</small></li>
+          <li>CVE scan of dependencies <small>- trivy not installed on this machine</small></li>
+          <li>Verified secret scan <small>- gitleaks missing; grep heuristic only</small></li>
+          <li>CI/CD pipeline <small>- no CI config found anywhere in the repo</small></li>
+          <li>Deploy &amp; rollback procedure <small>- no evidence in repo; question raised</small></li>
+          <li>On-call &amp; incident history <small>- phase 2 source (PagerDuty/Jira via MCP)</small></li>
+        </ul>
+      </div>
+
+      <!-- ---- questions ---- -->
+      <div data-pane="questions" hidden>
+        <div class="qnote">18 questions generated, risk-sorted - top 7 shown. Questions, not tasks:
+        the outgoing team will give 2 hours of answers, never weeks of remediation work.</div>
+        <div class="q high">
+          <b>Who besides M. Silva understands <span style="font-family:var(--mono)">pricing/</span>?</b>
+          <p>96% single-author, revenue-critical, no tests. <span class="who">ask: m.silva</span></p>
+        </div>
+        <div class="q high">
+          <b>The .env in git - are those production credentials, and were they ever rotated?</b>
+          <p>Tracked since the initial commit; every past contributor has had them. <span class="who">ask: m.silva</span></p>
+        </div>
+        <div class="q high">
+          <b>How is routemaster deployed - and how do you roll back?</b>
+          <p>No CI config in the repo; the pipeline lives somewhere we cannot see. <span class="who">ask: outgoing team lead</span></p>
+        </div>
+        <div class="q high">
+          <b>Why does <span style="font-family:var(--mono)">dispatch/engine.js</span> change every few days?</b>
+          <p>41 changes in 6 months - what keeps breaking, or what keeps changing upstream? <span class="who">ask: j.oliveira</span></p>
+        </div>
+        <div class="q med">
+          <b>What do the 86 TODO/FIXME markers cluster around - known landmines?</b>
+          <p>Highest density in <span style="font-family:var(--mono)">dispatch/</span> and <span style="font-family:var(--mono)">pricing/</span> - the same two hotspots. <span class="who">ask: m.silva</span></p>
+        </div>
+        <div class="q med">
+          <b>What actually runs in production - Node 14 as the README says, or something newer?</b>
+          <p>Docs are 31 months stale; the truth exists only in the deploy environment. <span class="who">ask: outgoing team lead</span></p>
+        </div>
+        <div class="q med">
+          <b>Which parts of <span style="font-family:var(--mono)">legacy-sync/</span> are still alive?</b>
+          <p>No commits in 19 months, but still imported from 7 places. <span class="who">ask: j.oliveira</span></p>
+        </div>
+      </div>
+
+      <!-- ---- orientation ---- -->
+      <div data-pane="orientation" hidden>
+        <div class="orient">
+          <h3>What this is</h3>
+          <p>routemaster assigns vehicles to delivery routes and computes trip pricing for the LATAM fleet.
+          Node.js service, PostgreSQL, one external maps API. ~210 source files, 6 contributors historically, 2 active.</p>
+
+          <h3>Where to start reading</h3>
+          <p class="mut">1 - <span style="font-family:var(--mono)">dispatch/engine.js</span> (the core loop, and the churn hotspot) ·
+          2 - <span style="font-family:var(--mono)">pricing/</span> (revenue-critical, single-author) ·
+          3 - <span style="font-family:var(--mono)">api/routes.js</span> (the public surface, stable)</p>
+
+          <h3>Ownership map - from commit history</h3>
+          <div class="own">
+            <code>dispatch/</code><span>core assignment engine</span><span class="pct">m.silva 81%</span>
+            <code>pricing/</code><span>fare calculation</span><span class="pct">m.silva 96%</span>
+            <code>api/</code><span>REST surface</span><span class="pct">j.oliveira 64%</span>
+            <code>legacy-sync/</code><span>old fleet importer - possibly dead</span><span class="pct">a.reyes 88% (left)</span>
+          </div>
+
+          <h3>Top risks for the incoming team</h3>
+          <div class="risk">Everything routes through one person's head - schedule Q&amp;A before their availability ends.</div>
+          <div class="risk">Deploy pipeline is invisible from the repo - get access before the handover session, not during.</div>
+          <div class="risk">Docs will mislead you - trust the code and the questions file, not the README.</div>
+          <p class="mut" style="margin-top:10px">Generated from evidence only - no interviews needed. This brief works even when the outgoing team is already gone.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const tbody=$('#tbody'), cur=$('#cur');
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let timer=null, step=0, running=false;
+
+/* ---- terminal script: [css-class, text, delay-after-ms, reveal-key] ---- */
+const S=[
+ ['cmd','audit ~/repos/routemaster mode=handover',700],
+ ['leg','▸ leg 0 · target validation',350],
+ ['dim','  /Users/eu-team/repos/routemaster - exists · git repo ✓ · target is read-only',300],
+ ['dim','  audits/routemaster/2026-07-26/ created',450],
+ ['leg','▸ leg 1 · tool inventory',350],
+ ['dim','  git ✓  grep ✓  wc ✓  scc ✗  gitleaks ✗  trivy ✗',300],
+ ['gap','  ⚠ 3 tools missing → recorded as gaps, continuing with native fallbacks',500],
+ ['leg','▸ leg 2 · deterministic scans → raw/',350],
+ ['dim','  authors.txt          312 commits · 6 authors',180],
+ ['dim','  ownership-*.txt      9 top-level directories',180],
+ ['dim','  churn-6m.txt         148 commits in the last 6 months',180],
+ ['dim','  secret-suspects.txt  4 candidate lines',180],
+ ['dim','  todos.txt            86 TODO/FIXME markers',180],
+ ['dim','  largest-files.txt    top 10 by line count',450],
+ ['leg','▸ leg 3 · dispatching 4 subagents in parallel',400,'score'],
+ ['dim','  ⧖ vcs-archeolog · code-health · security · docs - isolated contexts, read-only',900],
+ ['ok','  ✓ vcs-archeolog   bus factor 1 - m.silva 78% of all commits',700,'vcs'],
+ ['ok','  ✓ security        .env tracked in git - DB credentials (redacted)',700,'sec'],
+ ['ok','  ✓ code-health     4 test files vs 210 source files',700,'code'],
+ ['ok','  ✓ docs            README untouched 31 months, code changed 412× since',700,'docs'],
+ ['leg','▸ leg 4 · synthesis',400],
+ ['hot','  ✗ 2 claims arrived without evidence → discarded, logged as gaps',500,'gaps'],
+ ['dim','  report.md ✓   questions.md ✓ (18)   orientation.md ✓',400,'files'],
+ ['ok','done in 4m 12s - 14 findings · 6 gaps · 18 questions',0,'done'],
+];
+
+function line(cls,txt){
+  const el=document.createElement('span');
+  el.className='tl '+cls; el.textContent=txt;
+  tbody.insertBefore(el,cur);
+  void el.offsetWidth; el.classList.add('on');
+  tbody.scrollTop=tbody.scrollHeight;
+}
+function reveal(key){
+  if(!key)return;
+  $('#placeholder').hidden=true;
+  if($('.tab[data-tab="report"]').getAttribute('aria-selected')==='true')
+    $('[data-pane="report"]').hidden=false;
+  $$('[data-r="'+key+'"]').forEach(e=>e.classList.add('on'));
+  if(key==='files'||key==='done'){ $('#qn').textContent='· 18'; }
+}
+function tick(){
+  if(step>=S.length){ finish(); return; }
+  const [cls,txt,d,key]=S[step++];
+  line(cls,txt); reveal(key);
+  timer=setTimeout(tick, reduced?0:d);
+}
+function finish(){
+  running=false; timer=null;
+  $('#run').textContent='Replay'; $('#run').disabled=false; $('#skip').disabled=true;
+}
+function reset(){
+  clearTimeout(timer); step=0;
+  $$('.tl').forEach(e=>e.remove());
+  $$('.reveal').forEach(e=>e.classList.remove('on'));
+  $$('[data-pane]').forEach(e=>e.hidden=true);
+  $('#placeholder').hidden=false; $('#qn').textContent='';
+  selectTab('report');
+}
+$('#run').addEventListener('click',()=>{
+  if(running)return;
+  reset(); running=true;
+  $('#run').disabled=true; $('#skip').disabled=false;
+  tick();
+});
+$('#skip').addEventListener('click',()=>{
+  clearTimeout(timer);
+  while(step<S.length){ const [cls,txt,,key]=S[step++]; line(cls,txt); reveal(key); }
+  finish();
+});
+
+/* ---- tabs ---- */
+function selectTab(name){
+  $$('.tab').forEach(t=>t.setAttribute('aria-selected', t.dataset.tab===name?'true':'false'));
+  $$('[data-pane]').forEach(p=>{
+    const anyRun=step>0;
+    p.hidden=!(p.dataset.pane===name&&anyRun);
+  });
+  $('#placeholder').hidden=step>0;
+}
+$$('.tab').forEach(t=>t.addEventListener('click',()=>selectTab(t.dataset.tab)));
+})();
+</script>
+</body>
+</html>

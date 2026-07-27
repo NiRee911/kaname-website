@@ -60,9 +60,36 @@ Reads directly from `kaname-guide.md` in the Obsidian vault - NOT from the websi
 | `/artifacts` | `app/artifacts/page.tsx` | Chain of constraint: constitution.md → spec.md → plan.md → tasks.md |
 | `/events` | `app/events/page.tsx` | 6 events with attendance, triggers, outputs |
 | `/gates` | `app/gates/page.tsx` | 4 human gates |
+| `/kvnsky` | `app/kvnsky/page.tsx` | HIDDEN portfolio hub - never link, never index (see section below) |
 | `/team` | `app/team/page.tsx` | |
 
 Nav order: Manifesto · Convictions · Values · Delivery Cycle · Artifacts · Gates · Events · Team
+
+---
+
+## Hidden portfolio: /kvnsky
+
+Unlisted concept-lab page (`app/kvnsky/page.tsx`) + static demo copies in `public/kvnsky/<project>/{flow,demo}.html`. Rules:
+
+- **Never link it** from nav, footer, sitemap.ts, or any public page. Not in robots.txt either - a Disallow line would advertise the path. Hiding = noindex meta on the page + `X-Robots-Tag` headers in `next.config.ts` for `/kvnsky/:path*`.
+- Source of truth for demos is the Obsidian vault (`PROJECTS/BibCell/`, `PROJECTS/BibRelay/`). After a demo changes there, re-sync the copy - it must strip em dashes and inject the noindex meta:
+
+```bash
+python3 -c "
+import pathlib
+for src,dst in [
+ ('/Users/kavinsky/Documents/Obsidian/PROJECTS/BibCell/flow.html','public/kvnsky/bibcell/flow.html'),
+ ('/Users/kavinsky/Documents/Obsidian/PROJECTS/BibCell/demo.html','public/kvnsky/bibcell/demo.html'),
+ ('/Users/kavinsky/Documents/Obsidian/PROJECTS/BibRelay/flow.html','public/kvnsky/bibrelay/flow.html'),
+ ('/Users/kavinsky/Documents/Obsidian/PROJECTS/BibRelay/demo.html','public/kvnsky/bibrelay/demo.html')]:
+    t=pathlib.Path(src).read_text().replace(chr(8212),'-')
+    t=t.replace('<head>','<head>\n<meta name=\"robots\" content=\"noindex, nofollow\">',1)
+    pathlib.Path(dst).write_text(t)
+"
+```
+
+- After sync verify: `grep -rl $'—' public/kvnsky/` empty and `grep -ril 'kavinsky\|smolkov' public/kvnsky/` empty.
+- New project on the hub = one entry in the `projects` array in `app/kvnsky/page.tsx` + a folder in `public/kvnsky/`.
 
 ---
 

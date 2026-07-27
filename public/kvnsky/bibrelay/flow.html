@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BibRelay - Audit data flow</title>
+<style>
+:root{
+  --bg:#fafafa; --card:#fff; --border:#e4e4e7; --ink:#09090b; --muted:#71717a;
+  --secondary:#f4f4f5; --green:#16a34a; --amber:#d97706; --red:#dc2626;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace; --radius:8px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{font:13px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  margin:0;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
+
+/* ---------- header ---------- */
+header{padding:12px 24px;border-bottom:1px solid var(--border);background:var(--card);
+  display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.eyebrow{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+header h1{font-size:17px;font-weight:600;letter-spacing:-.02em;margin:0}
+header p{margin:0;color:var(--muted);font-size:12.5px;flex:1}
+.modes{display:flex;gap:5px}
+.modes span{font:10px var(--mono);border:1px solid var(--border);background:var(--secondary);
+  color:#3f3f46;border-radius:99px;padding:1px 9px}
+.modes span.hot{border-color:#bbf7d0;background:#f0fdf4;color:var(--green)}
+header a{font-size:12px;color:var(--ink);text-decoration:none;border:1px solid var(--border);
+  border-radius:99px;padding:2px 11px;background:var(--card);white-space:nowrap}
+header a:hover{background:var(--secondary)}
+header a:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+/* ---------- flow ---------- */
+.wrap{position:relative;flex:1;min-height:0}
+#wires{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.flow{display:grid;grid-template-columns:1fr 1.1fr 1.05fr 1.25fr;gap:40px;
+  padding:12px 24px;align-items:start;height:100%}
+.col>h2{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 7px}
+.col>h2 b{color:var(--ink)}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:8px 12px;margin-bottom:8px;box-shadow:0 1px 2px #0000000d}
+.card h3{font-size:13px;font-weight:600;margin:0}
+.card p{margin:1px 0 0;font-size:11.5px;color:var(--muted)}
+.badge{display:inline-block;font:10px var(--mono);background:var(--secondary);
+  border:1px solid var(--border);color:#3f3f46;border-radius:99px;padding:0 8px;margin-top:5px}
+.badge.ro{color:var(--red);border-color:#fecaca;background:#fef2f2}
+.value{font-size:11.5px;color:var(--green);margin-top:4px}
+.value::before{content:"↳ "}
+.ev{display:inline-block;font:10px var(--mono);color:#3f3f46;background:var(--secondary);
+  border:1px solid var(--border);border-radius:5px;padding:0 6px;margin:5px 4px 0 0}
+.ev::before{content:"⌁ ";color:var(--green)}
+.note{font-size:11px;color:var(--muted);border:1px dashed var(--border);
+  border-radius:var(--radius);padding:6px 10px;margin-bottom:8px}
+.gap{display:inline-block;font:10px var(--mono);color:var(--amber);background:#fffbeb;
+  border:1px dashed var(--amber);border-radius:6px;padding:0 8px;margin-top:5px}
+
+/* ---------- evidence locker (dark cell) ---------- */
+.cell{background:#09090b;color:#a1a1aa;border-radius:12px;padding:13px 13px 10px}
+.cell .agent{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;
+  text-align:center;color:#e4e4e7;margin-bottom:9px}
+.nucleus{background:var(--card);color:var(--ink);border:1px solid var(--border);
+  border-radius:9px;padding:9px 12px;text-align:center}
+.nucleus h3{margin:0;font-size:14px;font-weight:600;font-family:var(--mono)}
+.nucleus .sub{font-size:11px;color:var(--muted)}
+.rawfiles{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:7px}
+.rawfiles span{font:9.5px var(--mono);background:var(--secondary);border:1px solid var(--border);
+  border-radius:5px;padding:1px 6px;color:#3f3f46}
+.rules{list-style:none;margin:9px 0 0;padding:0;font-size:11.5px}
+.rules li{margin:4px 0;padding-left:14px;position:relative}
+.rules li::before{content:"";position:absolute;left:1px;top:6px;width:5px;height:5px;
+  border-radius:99px;background:var(--green)}
+.cell .one{margin:9px 2px 0;font-size:11px;color:#71717a;text-align:center}
+
+/* ---------- agents ---------- */
+.agentcard h3::before{content:"◆ ";color:var(--ink);font-size:10px;vertical-align:1px}
+.par{font:10px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+  text-align:center;border:1px dashed var(--border);border-radius:99px;padding:1px 0;margin-bottom:8px}
+
+/* ---------- bottom ---------- */
+.bottom{border-top:1px solid var(--border);background:var(--card);padding:8px 24px 10px}
+.strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.strip .v{border:1px solid var(--border);border-radius:var(--radius);padding:6px 11px}
+.strip b{display:block;font-size:12px;font-weight:600}
+.strip p{margin:0;font-size:11px;color:var(--muted)}
+.meta-row{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:8px}
+details summary{cursor:pointer;font:10px var(--mono);letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);list-style:none}
+details summary::before{content:"▸ "}
+details[open] summary::before{content:"▾ "}
+table{border-collapse:separate;border-spacing:0;width:100%;background:var(--card);
+  border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;font-size:12px;margin-top:6px}
+th,td{border-bottom:1px solid var(--border);padding:4px 11px;text-align:left}
+th{background:var(--secondary);font-size:11px;font-weight:600}
+tr:last-child td{border-bottom:none}
+code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radius:4px}
+.foot{font-size:11px;color:var(--muted);white-space:nowrap}
+
+@media (max-width:1000px){
+  .flow{grid-template-columns:1fr 1fr;height:auto}
+  #wires{display:none}
+  body{height:auto}
+}
+@media (max-width:640px){
+  .flow{grid-template-columns:1fr;gap:16px}
+  .strip{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="eyebrow">BibRelay · internal PoC</span>
+  <h1>Audit data flow</h1>
+  <p>Deterministic tools measure, the agent interprets, every claim keeps a link to its evidence.</p>
+  <div class="modes" aria-label="Audit modes">
+    <span class="hot">handover</span><span>health</span><span>onboarding</span><span>offboarding</span>
+  </div>
+  <a href="demo.html">Watch the demo →</a>
+</header>
+
+<div class="wrap">
+<svg id="wires" aria-hidden="true"></svg>
+<div class="flow">
+
+  <div class="col" id="leg1">
+    <h2><b>Leg 1</b> · Target</h2>
+    <div class="card src" id="target">
+      <h3>Any repository</h3>
+      <p>No instrumentation, no registration - the audit runs cold on whatever it is pointed at.</p>
+      <span class="badge ro">read-only - never builds, never runs its code</span>
+    </div>
+    <div class="card src">
+      <h3>Deterministic scans</h3>
+      <p>git log, ownership per directory, churn, secret heuristics, TODO density, file census.</p>
+      <span class="badge">git · grep · wc - zero installs required</span>
+      <span class="gap">missing tool = recorded gap, never a guess</span>
+    </div>
+    <div class="note">Phase 2 sources - Jira, Confluence, Slack, on-call history via MCP -
+      plug into the same evidence locker.</div>
+  </div>
+
+  <div class="col">
+    <h2><b>Leg 2</b> · Evidence locker</h2>
+    <div class="cell" id="core">
+      <div class="agent">Agent - Claude Code</div>
+      <div class="nucleus">
+        <h3>raw/</h3>
+        <div class="sub">every number is born here</div>
+        <div class="rawfiles">
+          <span>authors.txt</span><span>ownership-*.txt</span><span>churn-6m.txt</span>
+          <span>secret-suspects</span><span>todos.txt</span><span>tools.txt</span>
+        </div>
+      </div>
+      <ul class="rules">
+        <li>Tools measure - the LLM only interprets</li>
+        <li>A number without a raw file does not exist</li>
+        <li>Every finding cites file:line or a commit</li>
+        <li>UNKNOWN is a valid answer, never a guess</li>
+        <li>Findings without evidence get discarded</li>
+      </ul>
+      <div class="one">Four auditors read from here - nothing else.</div>
+    </div>
+  </div>
+
+  <div class="col" id="agents">
+    <h2><b>Leg 3</b> · Subagents</h2>
+    <div class="par">4 × in parallel, isolated context</div>
+    <div class="card agentcard ag">
+      <h3>vcs-archeolog</h3>
+      <p>Bus factor, knowledge islands, churn hotspots, abandoned areas.</p>
+      <span class="ev">findings/vcs.md</span>
+    </div>
+    <div class="card agentcard ag">
+      <h3>code-health</h3>
+      <p>Size, largest files, test presence, dependency census, TODO debt.</p>
+      <span class="ev">findings/code-health.md</span>
+    </div>
+    <div class="card agentcard ag">
+      <h3>security</h3>
+      <p>Tracked secrets (redacted), risky files in git, stale dependencies.</p>
+      <span class="ev">findings/security.md</span>
+    </div>
+    <div class="card agentcard ag">
+      <h3>docs</h3>
+      <p>Staleness vs code, newcomer test: can you run it from the docs alone?</p>
+      <span class="ev">findings/docs.md</span>
+    </div>
+  </div>
+
+  <div class="col" id="outputs">
+    <h2><b>Leg 4</b> · Synthesis → artifacts</h2>
+    <div class="card out">
+      <h3>report.md</h3>
+      <p>Scorecard per domain + findings, each with its evidence link.</p>
+      <span class="badge">risk prioritization - never a team ranking</span>
+      <div class="value">the state of the project, provable line by line</div>
+    </div>
+    <div class="card out">
+      <h3>questions.md</h3>
+      <p>Max 30 questions for the outgoing team, risk-sorted, addressed to the person the data points at.</p>
+      <span class="badge">interrogation, not remediation</span>
+      <div class="value">2 hours of answers beats 40 tasks nobody will do</div>
+    </div>
+    <div class="card out">
+      <h3>orientation.md</h3>
+      <p>Architecture, ownership map, top risks, where to start reading.</p>
+      <span class="badge">handover · onboarding modes</span>
+      <div class="value">the new team arrives prepared - works even if the old team is gone</div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<div class="bottom">
+  <div class="strip">
+    <div class="v"><b>Questions, not tasks</b><p>The outgoing team won't fix 40 action points - but will answer 30 questions.</p></div>
+    <div class="v"><b>Works after they leave</b><p>Knowledge is mined from artifacts: git, code, docs - no people required.</p></div>
+    <div class="v"><b>UNKNOWN is an answer</b><p>Gaps are reported, never papered over with a plausible guess.</p></div>
+    <div class="v"><b>Not just handover</b><p>Same engine: health check, onboarding, offboarding early warning.</p></div>
+  </div>
+  <div class="meta-row">
+    <details>
+      <summary>MVP today vs. phase 2</summary>
+      <table>
+        <tr><th>Area</th><th>MVP (today)</th><th>Phase 2</th></tr>
+        <tr><td>Sources</td><td>code + git history</td><td>Jira, Confluence, Slack, PagerDuty via MCP (GDPR/LGPD: anonymized)</td></tr>
+        <tr><td>Measurement</td><td>git / grep / wc, optional scc + gitleaks</td><td>semgrep, trivy, syft, coverage from CI</td></tr>
+        <tr><td>Knowledge base</td><td>audit artifacts in <code>audits/</code></td><td>Obsidian vault, regenerated by a CI hook</td></tr>
+        <tr><td>Validation</td><td>human review of findings</td><td>tracked precision - target &gt;80% valid findings</td></tr>
+      </table>
+    </details>
+    <span class="foot">BibRelay · internal PoC · 2026</span>
+  </div>
+</div>
+
+<script>
+(function(){
+  const svg=document.getElementById('wires'), NS='http://www.w3.org/2000/svg';
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function el(n,a){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);return e;}
+  function draw(){
+    if(getComputedStyle(svg).display==='none')return;
+    svg.innerHTML='';
+    const R=svg.getBoundingClientRect();
+    const core=document.getElementById('core').getBoundingClientRect();
+    const target=document.getElementById('target').getBoundingClientRect();
+    const cy=core.top-R.top+core.height/2;
+    let i=0;
+    function wire(x1,y1,x2,y2){
+      const mx=(x1+x2)/2, d=`M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
+      const p=el('path',{d,fill:'none',stroke:'#d4d4d8','stroke-width':1.5,id:'w'+i});
+      svg.appendChild(p);
+      if(!reduced){
+        for(let j=0;j<2;j++){
+          const dot=el('circle',{r:2.4,fill:'#18181b',opacity:.75});
+          const m=el('animateMotion',{dur:'2.8s',repeatCount:'indefinite',begin:(i*0.33+j*1.4)+'s'});
+          m.appendChild(el('mpath',{href:'#w'+i}));
+          dot.appendChild(m); svg.appendChild(dot);
+        }
+      }
+      i++;
+    }
+    // leg1 -> locker
+    wire(target.right-R.left, target.top-R.top+18, core.left-R.left, cy);
+    // locker -> agents
+    const ags=[...document.querySelectorAll('#agents .ag')];
+    ags.forEach(c=>{
+      const r=c.getBoundingClientRect();
+      wire(core.right-R.left, cy, r.left-R.left, r.top-R.top+18);
+    });
+    // agents -> outputs (fan from agents' right edge midline to each artifact)
+    const ax=Math.max(...ags.map(c=>c.getBoundingClientRect().right))-R.left;
+    const ay=(ags[0].getBoundingClientRect().top+ags[ags.length-1].getBoundingClientRect().bottom)/2-R.top;
+    document.querySelectorAll('#outputs .out').forEach(c=>{
+      const r=c.getBoundingClientRect();
+      wire(ax, ay, r.left-R.left, r.top-R.top+18);
+    });
+  }
+  addEventListener('load',draw);
+  let t;addEventListener('resize',()=>{clearTimeout(t);t=setTimeout(draw,150)});
+})();
+</script>
+</body>
+</html>

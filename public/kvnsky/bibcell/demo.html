@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BibCell - Live demo (simulated incident)</title>
+<style>
+:root{
+  --bg:#0d1117; --panel:#161b22; --panel2:#1c2129; --border:#21262d;
+  --ink:#e6edf3; --muted:#8b949e; --dim:#6e7681;
+  --red:#f85149; --blue:#58a6ff; --green:#3fb950; --amber:#d29922; --purple:#bc8cff;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace; --radius:10px;
+}
+*{box-sizing:border-box}
+body{font:13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  margin:0;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+
+/* ---------- header ---------- */
+header{padding:12px 24px;border-bottom:1px solid var(--border);background:var(--panel);
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.eyebrow{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+header h1{font-size:16px;font-weight:600;margin:0}
+header p{margin:0;color:var(--muted);font-size:12px;flex:1;min-width:200px}
+header a{font-size:12px;color:var(--ink);text-decoration:none;border:1px solid var(--border);
+  border-radius:99px;padding:3px 12px}
+header a:hover{background:var(--panel2)}
+button{font:12.5px inherit;color:var(--bg);background:var(--ink);border:0;border-radius:99px;
+  padding:5px 16px;cursor:pointer;font-weight:600}
+button.ghost{background:transparent;color:var(--muted);border:1px solid var(--border);font-weight:400}
+button:hover{opacity:.9}
+button.ghost:hover{color:var(--ink);opacity:1}
+button:focus-visible,header a:focus-visible,.tab:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+button[disabled]{opacity:.4;cursor:default}
+
+/* ---------- layout ---------- */
+main{flex:1;display:grid;grid-template-columns:minmax(370px,42%) 1fr;gap:16px;padding:16px 24px;min-height:0}
+
+/* ---------- war room feed ---------- */
+.feed{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+  display:flex;flex-direction:column;min-height:420px;max-height:calc(100vh - 140px);overflow:hidden}
+.feed-bar{display:flex;align-items:center;gap:8px;padding:9px 13px;border-bottom:1px solid var(--border)}
+.feed-bar b{font:11px var(--mono);color:var(--muted);font-weight:400}
+.live{margin-left:auto;font:10px var(--mono);color:var(--red);letter-spacing:.1em}
+.live::before{content:"● ";animation:blink 1.4s steps(1) infinite}
+.live.off{color:var(--dim)}.live.off::before{animation:none}
+@keyframes blink{50%{opacity:.2}}
+.feed-body{padding:10px 13px;overflow-y:auto;flex:1}
+.msg{display:flex;gap:8px;margin-bottom:9px;opacity:0;transform:translateY(3px);
+  transition:opacity .25s,transform .25s}
+.msg.on{opacity:1;transform:none}
+.msg .t{font:10.5px var(--mono);color:var(--dim);flex-shrink:0;padding-top:2px;width:44px}
+.msg .b{flex:1;min-width:0}
+.chan{font:9px var(--mono);letter-spacing:.08em;text-transform:uppercase;border-radius:4px;
+  padding:0 6px;margin-right:6px;vertical-align:1px}
+.chan.slack{color:var(--green);border:1px solid color-mix(in srgb,var(--green) 40%,transparent)}
+.chan.teams{color:var(--purple);border:1px solid color-mix(in srgb,var(--purple) 40%,transparent)}
+.chan.alarm{color:var(--red);border:1px solid color-mix(in srgb,var(--red) 45%,transparent)}
+.chan.cell{color:var(--blue);border:1px solid color-mix(in srgb,var(--blue) 40%,transparent)}
+.msg .who{font-weight:600;font-size:12px}
+.msg p{margin:1px 0 0;font-size:12px;color:var(--muted)}
+.msg.note p{color:var(--dim);font-style:italic}
+.msg.sys .who{color:var(--blue)}
+@media (prefers-reduced-motion: reduce){.msg{transition:none}}
+
+/* ---------- outputs panel ---------- */
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+  display:flex;flex-direction:column;min-height:420px;max-height:calc(100vh - 140px);overflow:hidden}
+.tabs{display:flex;gap:2px;padding:8px 10px 0;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.tab{font:12px var(--mono);color:var(--muted);background:none;border:1px solid transparent;
+  border-bottom:0;border-radius:8px 8px 0 0;padding:6px 12px;cursor:pointer;font-weight:400;position:relative}
+.tab[aria-selected="true"]{color:var(--ink);background:var(--panel2);border-color:var(--border)}
+.tab .dot{display:none;width:6px;height:6px;border-radius:99px;background:var(--amber);
+  position:absolute;top:6px;right:5px}
+.tab.fresh .dot{display:block}
+.panel-body{padding:14px 16px;overflow-y:auto;flex:1}
+.placeholder{color:var(--dim);font-size:12.5px;text-align:center;margin-top:80px}
+.placeholder b{display:block;color:var(--muted);font-size:13px;margin-bottom:4px}
+
+/* approval bar */
+.approve{display:none;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--border);
+  background:color-mix(in srgb,var(--amber) 9%,var(--panel));font-size:12px}
+.approve.on{display:flex}
+.approve b{color:var(--amber);font-weight:600}
+.approve span{color:var(--muted);flex:1}
+.approve button{background:var(--amber);color:#1c1503}
+
+/* incident.md */
+h3{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+  margin:16px 0 8px;font-weight:400}
+h3:first-child{margin-top:0}
+.meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
+.chip{font:11px var(--mono);border:1px solid var(--border);border-radius:6px;padding:2px 9px;color:var(--muted)}
+.chip b{color:var(--ink);font-weight:600}
+.chip.sev{border-color:color-mix(in srgb,var(--amber) 50%,transparent);color:var(--amber);font-weight:700;transition:color .4s,border-color .4s}
+.chip.sev.s1{border-color:color-mix(in srgb,var(--red) 55%,transparent);color:var(--red)}
+.chip.status{border-color:color-mix(in srgb,var(--blue) 50%,transparent);color:var(--blue)}
+.sect{font-size:12.5px;color:var(--ink);margin:0 0 4px}
+.sect .unv{color:var(--amber)}
+.tl-list,.dead{list-style:none;margin:0;padding:0}
+.tl-list li{font-size:12px;margin:0 0 5px;padding-left:14px;position:relative;color:var(--ink);
+  opacity:0;transform:translateY(3px);transition:opacity .25s,transform .25s}
+.tl-list li.on{opacity:1;transform:none}
+.tl-list li::before{content:"";position:absolute;left:2px;top:7px;width:5px;height:5px;border-radius:99px;background:var(--border)}
+.tl-list li.hot::before{background:var(--red)}
+.tl-list li .t{font:10.5px var(--mono);color:var(--dim);margin-right:6px}
+.src{font:10px var(--mono);color:var(--green);border:1px solid color-mix(in srgb,var(--green) 30%,transparent);
+  border-radius:5px;padding:0 6px;margin-left:6px;white-space:nowrap}
+.dead li{font-size:12px;color:var(--muted);margin:4px 0;padding-left:16px;position:relative}
+.dead li::before{content:"✕";position:absolute;left:2px;color:var(--dim);font-size:10px;top:2px}
+@media (prefers-reduced-motion: reduce){.tl-list li{transition:none}}
+
+/* doc-style tabs (onboard, cto, rca) */
+.doc p{font-size:12.5px;margin:0 0 8px;color:var(--ink)}
+.doc p.mut{color:var(--muted)}
+.doc .draft{display:inline-block;font:10px var(--mono);letter-spacing:.08em;color:var(--amber);
+  border:1px dashed var(--amber);border-radius:6px;padding:1px 8px;margin-bottom:10px}
+.doc .sent{display:inline-block;font:10px var(--mono);letter-spacing:.08em;color:var(--green);
+  border:1px solid color-mix(in srgb,var(--green) 40%,transparent);border-radius:6px;padding:1px 8px;margin-bottom:10px}
+.doc .open-q{color:var(--amber)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:3px 14px;font-size:12px;margin-bottom:10px}
+.kv b{font:11px var(--mono);color:var(--dim);font-weight:400}
+.qnote{font-size:11.5px;color:var(--dim);border:1px dashed var(--border);border-radius:8px;
+  padding:7px 11px;margin-bottom:12px}
+.rt{border-collapse:separate;border-spacing:0;width:100%;font-size:11.5px;
+  border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.rt th{background:var(--panel2);font:10px var(--mono);letter-spacing:.06em;text-transform:uppercase;
+  color:var(--muted);font-weight:400;text-align:left;padding:4px 9px;border-bottom:1px solid var(--border)}
+.rt td{padding:4px 9px;border-bottom:1px solid var(--border);color:var(--ink);vertical-align:top}
+.rt tr:last-child td{border-bottom:none}
+.st{font:10px var(--mono);color:var(--muted);border:1px solid var(--border);border-radius:5px;padding:0 6px;white-space:nowrap}
+.st.prog{color:var(--blue);border-color:color-mix(in srgb,var(--blue) 40%,transparent)}
+
+@media (max-width:900px){
+  main{grid-template-columns:1fr}
+  .feed,.panel{max-height:none}
+  .feed{min-height:300px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="eyebrow">BibCell · internal PoC</span>
+  <h1>Live demo - simulated incident</h1>
+  <p>A scripted replay of INC-demo-fleet: stale GPS positions on 40% of the fleet. One incident file, every output rendered from it.</p>
+  <button id="run">Run incident</button>
+  <button id="skip" class="ghost" disabled>Skip to result</button>
+  <a href="flow.html">← Data flow</a>
+</header>
+
+<main>
+
+  <!-- ============ war room ============ -->
+  <section class="feed" aria-label="War room feed">
+    <div class="feed-bar"><b>#tmp-fleet-tracking · Fleet Ops - Incidents · CloudWatch</b>
+      <span class="live off" id="live">LIVE</span></div>
+    <div class="feed-body" id="fbody"></div>
+  </section>
+
+  <!-- ============ outputs ============ -->
+  <section class="panel" aria-label="Rendered outputs">
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-tab="incident">incident.md<i class="dot"></i></button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="onboard">onboard.md<i class="dot"></i></button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="cto">cto-update.md<i class="dot"></i></button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="rca">rca.md<i class="dot"></i></button>
+    </div>
+
+    <div class="approve" id="approve">
+      <b>DRAFT</b><span>CTO update is written - it goes nowhere until a human approves it.</span>
+      <button id="approveBtn">Approve &amp; send</button>
+    </div>
+
+    <div class="panel-body">
+      <div id="placeholder" class="placeholder">
+        <b>No incident yet</b>
+        Press "Run incident" - the file builds itself as the war room talks.
+      </div>
+
+      <!-- ---- incident.md ---- -->
+      <div data-pane="incident" hidden>
+        <h3>incident.md - single source of truth</h3>
+        <div class="meta">
+          <span class="chip sev" id="sev">SEV2</span>
+          <span class="chip status" id="status">investigating</span>
+          <span class="chip">IC <b>@maya.r</b></span>
+          <span class="chip">ops <b>@tomas.v</b></span>
+          <span class="chip">comms <b>BibCell + @priya.s</b></span>
+        </div>
+        <h3>[P] Current state</h3>
+        <p class="sect" id="pstate">Consumer lag climbing on telematics-ingest; cause unknown.</p>
+        <h3>Timeline - append-only, every line keeps its source</h3>
+        <ul class="tl-list" id="tl"></ul>
+        <h3 id="deadH" hidden>Ruled out - dead ends stay in the file</h3>
+        <ul class="dead" id="dead"></ul>
+      </div>
+
+      <!-- ---- onboard ---- -->
+      <div data-pane="onboard" hidden>
+        <div class="doc" id="onboardDoc">
+          <p class="mut">Rendered only when someone joins - nothing yet.</p>
+        </div>
+      </div>
+
+      <!-- ---- cto ---- -->
+      <div data-pane="cto" hidden>
+        <div class="doc" id="ctoDoc">
+          <p class="mut">No update drafted yet. Cadence: hourly or on severity change.</p>
+        </div>
+      </div>
+
+      <!-- ---- rca ---- -->
+      <div data-pane="rca" hidden>
+        <div class="doc" id="rcaDoc">
+          <p class="mut">RCA builds during the incident, not a week after. Nothing yet.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const PACE=2.5; // ponytail: jeden knob na tempo prehravania - delaye v S su zakladne, toto ich nasobi
+let timer=null, step=0, running=false, approved=false, started=false, ctoDrafted=false;
+
+/* ---------- content helpers ---------- */
+function feed(ch,who,text,t,cls){
+  const m=document.createElement('div');
+  m.className='msg '+(cls||'');
+  m.innerHTML='<span class="t">'+t+'</span><div class="b">'+
+    '<span class="chan '+ch+'">'+ch+'</span><span class="who">'+who+'</span>'+
+    '<p>'+text+'</p></div>';
+  $('#fbody').appendChild(m);
+  void m.offsetWidth; m.classList.add('on');
+  $('#fbody').scrollTop=$('#fbody').scrollHeight;
+}
+function tl(t,text,src,hot){
+  const li=document.createElement('li');
+  if(hot)li.className='hot';
+  li.innerHTML='<span class="t">'+t+'</span>'+text+(src?'<span class="src">'+src+'</span>':'');
+  $('#tl').appendChild(li);
+  void li.offsetWidth; li.classList.add('on');
+}
+function dead(text,src){
+  $('#deadH').hidden=false;
+  const li=document.createElement('li');
+  li.innerHTML=text+(src?'<span class="src">'+src+'</span>':'');
+  $('#dead').appendChild(li);
+}
+function pstate(t){ $('#pstate').innerHTML=t; }
+function fresh(tab){
+  const el=$('.tab[data-tab="'+tab+'"]');
+  if(el.getAttribute('aria-selected')!=='true') el.classList.add('fresh');
+}
+function show(){
+  $('#placeholder').hidden=true;
+  if($('.tab[data-tab="incident"]').getAttribute('aria-selected')==='true')
+    $('[data-pane="incident"]').hidden=false;
+}
+
+/* ---------- documents ---------- */
+function renderOnboard(){
+  $('#onboardDoc').innerHTML=
+   '<h3>Onboarding brief - @jonas.k · 10:22Z · I-PASS</h3>'+
+   '<div class="kv">'+
+   '<b>[I] severity</b><span>SEV1, recovering - SLA breach risk 13:00Z, on track</span>'+
+   '<b>[P] state</b><span>v3.2.0 broke consumer rebalancing; rollback done, backlog draining ~90 min</span>'+
+   '<b>[A] in flight</b><span>drain watch (@tomas.v) · customer statement via PM (@priya.s)</span>'+
+   '<b>[S] dead ends</b><span>external GPS feed and kafka infra already ruled out - don’t waste time there</span>'+
+   '<b>[S] your task</b><span>find out why v3.2.0 broke group rebalancing · IC is @maya.r</span>'+
+   '</div>'+
+   '<p class="mut">Every fact above exists in incident.md - the brief adds nothing and invents nothing.</p>';
+  fresh('onboard');
+}
+function renderCTO(state){
+  $('#ctoDoc').innerHTML=
+   (state==='sent'
+     ?'<span class="sent">APPROVED · SENT 09:44Z</span>'
+     :'<span class="draft">DRAFT - held for human approval</span>')+
+   '<h3>CTO update · 09:42Z</h3>'+
+   '<p><b>Customer impact:</b> ~40% of tracked vehicles (4,200 of 10,500) show stale GPS positions - ETAs unreliable, geofence alerts delayed. Two enterprise clients have asked; SLA breach risk at 13:00Z.</p>'+
+   '<p><b>What we’re doing:</b> cause narrowed to this morning’s deploy; rollback in preparation. Holding statement for clients routed through the PM.</p>'+
+   '<p><b>Next update:</b> 10:42Z or on any severity change.</p>'+
+   '<p class="mut">Profile: keep_satisfied - impact first, no jargon, max 120 words, cadence over depth.</p>';
+  fresh('cto');
+}
+function renderRCA(){
+  $('#rcaDoc').innerHTML=
+   '<h3>RCA - live draft · builds during the incident, reviewed at the RCA call</h3>'+
+
+   '<h3>Summary</h3>'+
+   '<p>Deploy v3.2.0 of telematics-ingest (FLEET-1204, commit e4f9a2) sent the consumer group into a rebalance loop; GPS position updates stalled for ~40% of the fleet for 59 minutes until rollback. Incident card: <span class="src">jira INC-2107</span></p>'+
+
+   '<h3>Stakeholders</h3>'+
+   '<div class="kv">'+
+   '<b>team</b><span>@maya.r (IC) · @tomas.v (ops) · @priya.s (comms approver) · @jonas.k (follow-up)</span>'+
+   '<b>rest of business</b><span>@coo.office (board call 11:00) · @account.mgmt (2 enterprise clients) · PM (customer statement)</span>'+
+   '</div>'+
+
+   '<h3>Detailed analysis</h3>'+
+   '<p><b>Timeline:</b> inherited from incident.md - every entry already has a timestamp and a source link, nothing is rewritten for the RCA. <span class="src">incident.md#timeline</span></p>'+
+   '<p><b>Technical:</b> after the 09:02Z deploy the consumer group never reached a stable assignment; scaling 12→24 consumers had no effect, which pointed away from capacity and at the deploy itself. Rollback to v3.1.9 stopped the loop immediately.</p>'+
+   '<p><b>Customer impact:</b> 4,200 of 10,500 vehicles showed frozen positions - wrong ETAs, delayed geofence alerts. Two enterprise clients asked; SLA breach avoided (window was 13:00Z).</p>'+
+   '<p><b>Other systems:</b> dispatch-map, eta-service and geofence-alerts degraded downstream; no data loss - backlog replayed after rollback.</p>'+
+
+   '<h3>Opportunities for improvement</h3>'+
+   '<p class="mut">· 12 minutes spent on consumer scaling - a dead end the runbook could have excluded upfront.<br>'+
+   '· No canary for telematics-ingest deploys - a 5% canary would have caught the loop pre-rollout.<br>'+
+   '· No alert on rebalance-loop behaviour itself; we alerted on lag, 3 minutes later.</p>'+
+
+   '<h3>Resolution activities - done before the RCA call</h3>'+
+   '<table class="rt"><tr><th>Activity</th><th>Owner</th><th>Jira</th><th>Notes</th></tr>'+
+   '<tr><td>Rollback to v3.1.9</td><td>@tomas.v</td><td><span class="src">FLEET-1205</span></td><td>10:04Z, rebalance stopped</td></tr>'+
+   '<tr><td>Backlog drain to full freshness</td><td>@tomas.v</td><td><span class="src">FLEET-1206</span></td><td>~11:45Z, no data loss</td></tr>'+
+   '</table>'+
+
+   '<h3>Corrective actions - drafted as Jira placeholders for the call</h3>'+
+   '<table class="rt"><tr><th>Action</th><th>Owner</th><th>Jira</th><th>Status</th></tr>'+
+   '<tr><td>Find why v3.2.0 broke group rebalancing (config vs code)</td><td>@jonas.k</td><td><span class="src">FLEET-1210</span></td><td><span class="st prog">in progress</span></td></tr>'+
+   '<tr><td>Canary stage for telematics-ingest deploys</td><td>-</td><td><span class="src">draft</span></td><td><span class="st">proposed</span></td></tr>'+
+   '<tr><td>Alert on consumer rebalance loops directly</td><td>-</td><td><span class="src">draft</span></td><td><span class="st">proposed</span></td></tr>'+
+   '<tr><td>Runbook: scaling is not a fix for rebalance loops</td><td>@tomas.v</td><td><span class="src">draft</span></td><td><span class="st">proposed</span></td></tr>'+
+   '</table>'+
+   '<p class="mut" style="margin-top:8px">Notes log: <b>Jul 24</b> drafted during incident · owners confirmed at the RCA call, not invented by the agent.</p>'+
+
+   '<p class="open-q"><b>Open:</b> root cause of the rebalance loop ⚠ unverified until FLEET-1210 closes.</p>'+
+   '<p class="mut">When the incident closes, the RCA is a review away from done - not a week of archaeology.</p>';
+  fresh('rca');
+}
+
+/* ---------- script ---------- */
+const S=[
+ [700,()=>{feed('alarm','CloudWatch','ALARM telematics-ingest-lag: consumer lag 2.1M msgs &gt; threshold 500k, eu-west-1','09:05');
+   show(); tl('09:05Z','CloudWatch alarm: consumer lag 2.1M','slack#msg-1');}],
+ [650,()=>{feed('cell','BibCell','incident file created from the alarm - I-PASS skeleton, timeline started','09:05','sys');}],
+ [800,()=>{feed('slack','@maya.r','declaring SEV2 for now, I’m IC. @tomas.v you’re ops lead','09:12');
+   tl('09:12Z','Incident declared SEV2, IC @maya.r','slack#msg-2');}],
+ [800,()=>{feed('slack','@tomas.v','dispatch map shows stale GPS for ~40% of vehicles, last update &gt;15 min','09:15');
+   tl('09:15Z','Stale positions on ~40% of fleet, share growing','slack#msg-3');
+   pstate('~40% of fleet reporting stale GPS; cause unknown.');}],
+ [800,()=>{feed('slack','@tomas.v','telematics-ingest v3.2.0 deployed at 09:02 - suspicious. FLEET-1204, commit e4f9a2','09:18');
+   tl('09:18Z','Deploy v3.2.0 suspected (FLEET-1204)','slack#msg-4');}],
+ [700,()=>{feed('teams','@maya.r','FYI SEV2 on vehicle tracking, war room in Slack #tmp-fleet-tracking','09:20');
+   feed('cell','BibCell','cross-post detected - merged by timestamp, no duplicate timeline entry','09:20','sys note');}],
+ [800,()=>{feed('slack','@tomas.v','consumer group stuck in a rebalance loop since the deploy','09:21');
+   tl('09:21Z','Consumer rebalance loop confirmed','slack#msg-5');
+   pstate('Consumer group in a rebalance loop since the v3.2.0 deploy. Hypothesis: the deploy.');}],
+ [800,()=>{feed('slack','@priya.s','GPS provider status green, carrier link fine - external feed ruled out','09:24');
+   dead('External GPS feed - provider green, carrier link fine','slack#msg-6');}],
+ [800,()=>{feed('teams','@coo.office','how many customers are affected? I have a board call at 11:00','09:28');}],
+ [900,()=>{feed('slack','@maya.r','escalating to SEV1 - 4,200 of 10,500 vehicles stale, SLA breach risk at 13:00Z','09:30');
+   $('#sev').textContent='SEV1'; $('#sev').classList.add('s1');
+   tl('09:30Z','Escalated SEV2 → SEV1 - 4,200 vehicles, SLA risk 13:00Z','slack#msg-7',true);}],
+ [800,()=>{feed('teams','@account.mgmt','two enterprise clients asking why ETAs are frozen - we need a holding statement','09:38');
+   tl('09:38Z','Enterprise clients asking; holding statement requested','teams#msg-4');}],
+ [600,()=>{feed('cell','BibCell','severity change + exec question → CTO update drafted. Held as DRAFT - a human approves exec comms.','09:42','sys');
+   renderCTO('draft');},'pause'],
+ [800,()=>{feed('slack','@tomas.v','scaled consumer group 12 → 24 … no effect, rebalance loop continues','09:47');
+   tl('09:47Z','Consumer scaling had no effect','slack#msg-9');}],
+ [800,()=>{feed('slack','@priya.s','kafka brokers healthy, disk and network fine - infra ruled out','09:55');
+   dead('Kafka infra - brokers, disk, network all healthy','slack#msg-10');}],
+ [900,()=>{feed('slack','@tomas.v','rollback to v3.1.9 done - rebalance stopped, ingest rate recovering','10:04');
+   $('#status').textContent='recovering';
+   tl('10:04Z','Rollback to v3.1.9 - rebalance stopped','slack#msg-11',true);
+   pstate('Rollback done; ingest healthy, position freshness improving.');}],
+ [800,()=>{feed('slack','@tomas.v','lag draining but slower than expected - ~90 min to catch up','10:14');
+   tl('10:14Z','Backlog draining, ~90 min to full freshness','slack#msg-12');
+   pstate('Backlog draining ~90 min. Why it drains slowly is <span class="unv">⚠ unverified</span> - possible leftover consumer offsets.');}],
+ [800,()=>{feed('slack','@maya.r','@jonas.k joining to dig into why v3.2.0 broke rebalancing','10:22');
+   feed('cell','BibCell','onboarding brief rendered from incident.md - 15 lines, dead ends included','10:22','sys');
+   renderOnboard();}],
+ [800,()=>{feed('slack','@maya.r','status → monitoring. Nice work everyone','10:30');
+   $('#status').textContent='monitoring';
+   tl('10:30Z','Status → monitoring','slack#msg-14');}],
+ [500,()=>{feed('cell','BibCell','RCA draft updated - complete timeline, dead ends, one open question with an owner','10:31','sys');
+   renderRCA();}],
+ [0,()=>{feed('cell','BibCell','85 minutes of incident → onboarding brief, approved CTO update and a live RCA, all from one file. Zero duplicated writing.','10:31','sys');
+   $('#live').classList.add('off');}],
+];
+
+/* ---------- engine ---------- */
+function tick(){
+  if(step>=S.length){ finish(); return; }
+  const [d,fn,flag]=S[step++]; fn();
+  if(flag==='pause'){ ctoDrafted=true;
+    if(!approved){ $('#approve').classList.add('on'); return; } }
+  timer=setTimeout(tick, reduced?0:d*PACE);
+}
+function doApprove(){
+  if(approved||!ctoDrafted)return;
+  approved=true; $('#approve').classList.remove('on');
+  renderCTO('sent');
+  feed('cell','BibCell','CTO update approved by @priya.s → sent to Teams','09:44','sys');
+  tl('09:44Z','CTO update approved and sent','teams');
+}
+$('#approveBtn').addEventListener('click',()=>{
+  doApprove();
+  if(running) timer=setTimeout(tick, reduced?0:600*PACE);
+});
+function finish(){ running=false; timer=null;
+  $('#run').textContent='Replay'; $('#run').disabled=false; $('#skip').disabled=true; }
+function reset(){
+  clearTimeout(timer); step=0; approved=false; ctoDrafted=false;
+  $('#fbody').innerHTML=''; $('#tl').innerHTML=''; $('#dead').innerHTML='';
+  $('#deadH').hidden=true; $('#approve').classList.remove('on');
+  $('#sev').textContent='SEV2'; $('#sev').classList.remove('s1'); $('#status').textContent='investigating';
+  pstate('Consumer lag climbing on telematics-ingest; cause unknown.');
+  $('#onboardDoc').innerHTML='<p class="mut">Rendered only when someone joins - nothing yet.</p>';
+  $('#ctoDoc').innerHTML='<p class="mut">No update drafted yet. Cadence: hourly or on severity change.</p>';
+  $('#rcaDoc').innerHTML='<p class="mut">RCA builds during the incident, not a week after. Nothing yet.</p>';
+  $$('.tab').forEach(t=>t.classList.remove('fresh'));
+  $$('[data-pane]').forEach(e=>e.hidden=true);
+  $('#placeholder').hidden=false; started=false;
+  selectTab('incident'); $('#live').classList.remove('off');
+}
+$('#run').addEventListener('click',()=>{
+  if(running)return;
+  reset(); running=true; started=true;
+  $('#run').disabled=true; $('#skip').disabled=false;
+  tick();
+});
+$('#skip').addEventListener('click',()=>{
+  clearTimeout(timer);
+  doApprove();
+  while(step<S.length){ const [,fn,flag]=S[step++]; fn();
+    if(flag==='pause'){ ctoDrafted=true; doApprove(); } }
+  finish();
+});
+
+/* ---------- tabs ---------- */
+function selectTab(name){
+  $$('.tab').forEach(t=>{
+    t.setAttribute('aria-selected', t.dataset.tab===name?'true':'false');
+    if(t.dataset.tab===name)t.classList.remove('fresh');
+  });
+  $$('[data-pane]').forEach(p=>{ p.hidden=!(p.dataset.pane===name&&started); });
+  $('#placeholder').hidden=started;
+}
+$$('.tab').forEach(t=>t.addEventListener('click',()=>selectTab(t.dataset.tab)));
+})();
+</script>
+</body>
+</html>
