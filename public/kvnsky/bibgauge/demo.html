@@ -4,7 +4,7 @@
 <meta name="robots" content="noindex, nofollow">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BibGauge - Live demo (simulated run)</title>
+<title>BibGauge - Live demo: does this meet our standard?</title>
 <style>
 :root{
   --bg:#0b0d10; --panel:#12151a; --panel2:#171b21; --border:#242a32;
@@ -112,7 +112,7 @@ h3:first-child{margin-top:0}
 .radarwrap{position:relative}
 .radarwrap svg{width:100%;height:auto;display:block;overflow:visible}
 .rax{font:9.5px var(--mono);fill:var(--muted)}
-.rax .pctv{fill:var(--ink)}
+text.rax.pctv{fill:var(--ink);font-size:12px}
 text.rax.axwarn{fill:var(--warn)}
 .rgrid{fill:none;stroke:var(--border);stroke-width:1}
 .rspoke{stroke:var(--border);stroke-width:1}
@@ -120,7 +120,6 @@ text.rax.axwarn{fill:var(--warn)}
 .rpoly{fill:color-mix(in srgb,var(--acc) 18%,transparent);stroke:var(--acc);stroke-width:2;
   transition:d .5s, points .5s}
 .rdot{fill:var(--acc);stroke:var(--panel);stroke-width:2}
-.rringlbl{font:8.5px var(--mono);fill:var(--dim)}
 .maplead{font-size:11.5px;color:var(--muted);margin:0 0 12px}
 
 .wl{display:grid;grid-template-columns:auto 1fr auto;gap:5px 10px;align-items:center;font-size:11.5px}
@@ -202,7 +201,7 @@ text.rax.axwarn{fill:var(--warn)}
 
 <header>
   <span class="eyebrow">BibGauge · internal PoC</span>
-  <h1>Live demo - simulated conformance run</h1>
+  <h1>Live demo - does this service meet our standard?</h1>
   <p>A scripted replay against <span style="font-family:var(--mono)">fuelwatch</span>, a fictional fleet fuel-monitoring service, measured on the standard in force that day.</p>
   <span class="stdver">standard: <b id="stdver">observability v2</b></span>
   <button id="run">Run gauge</button>
@@ -230,8 +229,8 @@ text.rax.axwarn{fill:var(--warn)}
 
     <div class="adopt" id="adopt">
       <b>PROPOSED</b>
-      <span>The audit found a risk no control covers. It cannot become a finding until a human puts it in the standard.</span>
-      <button id="adoptBtn">Adopt OBS-08</button>
+      <span>The audit spotted a risk that no check covers. It cannot count as a finding until a person adds it to the standard.</span>
+      <button id="adoptBtn">Make it a check</button>
     </div>
 
     <div class="panel-body">
@@ -243,109 +242,110 @@ text.rax.axwarn{fill:var(--warn)}
 
       <!-- ---- risk map ---- -->
       <div data-pane="riskmap" hidden>
-        <h3 class="reveal" data-r="head">Where the weak links are</h3>
-        <p class="maplead reveal" data-r="head">Rendered from <span style="font-family:var(--mono)">exposure.json</span>.
-        Axes follow the incident lifecycle, not the folders the controls were written in: a weak link does not
-        respect pack boundaries. Further from the centre means more risk carried.</p>
+        <h3 class="reveal" data-r="head">Where it is weakest</h3>
+        <p class="maplead reveal" data-r="head">Five questions about this service. Each one is something that can
+        go wrong. <b>The further a corner reaches out, the worse the answer.</b> 0 % means every check passes,
+        100 % means none of them do.</p>
 
         <div class="mapgrid reveal" data-r="head">
-          <div class="radarwrap"><svg id="radar" viewBox="-38 -6 396 306" role="img"
-            aria-label="Exposure per risk area"></svg></div>
+          <div class="radarwrap"><svg id="radar" viewBox="-58 -6 436 330" role="img"
+            aria-label="How much risk this service carries, by question"></svg></div>
           <div>
             <div class="arealist" id="arealist"></div>
             <div class="callout blind reveal" data-r="na">
-              <b>3.0 points unmeasured</b>
-              <p>Response looks like the healthiest area and carries the only blind spot: the whole
-              "does the page reach anybody out of hours" risk could not be assessed. A low number over an
-              unmeasured risk is not health, it is silence.</p>
+              <b>3.0 points nobody checked</b>
+              <p>"Can we fix it?" looks like the best answer here, and it is the one to worry about. Nobody
+              could check whether a page actually reaches a person out of hours, because the on-call file we
+              were promised is not there. A low number over something nobody checked is not health, it is silence.</p>
             </div>
             <div class="callout acc reveal" data-r="waiv">
-              <b>3.0 points accepted</b>
-              <p>Traceability reads 50 % on a base of 1.5, because its primary control is waived until
-              2026-12-31. On a base that thin the percentage is not meaningful - the signed-off points are.</p>
+              <b>3.0 points signed off</b>
+              <p>"Can we look back?" reads 50 %, but only one check is left behind it: the main one is signed
+              off by the Head of Platform until 2026-12-31. Do not read that percentage - read the signed-off points.</p>
             </div>
           </div>
         </div>
 
-        <h3 class="reveal" data-r="head">Weak links, by risk carried</h3>
+        <h3 class="reveal" data-r="head">What to fix first</h3>
         <div class="wl reveal" data-r="head" id="weaklinks"></div>
-        <p class="wlnote reveal" data-r="head">Ordered by exposure, not by MUST/SHOULD. Exposure points are an
-        ordinal weighting stated openly in <span style="font-family:var(--mono)">risks.yaml</span>: a convention,
-        not a measurement, and deliberately not money. A euro figure appears only when a named person states one.</p>
+        <p class="wlnote reveal" data-r="head">Ordered by how much risk each one carries. The points are a ranking
+        scale we chose ourselves and wrote down openly - not money. A euro figure appears only when a named
+        person states one.</p>
       </div>
 
       <!-- ---- report ---- -->
       <div data-pane="report" hidden>
-        <h3 class="reveal" data-r="head">Risk carried - one assessment of one system</h3>
+        <h3 class="reveal" data-r="head">How much risk this service is carrying</h3>
         <div class="reveal" data-r="head">
           <div class="cov">
-            <span class="lbl must">EXPOSURE</span>
+            <span class="lbl must">ALL FIVE</span>
             <span class="bar"><i id="totalBar" style="width:43%"></i></span>
             <span class="num" id="totalNum">43 %</span>
           </div>
-          <p class="covnote"><span id="totalPts">21.75 / 50.5</span> exposure points carried, plus
-          <b>3.0 unmeasured</b> and <b>3.0 accepted</b> - both reported separately, neither ever counted as zero.</p>
+          <p class="covnote"><span id="totalPts">21.75 / 50.5</span> risk points carried. On top of that,
+          <b>3.0 points nobody could check</b> and <b>3.0 points signed off</b> - both kept separate, neither
+          ever counted as zero.</p>
           <div class="packs">
-            <span class="pk">Packs are authoring folders and are not reported on. The unit is the risk area.</span>
+            <span class="pk">One answer for the whole service. The folders the checks were written in are not reported on.</span>
           </div>
         </div>
 
-        <h3 class="reveal" data-r="head">Remediation - ordered by risk carried</h3>
+        <h3 class="reveal" data-r="head">What to fix first</h3>
         <div class="rem reveal" data-r="dat">
-          <div class="row"><span class="v gap">GAP</span><span class="id">4.0 exp &middot; DAT-03 &middot; MUST &middot; R-07 severe</span><b>No high-risk processing carries a DPIA reference</b></div>
-          <p class="why">Why the standard asks: high-risk processing without a DPIA is the exposure a regulator asks about first.</p>
+          <div class="row"><span class="v gap">GAP</span><span class="id">4.0 pts &middot; DAT-03 &middot; MUST &middot; R-07 severe</span><b>No high-risk processing carries a DPIA reference</b></div>
+          <p class="why">Why the standard asks: high-risk processing without a DPIA is the first thing a regulator asks about.</p>
         </div>
         <div class="rem reveal" data-r="own">
-          <div class="row"><span class="v gap">GAP</span><span class="id">4.0 exp &middot; OWN-02 &middot; MUST &middot; R-05 severe</span><b>No deputy contact recorded</b></div>
+          <div class="row"><span class="v gap">GAP</span><span class="id">4.0 pts &middot; OWN-02 &middot; MUST &middot; R-05 severe</span><b>No deputy contact recorded</b></div>
           <p class="why">Why the standard asks: a single named contact is a bus factor of one at the level of the catalogue itself.</p>
         </div>
         <div class="rem reveal" data-r="dat">
-          <div class="row"><span class="v gap">GAP</span><span class="id">3.0 exp &middot; DAT-04 &middot; MUST &middot; R-08 major</span><b>Data subject requests have no process, owner or SLA</b></div>
+          <div class="row"><span class="v gap">GAP</span><span class="id">3.0 pts &middot; DAT-04 &middot; MUST &middot; R-08 major</span><b>Data subject requests have no process, owner or SLA</b></div>
           <p class="why">Why the standard asks: the response clock starts on the request, not on the day someone works out who handles it.</p>
         </div>
         <div class="rem reveal" data-r="dat">
-          <div class="row"><span class="v partial">PARTIAL</span><span class="id">2.0 exp &middot; DAT-02 &middot; MUST &middot; R-07 severe</span><b>Two personal-data fields have no retention period</b></div>
+          <div class="row"><span class="v partial">PARTIAL</span><span class="id">2.0 pts &middot; DAT-02 &middot; MUST &middot; R-07 severe</span><b>Two personal-data fields have no retention period</b></div>
           <p class="why">Why the standard asks: data without a retention period is kept forever by default, which no legal basis supports.</p>
         </div>
         <div class="rem reveal" data-r="obs">
-          <div class="row"><span class="v partial">PARTIAL</span><span class="id">2.0 exp &middot; OBS-01 &middot; MUST &middot; R-01 severe</span><b>Traffic has no alert; saturation pages nobody</b></div>
+          <div class="row"><span class="v partial">PARTIAL</span><span class="id">2.0 pts &middot; OBS-01 &middot; MUST &middot; R-01 severe</span><b>Traffic has no alert; saturation pages nobody</b></div>
           <p class="why">Why the standard asks: un-paged degradation is discovered by the customer, not by the team.</p>
         </div>
         <div class="rem reveal" data-r="obs">
-          <div class="row"><span class="v partial">PARTIAL</span><span class="id">2.0 exp &middot; OBS-02 &middot; MUST &middot; R-03 severe</span><b>Two of four alarms have no runbook link</b></div>
+          <div class="row"><span class="v partial">PARTIAL</span><span class="id">2.0 pts &middot; OBS-02 &middot; MUST &middot; R-03 severe</span><b>Two of four alarms have no runbook link</b></div>
           <p class="why">Why the standard asks: an alert without a response procedure moves the outage from detection to guesswork.</p>
         </div>
         <div class="rem reveal" data-r="own">
-          <div class="row"><span class="v partial">PARTIAL</span><span class="id">2.0 exp &middot; OWN-04 &middot; MUST &middot; R-03 severe</span><b>Runbook last reviewed 2024-11-03, about 21 months</b></div>
+          <div class="row"><span class="v partial">PARTIAL</span><span class="id">2.0 pts &middot; OWN-04 &middot; MUST &middot; R-03 severe</span><b>Runbook last reviewed 2024-11-03, about 21 months</b></div>
           <p class="why">Why the standard asks: a stale runbook is more dangerous than a missing one, because it is trusted.</p>
         </div>
         <p class="mut reveal" data-r="own" style="margin:10px 0 0">OBS-02 and OWN-04 both sit on R-03 and together carry 4.0 points, the same weight as the single worst finding. Read with the 2025-09 departures in owners.md, the response capability of this service rests on one person and a document nobody has opened in almost two years.</p>
 
-        <h3 class="reveal" data-r="na">Not assessable - the audit's reach, not the target's quality</h3>
+        <h3 class="reveal" data-r="na">What nobody could check</h3>
         <ul class="nalist reveal" data-r="na">
           <li>OBS-06 · MUST - paging rotation <small>- oncall-schedule.json declared in the manifest, not found</small></li>
         </ul>
 
-        <h3 class="reveal" data-r="waiv">Waivers</h3>
+        <h3 class="reveal" data-r="waiv">Signed off, not fixed</h3>
         <p class="mut reveal" data-r="waiv">OBS-04 · log retention 14 days against a 90-day minimum. Accepted by Head of Platform until 2026-12-31.
         The verdict stays GAP - the waiver takes it off this list and gives it an expiry date, it does not take it off the record.</p>
 
-        <h3 class="reveal" data-r="delta">Delta</h3>
+        <h3 class="reveal" data-r="delta">What changed since last time</h3>
         <div class="deltabox reveal" data-r="delta" id="deltabox">No previous audit for this target - nothing to compare against yet.</div>
       </div>
 
       <!-- ---- conformance ---- -->
       <div data-pane="conformance" hidden>
-        <h3 class="reveal" data-r="conf">Every control, every verdict, every citation</h3>
+        <h3 class="reveal" data-r="conf">Every check, its answer, and where it came from</h3>
         <table class="ct">
-          <tr class="reveal" data-r="conf"><th>Control</th><th>Verdict</th><th>Evidence</th></tr>
+          <tr class="reveal" data-r="conf"><th>Check</th><th>Answer</th><th>Where we saw it</th></tr>
 
           <tr class="reveal" data-r="obs"><td>OBS-01 <span class="lv">MUST</span></td><td><span class="v partial">PARTIAL</span></td><td class="evc">alarms.json - 3 signals mapped, traffic absent, saturation email-only</td></tr>
           <tr class="reveal" data-r="obs"><td>OBS-02 <span class="lv">MUST</span></td><td><span class="v partial">PARTIAL</span></td><td class="evc">alarms.json - runbook_url null on 2 of 4</td></tr>
           <tr class="reveal" data-r="obs"><td>OBS-03 <span class="lv">SHOULD</span></td><td><span class="v meets">MEETS</span></td><td class="evc">alarms.json dashboards[0] + runbook.md "Dashboards"</td></tr>
-          <tr class="reveal" data-r="obs"><td>OBS-04 <span class="lv">MUST</span></td><td><span class="v gap">GAP</span><span class="flag" id="waivFlag" hidden>waived</span></td><td class="evc">alarms.json log_groups - 14 days, both</td></tr>
+          <tr class="reveal" data-r="obs"><td>OBS-04 <span class="lv">MUST</span></td><td><span class="v gap">GAP</span><span class="flag" id="waivFlag" hidden>signed off</span></td><td class="evc">alarms.json log_groups - 14 days, both</td></tr>
           <tr class="reveal" data-r="obs"><td>OBS-05 <span class="lv">SHOULD</span></td><td><span class="v gap">GAP</span></td><td class="evc">alarms.json - queue-depth fired 47× in 30d, runbook_url null</td></tr>
-          <tr class="reveal" data-r="obs"><td>OBS-06 <span class="lv">MUST</span></td><td><span class="v na">NOT ASSESSABLE</span></td><td class="evc">source-gaps.txt - oncall-schedule.json missing</td></tr>
+          <tr class="reveal" data-r="obs"><td>OBS-06 <span class="lv">MUST</span></td><td><span class="v na">UNKNOWN</span></td><td class="evc">source-gaps.txt - oncall-schedule.json missing</td></tr>
           <tr id="obs08row" hidden><td>OBS-08 <span class="lv">SHOULD</span></td><td><span class="v partial">PARTIAL</span><span class="flag">new in v2</span></td><td class="evc">alarms.json - golden_signal null on ingest-lag-warning</td></tr>
           <tr class="napprow reveal" data-r="obs"><td>OBS-07 <span class="lv">MUST</span></td><td><span class="v napp">not applicable</span></td><td class="evc">applies_to: [batch] - target kind is service</td></tr>
 
@@ -368,19 +368,19 @@ text.rax.axwarn{fill:var(--warn)}
 
       <!-- ---- questions ---- -->
       <div data-pane="questions" hidden>
-        <div class="qnote reveal" data-r="prop">Two things the audit could not settle by itself: evidence it could not reach, and risk that no control covers. Neither was counted in the report.</div>
+        <div class="qnote reveal" data-r="prop">Two things the audit could not settle on its own: evidence it could not get to, and risk that no check covers yet. Neither was counted in the numbers.</div>
 
-        <h3 class="reveal" data-r="prop">Questions that unlock a verdict</h3>
+        <h3 class="reveal" data-r="prop">Questions someone needs to answer</h3>
         <div class="q high reveal" data-r="prop">
           <b>Where is the on-call rotation recorded, and can the audit read it?</b>
-          <p>The manifest points at an export that does not exist. Turns the only unassessable MUST into a real verdict. <span class="who">ask: M. Duarte</span></p>
+          <p>The manifest points at a file that does not exist. One answer turns the only unchecked MUST into a real one. <span class="who">ask: M. Duarte</span></p>
         </div>
         <div class="q reveal" data-r="prop">
           <b>Is there a rotation at all, or is out-of-hours coverage best-effort by design for a Tier 2 service?</b>
           <p>If best-effort is the deliberate position, this is a waiver conversation, not a gap. <span class="who">ask: Head of Platform</span></p>
         </div>
 
-        <h3 class="reveal" data-r="prop">Proposed controls - 11 in total, top ones shown</h3>
+        <h3 class="reveal" data-r="prop">Things no check covers yet - 11 in total, top ones shown</h3>
         <p class="prop pick reveal" data-r="prop" id="propObs08"><b>Every alert declares which golden signal it serves.</b>
           <span id="propState">One alarm has no classification, no runbook and no paging route - it falls through every control in the pack.</span></p>
         <p class="prop reveal" data-r="prop">High-risk fields rest on legitimate interest, but no control requires a balancing test.</p>
@@ -388,7 +388,7 @@ text.rax.axwarn{fill:var(--warn)}
         <p class="prop reveal" data-r="prop">The log scrub list is never reconciled against the personal-data inventory.</p>
         <p class="prop reveal" data-r="prop">Documented procedures are required to exist and be fresh - never to have been exercised.</p>
         <p class="prop reveal" data-r="prop">Nothing requires knowledge transfer when a team loses its engineers.</p>
-        <p class="mut reveal" data-r="prop" style="margin-top:12px">The audit never promotes its own proposal. It reports what it saw, and the standard's owner decides whether that becomes a rule.</p>
+        <p class="mut reveal" data-r="prop" style="margin-top:12px">The audit never promotes its own suggestion. It reports what it saw; a person decides whether that becomes a rule.</p>
       </div>
 
     </div>
@@ -407,11 +407,13 @@ let timer=null, step=0, running=false, started=false, adopted=false, proposed=fa
 // -> reconstruct -> answer the regulator. Radar axis order is otherwise arbitrary, so it is fixed here.
 const AREA_ORDER=['detection','response','continuity','traceability','compliance'];
 const AREA_META={
-  detection:{label:'Detection', q:'Do we find out something is wrong, and when?'},
-  response:{label:'Response', q:'Can someone act correctly and in time?', flag:'3.0 unmeasured'},
-  continuity:{label:'Continuity', q:'Does operational knowledge survive people leaving?'},
-  traceability:{label:'Traceability', q:'Can we reconstruct what happened and why?', flag:'thin base'},
-  compliance:{label:'Compliance', q:'Do we hold a lawful basis for what we do with data?'},
+  detection:{label:'Will we notice?', q:'If this breaks, do we find out, or does the customer tell us first?'},
+  response:{label:'Can we fix it?', q:'When the alarm goes off, does anyone know what to do?',
+            flag:'3.0 never checked'},
+  continuity:{label:'What if they leave?', q:'If the one person who knows this leaves, what is left behind?'},
+  traceability:{label:'Can we look back?', q:'Months later, can we still show what happened and why?',
+            flag:'only 1 check left'},
+  compliance:{label:'Are we allowed?', q:'Do we have the legal right to hold this data, and can we show it?'},
 };
 const MAP={
   pre:{detection:[4,6], response:[4,14], continuity:[4,10], traceability:[.75,1.5], compliance:[9,19], _t:[21.75,50.5]},
@@ -436,8 +438,6 @@ function renderMap(state){
     const pts=AREA_ORDER.map((_,i)=>pt(i,R*p/100).join(',')).join(' ');
     svg.appendChild(svgEl('polygon',{points:pts,class:'rgrid'}));
   });
-  svg.appendChild(svgEl('text',{x:cx+3,y:cy-R+9,class:'rringlbl'},'100%'));
-  svg.appendChild(svgEl('text',{x:cx+3,y:cy-R/2+9,class:'rringlbl'},'50%'));
   AREA_ORDER.forEach((a,i)=>{
     const [x,y]=pt(i,R);
     const sp=svgEl('line',{x1:cx,y1:cy,x2:x,y2:y,class:'rspoke'+(AREA_META[a].flag?' unreliable':'')});
@@ -448,16 +448,14 @@ function renderMap(state){
   AREA_ORDER.forEach((a,i)=>{
     const p=pct(d,a), [x,y]=pt(i,R*p/100);
     const dot=svgEl('circle',{cx:x,cy:y,r:4,class:'rdot'});
-    dot.appendChild(svgEl('title',null,`${AREA_META[a].label}: ${p}% exposure (${d[a][0]} of ${d[a][1]} points)`));
+    dot.appendChild(svgEl('title',null,`${AREA_META[a].label} - carrying ${p}% of the risk here (${d[a][0]} of ${d[a][1]} points)`));
     svg.appendChild(dot);
     const [lx,ly]=pt(i,R+20);
     const anchor = Math.abs(lx-cx)<6 ? 'middle' : (lx>cx?'start':'end');
-    const g=svgEl('text',{x:lx,y:ly,class:'rax','text-anchor':anchor});
-    g.appendChild(svgEl('tspan',null,AREA_META[a].label+' '));
-    g.appendChild(svgEl('tspan',{class:'pctv'},p+'%'));
-    svg.appendChild(g);
+    svg.appendChild(svgEl('text',{x:lx,y:ly,class:'rax','text-anchor':anchor},AREA_META[a].label));
+    svg.appendChild(svgEl('text',{x:lx,y:ly+14,class:'rax pctv','text-anchor':anchor},p+'%'));
     if(AREA_META[a].flag){
-      svg.appendChild(svgEl('text',{x:lx,y:ly+11,class:'rax axwarn','text-anchor':anchor},
+      svg.appendChild(svgEl('text',{x:lx,y:ly+25,class:'rax axwarn','text-anchor':anchor},
         '⚠ '+AREA_META[a].flag));
     }
   });
@@ -484,7 +482,7 @@ function renderMap(state){
     const a=document.createElement('span'); a.className='wlid'; a.textContent=id;
     const bar=document.createElement('span'); bar.className='wlbar';
     const fill=document.createElement('i'); fill.style.width=(100*exp/top)+'%'; bar.appendChild(fill);
-    bar.title=`${id} - ${verd} on ${risk}, carrying ${exp} exposure points`;
+    bar.title=`${id} - ${verd} on ${risk}, carrying ${exp} risk points`;
     const v=document.createElement('span'); v.className='wlv'; v.textContent=exp.toFixed(2).replace(/\.?0+$/,'')+' · '+risk;
     wl.append(a,bar,v);
   });
@@ -509,13 +507,13 @@ const S=[
  ['dim','  repo-tree.txt            file census · docs/adr/',170],
  ['gap','  ⚠ oncall-schedule.json declared in the manifest, not found → source-gaps.txt',420],
  ['dim','  standard-version.txt     observability v1 · ownership-docs v1 · data-privacy v1',400],
- ['leg','▸ step 2 · control selection',350],
- ['dim','  20 controls in the packs · target kind = service',250],
+ ['leg','▸ step 2 · which checks apply',350],
+ ['dim','  20 checks in the standard · target kind = service',250],
  ['dim','  OBS-07 filtered out - applies_to: [batch]',250],
- ['ok','  19 controls to assess',450,'conf'],
+ ['ok','  19 checks to run',450,'conf'],
  ['leg','▸ step 3 · 3 evaluators in parallel - one agent, one pack each',400],
  ['dim','  ⧖ observability · ownership-docs · data-privacy',900],
- ['ok','  ✓ observability    1 MEETS · 2 PARTIAL · 2 GAP · 1 NOT ASSESSABLE',750,'obs'],
+ ['ok','  ✓ observability    1 MEETS · 2 PARTIAL · 2 GAP · 1 UNKNOWN',750,'obs'],
  ['ok','  ✓ ownership-docs   3 MEETS · 2 PARTIAL · 1 GAP',750,'own'],
  ['ok','  ✓ data-privacy     3 MEETS · 1 PARTIAL · 2 GAP',750,'dat'],
  ['leg','▸ step 4 · waivers',350],
@@ -525,22 +523,22 @@ const S=[
  ['dim','  no previous audit for this target - comparison skipped',400,'delta'],
  ['leg','▸ step 6 · synthesis',400],
  ['dim','  conformance.md ✓   report.md ✓   questions.md ✓',400,'head'],
- ['dim','  scripts/exposure.py - verdicts + risks → exposure.json',350],
- ['ok','  exposure 43% (21.75 / 50.5 points) · 3.0 unmeasured · 3.0 accepted',400,'na'],
- ['gap','  weakest area: detection 67% - traceability reads 50% on a base of 1.5, treat as unmeasured',600,'waiv'],
- ['hot','  ⚠ 11 observations had no control covering them',450],
- ['dim','  → questions.md as proposed controls. Not findings - nothing invented a rule.',300,'prop','pause'],
+ ['dim','  scripts/exposure.py - answers + risks → exposure.json',350],
+ ['ok','  carrying 43% of the risk (21.75 / 50.5 points) · 3.0 never checked · 3.0 signed off',400,'na'],
+ ['gap','  weakest: "will we notice?" 67% - "can we look back?" reads 50% on one check, do not read it',600,'waiv'],
+ ['hot','  ⚠ 11 things we saw that no check covers',450],
+ ['dim','  → questions.md as suggestions. Not findings - the audit never invents a rule.',300,'prop','pause'],
 ];
 
 /* ---- lines after the human adopts ---- */
 const A=[
  ['human','adopt OBS-08 into standard/observability.yaml',600],
- ['dim','  observability v2 → v3 · 8 controls · mitigates R-02, coverage supporting',400],
+ ['dim','  observability v2 → v3 · 8 checks · answers "will we notice?", supporting',400],
  ['dim','  re-running observability only - nothing else changed',600],
  ['ok','  ✓ OBS-08  PARTIAL - 3 of 4 alarms classified',650],
- ['gap','  detection 67% → 64% - the number improved and the target never moved',600],
+ ['gap','  "will we notice?" 67% → 64% - the number improved and the service never changed',600],
  ['dim','  the bar rose, so the map changed. delta reports that as standard changed, never as progress.',450],
- ['ok','done - 19 verdicts · 22.25 exposure points · 3.0 unmeasured · 10 proposals left',0,'donedelta'],
+ ['ok','done - 19 answers · 22.25 risk points · 3.0 never checked · 10 proposals left',0,'donedelta'],
 ];
 
 function line(cls,txt){
@@ -569,7 +567,7 @@ function reveal(key){
   if(key==='prop') fresh('questions');
   if(key==='donedelta'){
     $('#deltabox').classList.add('hit');
-    $('#deltabox').textContent='Standard changed: observability v1 → v2 (OBS-08 added). SHOULD coverage moved 4/6 → 4/7 with no change to the target. Target changed: nothing.';
+    $('#deltabox').textContent='The standard changed: observability v2 → v3, one check added. "Will we notice?" moved 67% → 64% with no change to the service itself. The service changed: nothing.';
   }
 }
 function play(list,i,after){

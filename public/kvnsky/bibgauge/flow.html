@@ -4,7 +4,7 @@
 <meta name="robots" content="noindex, nofollow">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BibGauge - Conformance data flow</title>
+<title>BibGauge - How the answer gets made</title>
 <style>
 :root{
   --bg:#fafafa; --card:#fff; --border:#e4e4e7; --ink:#09090b; --muted:#71717a;
@@ -139,7 +139,7 @@ code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radi
 
 <header>
   <span class="eyebrow">BibGauge · internal PoC</span>
-  <h1>Conformance data flow</h1>
+  <h1>How the answer gets made</h1>
   <p>Risk decides what the rule is worth. Evidence decides where we stand. A script decides the number, so nobody argues with arithmetic.</p>
   <div class="modes" aria-label="Run modes">
     <span class="hot">full</span><span>gate</span><span>per pack</span>
@@ -171,7 +171,7 @@ code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radi
     <div class="subhead">What it should be <em>- standard</em></div>
     <div class="card std">
       <h3>Risk register</h3>
-      <p>What can go wrong, how bad it is, and which area of the lifecycle it belongs to. Areas are the axes of the weak-link map and cut across packs on purpose.</p>
+      <p>What can go wrong and how bad it is, written as a question anyone can answer: will we notice, can we fix it, what if they leave, can we look back, are we allowed.</p>
       <span class="badge">severe · major · moderate · minor</span>
       <div class="value">MUST/SHOULD stops being a label somebody typed</div>
     </div>
@@ -216,7 +216,7 @@ code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radi
       <ul class="rules">
         <li>No control, no finding - a risk with no control is a proposal</li>
         <li>Every verdict cites a place in <code>raw/</code></li>
-        <li>No evidence → NOT ASSESSABLE, never a guess</li>
+        <li>No evidence → UNKNOWN, never a guess</li>
         <li>Thresholds live in the YAML, not in the model</li>
         <li>The verdict judges the system, never the team</li>
       </ul>
@@ -236,10 +236,10 @@ code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radi
     <div class="card">
       <h3>Four verdicts</h3>
       <div class="verdicts">
-        <div class="vd meets"><b>MEETS</b><span>evidence satisfies the threshold</span></div>
+        <div class="vd meets"><b>MEETS</b><span>the evidence clears the bar</span></div>
         <div class="vd partial"><b>PARTIAL</b><span>covered, but not all the way</span></div>
         <div class="vd gapv"><b>GAP</b><span>evidence shows it is not met</span></div>
-        <div class="vd na"><b>NOT ASSESSABLE</b><span>no source reached it - measures the audit, not the target</span></div>
+        <div class="vd na"><b>UNKNOWN</b><span>nobody could check it - that measures us, not them</span></div>
       </div>
     </div>
     <div class="card">
@@ -266,13 +266,13 @@ code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radi
     </div>
     <div class="card out">
       <h3>report.md</h3>
-      <p>Leads with the weak-link map per risk area, then remediation ordered by risk carried, blind spots, accepted exposure, delta.</p>
+      <p>Leads with five plain questions and how much risk sits behind each, then what to fix first, what nobody could check, what is signed off, and what moved since last time.</p>
       <span class="badge">one assessment of one system - packs are not reported on</span>
       <div class="value">the team stays, so remediation is the right output</div>
     </div>
     <div class="card out">
       <h3>questions.md</h3>
-      <p>What would unlock a NOT ASSESSABLE verdict, and risk the evidence showed that no control covers yet.</p>
+      <p>What would unlock a UNKNOWN verdict, and risk the evidence showed that no control covers yet.</p>
       <span class="badge">proposed controls - never counted as findings</span>
       <div class="value">the audit feeds the standard; the standard produces the findings</div>
     </div>

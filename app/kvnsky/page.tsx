@@ -42,7 +42,7 @@ const projects = [
     status: "PoC",
     oneLiner: "Conformance audit against your own standard",
     description:
-      "Every control names the risk it reduces, so MUST is derived rather than asserted. The model reads the evidence and returns a verdict; a script turns verdicts into exposure and maps where the system actually bends. Unmeasured is its own number, never zero, and there is no composite score to rank teams with.",
+      "Five plain questions about a service: will we notice, can we fix it, what if they leave, can we look back, are we allowed. Each check names the risk it reduces, so MUST is derived rather than asserted, and a script turns the answers into a map of where the thing actually bends. What nobody could check is its own number, never zero.",
     links: [
       { label: "Data flow", href: "/kvnsky/bibgauge/flow.html" },
       { label: "Live demo", href: "/kvnsky/bibgauge/demo.html" },
