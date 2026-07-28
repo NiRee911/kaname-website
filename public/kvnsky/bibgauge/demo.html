@@ -112,7 +112,8 @@ h3:first-child{margin-top:0}
 .radarwrap{position:relative}
 .radarwrap svg{width:100%;height:auto;display:block;overflow:visible}
 .rax{font:9.5px var(--mono);fill:var(--muted)}
-text.rax.pctv{fill:var(--ink);font-size:12px}
+text.rax.axname{fill:var(--ink);font-size:11.5px;font-weight:600}
+text.rax.pctv{fill:var(--muted);font-size:10.5px}
 text.rax.axwarn{fill:var(--warn)}
 .rgrid{fill:none;stroke:var(--border);stroke-width:1}
 .rspoke{stroke:var(--border);stroke-width:1}
@@ -128,15 +129,16 @@ text.rax.axwarn{fill:var(--warn)}
 .wl .wlbar i{display:block;height:100%;background:var(--acc);border-radius:4px}
 .wl .wlv{font:11px var(--mono);color:var(--muted);text-align:right;white-space:nowrap}
 .wlnote{font-size:11px;color:var(--dim);margin:8px 0 0}
-.callout{border:1px solid var(--border);border-radius:8px;padding:9px 12px;margin-top:12px;background:var(--panel2)}
-.callout b{font-size:11.5px}
-.callout.blind b{color:var(--warn)}
-.callout.acc b{color:var(--acc)}
-.callout p{margin:3px 0 0;font-size:11.5px;color:var(--muted)}
-.arealist{display:grid;grid-template-columns:1fr auto auto;gap:3px 12px;font-size:11.5px;margin-top:4px;align-items:baseline}
-.arealist .al{color:var(--muted)} .arealist .al.top{color:var(--ink)}
-.arealist .av{font:11px var(--mono);color:var(--ink);text-align:right}
-.arealist .ab{font:10px var(--mono);color:var(--dim);text-align:right;white-space:nowrap}
+.legend .lg{border-top:1px solid var(--border);padding:8px 0}
+.legend .lg:first-child{border-top:0;padding-top:0}
+.legend .lgtop{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.legend .lgtop b{font-size:13px;font-weight:600}
+.legend .lgv{font:11px var(--mono);color:var(--ink);margin-left:auto;white-space:nowrap}
+.legend .lgb{font:10px var(--mono);color:var(--dim);white-space:nowrap}
+.legend .lgq{margin:2px 0 0;font-size:11.5px;color:var(--muted)}
+.legend .lgw{margin:3px 0 0;font:10.5px var(--mono);color:var(--warn)}
+.legend .lg.top b{color:var(--ink)}
+.rcaption{font-size:11px;color:var(--dim);text-align:center;margin:6px 0 0}
 
 /* verdict pills */
 .v{font:9.5px var(--mono);letter-spacing:.04em;border-radius:4px;padding:1px 6px;white-space:nowrap;display:inline-block}
@@ -223,14 +225,14 @@ text.rax.axwarn{fill:var(--warn)}
     <div class="tabs" role="tablist">
       <button class="tab" role="tab" aria-selected="true" data-tab="riskmap">risk map<span class="dot"></span></button>
       <button class="tab" role="tab" aria-selected="false" data-tab="report">report.md<span class="dot"></span></button>
-      <button class="tab" role="tab" aria-selected="false" data-tab="conformance">checks.md<span class="dot"></span></button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="conformance">controls.md<span class="dot"></span></button>
       <button class="tab" role="tab" aria-selected="false" data-tab="questions">questions.md<span class="dot"></span></button>
     </div>
 
     <div class="adopt" id="adopt">
       <b>PROPOSED</b>
-      <span>The audit spotted a risk that no check covers. It cannot count as a finding until a person adds it to the standard.</span>
-      <button id="adoptBtn">Make it a check</button>
+      <span>The audit spotted a risk that no control covers. It cannot count as a finding until a person adds it to the standard.</span>
+      <button id="adoptBtn">Make it a control</button>
     </div>
 
     <div class="panel-body">
@@ -243,26 +245,15 @@ text.rax.axwarn{fill:var(--warn)}
       <!-- ---- risk map ---- -->
       <div data-pane="riskmap" hidden>
         <h3 class="reveal" data-r="head">Where it is weakest</h3>
-        <p class="maplead reveal" data-r="head">Five questions about this service. Each one is something that can
-        go wrong. <b>The further a corner reaches out, the worse the answer.</b> 0 % means every check passes,
-        100 % means none of them do.</p>
+        <p class="maplead reveal" data-r="head">Five areas of risk. Each name is explained in the legend beside the
+        chart. <b>A corner far from the centre means we carry a lot of that risk.</b></p>
 
         <div class="mapgrid reveal" data-r="head">
           <div class="radarwrap"><svg id="radar" viewBox="-58 -6 436 330" role="img"
-            aria-label="How much risk this service carries, by question"></svg></div>
+            aria-label="How much risk this service carries, per risk area"></svg>
+            <p class="rcaption">Centre = every control passes. Outer edge = nothing in place.</p></div>
           <div>
-            <div class="arealist" id="arealist"></div>
-            <div class="callout blind reveal" data-r="na">
-              <b>3.0 points nobody checked</b>
-              <p>"Can we fix it?" looks like the best answer here, and it is the one to worry about. Nobody
-              could check whether a page actually reaches a person out of hours, because the on-call file we
-              were promised is not there. A low number over something nobody checked is not health, it is silence.</p>
-            </div>
-            <div class="callout acc reveal" data-r="waiv">
-              <b>3.0 points signed off</b>
-              <p>"Can we look back?" reads 50 %, but only one check is left behind it: the main one is signed
-              off by the Head of Platform until 2026-12-31. Do not read that percentage - read the signed-off points.</p>
-            </div>
+            <div class="legend" id="arealist"></div>
           </div>
         </div>
 
@@ -283,10 +274,10 @@ text.rax.axwarn{fill:var(--warn)}
             <span class="num" id="totalNum">43 %</span>
           </div>
           <p class="covnote"><span id="totalPts">21.75 / 50.5</span> risk points carried. On top of that,
-          <b>3.0 points nobody could check</b> and <b>3.0 points signed off</b> - both kept separate, neither
+          <b>3.0 points not verified</b> and <b>3.0 points approved as accepted risk</b> - both kept separate, neither
           ever counted as zero.</p>
           <div class="packs">
-            <span class="pk">One answer for the whole service. The folders the checks were written in are not reported on.</span>
+            <span class="pk">One answer for the whole service. The folders the controls were written in are not reported on.</span>
           </div>
         </div>
 
@@ -321,12 +312,12 @@ text.rax.axwarn{fill:var(--warn)}
         </div>
         <p class="mut reveal" data-r="own" style="margin:10px 0 0">OBS-02 and OWN-04 both sit on R-03 and together carry 4.0 points, the same weight as the single worst finding. Read with the 2025-09 departures in owners.md, the response capability of this service rests on one person and a document nobody has opened in almost two years.</p>
 
-        <h3 class="reveal" data-r="na">What nobody could check</h3>
+        <h3 class="reveal" data-r="na">Not verified</h3>
         <ul class="nalist reveal" data-r="na">
           <li>OBS-06 · MUST - paging rotation <small>- oncall-schedule.json declared in the manifest, not found</small></li>
         </ul>
 
-        <h3 class="reveal" data-r="waiv">Signed off, not fixed</h3>
+        <h3 class="reveal" data-r="waiv">Approved as accepted risk</h3>
         <p class="mut reveal" data-r="waiv">OBS-04 · log retention 14 days against a 90-day minimum. Accepted by Head of Platform until 2026-12-31.
         The verdict stays GAP - the waiver takes it off this list and gives it an expiry date, it does not take it off the record.</p>
 
@@ -336,14 +327,14 @@ text.rax.axwarn{fill:var(--warn)}
 
       <!-- ---- conformance ---- -->
       <div data-pane="conformance" hidden>
-        <h3 class="reveal" data-r="conf">Every check, its answer, and where it came from</h3>
+        <h3 class="reveal" data-r="conf">Every control, its answer, and where it came from</h3>
         <table class="ct">
-          <tr class="reveal" data-r="conf"><th>Check</th><th>Answer</th><th>Where we saw it</th></tr>
+          <tr class="reveal" data-r="conf"><th>Control</th><th>Answer</th><th>Where we saw it</th></tr>
 
           <tr class="reveal" data-r="obs"><td>OBS-01 <span class="lv">MUST</span></td><td><span class="v partial">PARTIAL</span></td><td class="evc">alarms.json - 3 signals mapped, traffic absent, saturation email-only</td></tr>
           <tr class="reveal" data-r="obs"><td>OBS-02 <span class="lv">MUST</span></td><td><span class="v partial">PARTIAL</span></td><td class="evc">alarms.json - runbook_url null on 2 of 4</td></tr>
           <tr class="reveal" data-r="obs"><td>OBS-03 <span class="lv">SHOULD</span></td><td><span class="v meets">MEETS</span></td><td class="evc">alarms.json dashboards[0] + runbook.md "Dashboards"</td></tr>
-          <tr class="reveal" data-r="obs"><td>OBS-04 <span class="lv">MUST</span></td><td><span class="v gap">GAP</span><span class="flag" id="waivFlag" hidden>signed off</span></td><td class="evc">alarms.json log_groups - 14 days, both</td></tr>
+          <tr class="reveal" data-r="obs"><td>OBS-04 <span class="lv">MUST</span></td><td><span class="v gap">GAP</span><span class="flag" id="waivFlag" hidden>approved</span></td><td class="evc">alarms.json log_groups - 14 days, both</td></tr>
           <tr class="reveal" data-r="obs"><td>OBS-05 <span class="lv">SHOULD</span></td><td><span class="v gap">GAP</span></td><td class="evc">alarms.json - queue-depth fired 47× in 30d, runbook_url null</td></tr>
           <tr class="reveal" data-r="obs"><td>OBS-06 <span class="lv">MUST</span></td><td><span class="v na">UNKNOWN</span></td><td class="evc">source-gaps.txt - oncall-schedule.json missing</td></tr>
           <tr id="obs08row" hidden><td>OBS-08 <span class="lv">SHOULD</span></td><td><span class="v partial">PARTIAL</span><span class="flag">new in v2</span></td><td class="evc">alarms.json - golden_signal null on ingest-lag-warning</td></tr>
@@ -368,7 +359,7 @@ text.rax.axwarn{fill:var(--warn)}
 
       <!-- ---- questions ---- -->
       <div data-pane="questions" hidden>
-        <div class="qnote reveal" data-r="prop">Two things the audit could not settle on its own: evidence it could not get to, and risk that no check covers yet. Neither was counted in the numbers.</div>
+        <div class="qnote reveal" data-r="prop">Two things the audit could not settle on its own: evidence it could not get to, and risk that no control covers yet. Neither was counted in the numbers.</div>
 
         <h3 class="reveal" data-r="prop">Questions someone needs to answer</h3>
         <div class="q high reveal" data-r="prop">
@@ -380,10 +371,10 @@ text.rax.axwarn{fill:var(--warn)}
           <p>If best-effort is the deliberate position, this is a waiver conversation, not a gap. <span class="who">ask: Head of Platform</span></p>
         </div>
 
-        <h3 class="reveal" data-r="prop">Things no check covers yet - 11 in total, top ones shown</h3>
+        <h3 class="reveal" data-r="prop">Things no control covers yet - 11 in total, top ones shown</h3>
         <p class="prop pick reveal" data-r="prop" id="propObs08"><b>Every alert declares which golden signal it serves.</b>
-          <span id="propState">One alarm has no classification, no runbook and no paging route - it falls through every check in the pack.</span></p>
-        <p class="prop reveal" data-r="prop">High-risk fields rest on legitimate interest, but no check requires a balancing test.</p>
+          <span id="propState">One alarm has no classification, no runbook and no paging route - it falls through every control in the pack.</span></p>
+        <p class="prop reveal" data-r="prop">High-risk fields rest on legitimate interest, but no control requires a balancing test.</p>
         <p class="prop reveal" data-r="prop">Retention and deletion are not checked against the Brazilian read replica.</p>
         <p class="prop reveal" data-r="prop">The log scrub list is never reconciled against the personal-data inventory.</p>
         <p class="prop reveal" data-r="prop">Documented procedures are required to exist and be fresh - never to have been exercised.</p>
@@ -407,13 +398,15 @@ let timer=null, step=0, running=false, started=false, adopted=false, proposed=fa
 // -> reconstruct -> answer the regulator. Radar axis order is otherwise arbitrary, so it is fixed here.
 const AREA_ORDER=['detection','response','continuity','traceability','compliance'];
 const AREA_META={
-  detection:{label:'Will we notice?', q:'If this breaks, do we find out, or does the customer tell us first?'},
-  response:{label:'Can we fix it?', q:'When the alarm goes off, does anyone know what to do?',
-            flag:'3.0 never checked'},
-  continuity:{label:'What if they leave?', q:'If the one person who knows this leaves, what is left behind?'},
-  traceability:{label:'Can we look back?', q:'Months later, can we still show what happened and why?',
-            flag:'only 1 check left'},
-  compliance:{label:'Are we allowed?', q:'Do we have the legal right to hold this data, and can we show it?'},
+  detection:{label:'Detection', q:'Do we discover the problem ourselves, or does the customer report it first?'},
+  response:{label:'Response', q:'When an alarm activates, is there a person and a written procedure ready?',
+            flag:'not verified',
+            note:'3.0 of the points here were never verified: the on-call file was promised and is missing. A low number over something nobody verified is not health, it is silence.'},
+  continuity:{label:'Continuity', q:'If the person who knows this system leaves the company, what remains?'},
+  traceability:{label:'Traceability', q:'Months later, can we reconstruct what happened, and prove it?',
+            flag:'1 control only',
+            note:'The main control is approved as accepted risk until 2026-12-31, so a single control is left behind this number. Do not read the percentage.'},
+  compliance:{label:'Compliance', q:'Do we have a legal basis for this data, and can we demonstrate it?'},
 };
 const MAP={
   pre:{detection:[4,6], response:[4,14], continuity:[4,10], traceability:[.75,1.5], compliance:[9,19], _t:[21.75,50.5]},
@@ -452,24 +445,26 @@ function renderMap(state){
     svg.appendChild(dot);
     const [lx,ly]=pt(i,R+20);
     const anchor = Math.abs(lx-cx)<6 ? 'middle' : (lx>cx?'start':'end');
-    svg.appendChild(svgEl('text',{x:lx,y:ly,class:'rax','text-anchor':anchor},AREA_META[a].label));
-    svg.appendChild(svgEl('text',{x:lx,y:ly+14,class:'rax pctv','text-anchor':anchor},p+'%'));
+    svg.appendChild(svgEl('text',{x:lx,y:ly,class:'rax axname','text-anchor':anchor},AREA_META[a].label));
+    svg.appendChild(svgEl('text',{x:lx,y:ly+14,class:'rax pctv','text-anchor':anchor},p+' % at risk'));
     if(AREA_META[a].flag){
       svg.appendChild(svgEl('text',{x:lx,y:ly+25,class:'rax axwarn','text-anchor':anchor},
         '⚠ '+AREA_META[a].flag));
     }
   });
 
-  // area list, ordered worst first
+  // legenda: nazov + cislo + veta. Zobrazuje sa vzdy - termin bez nej je prazdny.
   const list=$('#arealist'); list.innerHTML='';
   const ranked=[...AREA_ORDER].sort((a,b)=>pct(d,b)-pct(d,a));
   ranked.forEach((a,idx)=>{
-    const p=pct(d,a);
-    const l=document.createElement('span'); l.className='al'+(idx===0?' top':''); l.textContent=AREA_META[a].label;
-    l.title=AREA_META[a].q;
-    const v=document.createElement('span'); v.className='av'; v.textContent=p+'%';
-    const b=document.createElement('span'); b.className='ab'; b.textContent=d[a][0]+' / '+d[a][1];
-    list.append(l,v,b);
+    const p=pct(d,a), m=AREA_META[a];
+    const row=document.createElement('div'); row.className='lg'+(idx===0?' top':'');
+    row.innerHTML='<div class="lgtop"><b>'+m.label+'</b>'+
+      '<span class="lgv">'+p+' % at risk</span>'+
+      '<span class="lgb">'+d[a][0]+' / '+d[a][1]+' pts</span></div>'+
+      '<p class="lgq">'+m.q+'</p>'+
+      (m.note?'<p class="lgw">⚠ '+m.note+'</p>':'');
+    list.appendChild(row);
   });
 
   // weak links
@@ -507,10 +502,10 @@ const S=[
  ['dim','  repo-tree.txt            file census · docs/adr/',170],
  ['gap','  ⚠ oncall-schedule.json declared in the manifest, not found → source-gaps.txt',420],
  ['dim','  standard-version.txt     observability v1 · ownership-docs v1 · data-privacy v1',400],
- ['leg','▸ step 2 · which checks apply',350],
- ['dim','  20 checks in the standard · target kind = service',250],
+ ['leg','▸ step 2 · which controls apply',350],
+ ['dim','  20 controls in the standard · target kind = service',250],
  ['dim','  OBS-07 filtered out - applies_to: [batch]',250],
- ['ok','  19 checks to run',450,'conf'],
+ ['ok','  19 controls to run',450,'conf'],
  ['leg','▸ step 3 · 3 evaluators in parallel - one agent, one pack each',400],
  ['dim','  ⧖ observability · ownership-docs · data-privacy',900],
  ['ok','  ✓ observability    1 MEETS · 2 PARTIAL · 2 GAP · 1 UNKNOWN',750,'obs'],
@@ -522,23 +517,23 @@ const S=[
  ['leg','▸ step 5 · delta',350],
  ['dim','  no previous audit for this target - comparison skipped',400,'delta'],
  ['leg','▸ step 6 · synthesis',400],
- ['dim','  checks.md ✓   report.md ✓   questions.md ✓',400,'head'],
+ ['dim','  controls.md ✓   report.md ✓   questions.md ✓',400,'head'],
  ['dim','  scripts/exposure.py - answers + risks → exposure.json',350],
- ['ok','  carrying 43% of the risk (21.75 / 50.5 points) · 3.0 never checked · 3.0 signed off',400,'na'],
- ['gap','  weakest: "will we notice?" 67% - "can we look back?" reads 50% on one check, do not read it',600,'waiv'],
- ['hot','  ⚠ 11 things we saw that no check covers',450],
+ ['ok','  carrying 43% of the risk (21.75 / 50.5 points) · 3.0 not verified · 3.0 approved',400,'na'],
+ ['gap','  weakest: detection 67% - traceability reads 50% on a single control, do not read it',600,'waiv'],
+ ['hot','  ⚠ 11 things we saw that no control covers',450],
  ['dim','  → questions.md as suggestions. Not findings - the audit never invents a rule.',300,'prop','pause'],
 ];
 
 /* ---- lines after the human adopts ---- */
 const A=[
  ['human','adopt OBS-08 into standard/observability.yaml',600],
- ['dim','  observability v2 → v3 · 8 checks · answers "will we notice?", supporting',400],
+ ['dim','  observability v2 → v3 · 8 controls · supports detection, supporting role',400],
  ['dim','  re-running observability only - nothing else changed',600],
  ['ok','  ✓ OBS-08  PARTIAL - 3 of 4 alarms classified',650],
- ['gap','  "will we notice?" 67% → 64% - the number improved and the service never changed',600],
+ ['gap','  detection 67% → 64% - the number improved and the service never changed',600],
  ['dim','  the bar rose, so the map changed. delta reports that as standard changed, never as progress.',450],
- ['ok','done - 19 answers · 22.25 risk points · 3.0 never checked · 10 proposals left',0,'donedelta'],
+ ['ok','done - 19 verdicts · 22.25 risk points · 3.0 not verified · 10 proposals left',0,'donedelta'],
 ];
 
 function line(cls,txt){
@@ -567,7 +562,7 @@ function reveal(key){
   if(key==='prop') fresh('questions');
   if(key==='donedelta'){
     $('#deltabox').classList.add('hit');
-    $('#deltabox').textContent='The standard changed: observability v2 → v3, one check added. "Will we notice?" moved 67% → 64% with no change to the service itself. The service changed: nothing.';
+    $('#deltabox').textContent='The standard changed: observability v2 → v3, one control added. Detection moved 67% → 64% with no change to the service itself. The service changed: nothing.';
   }
 }
 function play(list,i,after){
@@ -586,7 +581,7 @@ function doAdopt(){
   $('#obs08row').hidden=false;
   renderMap('post');
   $('#propObs08').classList.add('done');
-  $('#propState').innerHTML='Adopted into the standard as OBS-08 · assessed PARTIAL <span class="tagd">now a check</span>';
+  $('#propState').innerHTML='Adopted into the standard as OBS-08 · assessed PARTIAL <span class="tagd">now a control</span>';
   fresh('conformance'); fresh('report'); fresh('riskmap');
 }
 $('#adoptBtn').addEventListener('click',()=>{
@@ -610,7 +605,7 @@ function reset(){
   $('#obs08row').hidden=true; $('#waivFlag').hidden=true;
   renderMap('pre');
   $('#propObs08').classList.remove('done');
-  $('#propState').textContent='One alarm has no classification, no runbook and no paging route - it falls through every check in the pack.';
+  $('#propState').textContent='One alarm has no classification, no runbook and no paging route - it falls through every control in the pack.';
   $('#deltabox').classList.remove('hit');
   $('#deltabox').textContent='No previous audit for this target - nothing to compare against yet.';
   started=false; selectTab('riskmap');
