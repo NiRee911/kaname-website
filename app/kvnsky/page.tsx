@@ -42,7 +42,7 @@ const projects = [
     status: "PoC",
     oneLiner: "Conformance audit against your own standard",
     description:
-      "Measures something that already exists against the standard in force, control by control, with a citation for every verdict. The standard is data, not code: adding a control is a YAML edit. Coverage reads \"3 of 12 MUST\", never one composite score, because a single number invites ranking teams against each other.",
+      "Every control names the risk it reduces, so MUST is derived rather than asserted. The model reads the evidence and returns a verdict; a script turns verdicts into exposure and maps where the system actually bends. Unmeasured is its own number, never zero, and there is no composite score to rank teams with.",
     links: [
       { label: "Data flow", href: "/kvnsky/bibgauge/flow.html" },
       { label: "Live demo", href: "/kvnsky/bibgauge/demo.html" },

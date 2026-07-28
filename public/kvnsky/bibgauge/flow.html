@@ -140,7 +140,7 @@ code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radi
 <header>
   <span class="eyebrow">BibGauge · internal PoC</span>
   <h1>Conformance data flow</h1>
-  <p>Two inputs, one comparison: what the thing is, and what the standard says it should be. Every verdict keeps a link to its evidence.</p>
+  <p>Risk decides what the rule is worth. Evidence decides where we stand. A script decides the number, so nobody argues with arithmetic.</p>
   <div class="modes" aria-label="Run modes">
     <span class="hot">full</span><span>gate</span><span>per pack</span>
   </div>
@@ -170,6 +170,12 @@ code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radi
 
     <div class="subhead">What it should be <em>- standard</em></div>
     <div class="card std">
+      <h3>Risk register</h3>
+      <p>What can go wrong, how bad it is, and which area of the lifecycle it belongs to. Areas are the axes of the weak-link map and cut across packs on purpose.</p>
+      <span class="badge">severe · major · moderate · minor</span>
+      <div class="value">MUST/SHOULD stops being a label somebody typed</div>
+    </div>
+    <div class="card std">
       <h3>Control packs</h3>
       <p>One YAML per domain. Adding a control is a YAML edit - the engine never changes. Three domains authored, eight deliberately left empty: the content of a standard comes from whoever owns it, never from the audit.</p>
       <span class="badge">MUST / SHOULD · applies_to scoping</span>
@@ -177,11 +183,13 @@ code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radi
     <div class="card std">
       <h3>Anatomy of one control</h3>
       <div class="anat">
+        <code class="key">mitigates</code><span>which risk it reduces - no risk, no control</span>
+        <code>coverage</code><span>primary or supporting share of that risk</span>
         <code>requirement</code><span>what the standard demands</span>
         <code>rationale</code><span>why - this text ships with every gap</span>
-        <code>evidence</code><span>where the proof is looked for</span>
         <code class="key">assess</code><span>draws the MEETS / PARTIAL / GAP line, so the model never invents it</span>
       </div>
+      <div class="value">level is derived from risk × coverage, never authored</div>
     </div>
   </div>
 
@@ -235,6 +243,12 @@ code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radi
       </div>
     </div>
     <div class="card">
+      <h3>exposure.py - the arithmetic</h3>
+      <p>Consequence of the risk × how far the evidence is from the control. Aggregated per area, ranked into weak links.</p>
+      <span class="badge">deterministic - the model never computes</span>
+      <div class="value">ordinal points, stated openly; euros only when a named person says one</div>
+    </div>
+    <div class="card">
       <h3>Waivers, applied after</h3>
       <p>Accepted risk with an approver and an expiry date. The evaluator never sees them.</p>
       <span class="badge">the agent judges reality - a waiver is a decision</span>
@@ -252,8 +266,8 @@ code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radi
     </div>
     <div class="card out">
       <h3>report.md</h3>
-      <p>Coverage headline, remediation list ordered MUST before SHOULD, what could not be assessed, waivers, delta.</p>
-      <span class="badge">MUST x/y · SHOULD x/y - never one composite score</span>
+      <p>Leads with the weak-link map per risk area, then remediation ordered by risk carried, blind spots, accepted exposure, delta.</p>
+      <span class="badge">one assessment of one system - packs are not reported on</span>
       <div class="value">the team stays, so remediation is the right output</div>
     </div>
     <div class="card out">
@@ -270,10 +284,10 @@ code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radi
 
 <div class="bottom">
   <div class="strip">
-    <div class="v"><b>Normative, not descriptive</b><p>"3 of 12 MUST" is a fact people can act on. "Monitoring is weak" is an opinion people argue with.</p></div>
+    <div class="v"><b>Risk first, rule second</b><p>Every control names the risk it reduces. That is what makes MUST answerable instead of asserted.</p></div>
     <div class="v"><b>The standard is data</b><p>A new control is a YAML edit. The engine has never been touched to add one.</p></div>
     <div class="v"><b>Not assessable is a number</b><p>Unreachable evidence is reported as its own category - it measures our reach, not their quality.</p></div>
-    <div class="v"><b>No composite score</b><p>One number invites ranking teams against each other. That is how a standard gets killed.</p></div>
+    <div class="v"><b>Weak links, not folders</b><p>Risk areas cut across packs, so the map shows where the system actually bends.</p></div>
   </div>
   <div class="meta-row">
     <details>
