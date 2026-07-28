@@ -36,6 +36,18 @@ const projects = [
       { label: "Live demo", href: "/kvnsky/bibrelay/demo.html" },
     ],
   },
+  {
+    tag: "BibGauge",
+    year: "2026",
+    status: "PoC",
+    oneLiner: "Conformance audit against your own standard",
+    description:
+      "Measures something that already exists against the standard in force, control by control, with a citation for every verdict. The standard is data, not code: adding a control is a YAML edit. Coverage reads \"3 of 12 MUST\", never one composite score, because a single number invites ranking teams against each other.",
+    links: [
+      { label: "Data flow", href: "/kvnsky/bibgauge/flow.html" },
+      { label: "Live demo", href: "/kvnsky/bibgauge/demo.html" },
+    ],
+  },
 ]
 
 export default function KvnskyPage() {

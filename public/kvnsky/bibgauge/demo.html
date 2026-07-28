@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BibGauge - Live demo (simulated run)</title>
+<style>
+:root{
+  --bg:#0b0d10; --panel:#12151a; --panel2:#171b21; --border:#242a32;
+  --ink:#e6e8eb; --muted:#8b939e; --dim:#5c6570;
+  --good:#34d399; --warn:#fbbf24; --bad:#f87171; --acc:#7dd3fc;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace; --radius:10px;
+}
+*{box-sizing:border-box}
+body{font:13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  margin:0;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+
+/* ---------- header ---------- */
+header{padding:12px 24px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.eyebrow{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+header h1{font-size:16px;font-weight:600;letter-spacing:-.01em;margin:0}
+header p{margin:0;color:var(--muted);font-size:12px;flex:1;min-width:200px}
+header a{font-size:12px;color:var(--ink);text-decoration:none;border:1px solid var(--border);
+  border-radius:99px;padding:3px 12px}
+header a:hover{background:var(--panel2)}
+button{font:12.5px inherit;color:var(--bg);background:var(--ink);border:0;border-radius:99px;
+  padding:5px 16px;cursor:pointer;font-weight:600}
+button.ghost{background:transparent;color:var(--muted);border:1px solid var(--border);font-weight:400}
+button:hover{opacity:.9}
+button.ghost:hover{color:var(--ink);opacity:1}
+button:focus-visible,header a:focus-visible,.tab:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+button[disabled]{opacity:.4;cursor:default}
+.stdver{font:10px var(--mono);color:var(--dim);letter-spacing:.06em;white-space:nowrap}
+.stdver b{color:var(--acc);font-weight:400}
+
+/* ---------- layout ---------- */
+main{flex:1;display:grid;grid-template-columns:minmax(360px,42%) 1fr;gap:16px;padding:16px 24px;min-height:0}
+
+/* ---------- terminal ---------- */
+.term{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+  display:flex;flex-direction:column;min-height:420px;max-height:calc(100vh - 140px);overflow:hidden}
+.term-bar{display:flex;align-items:center;gap:6px;padding:9px 13px;border-bottom:1px solid var(--border)}
+.term-bar i{width:10px;height:10px;border-radius:99px;background:var(--border);display:inline-block}
+.term-bar span{font:11px var(--mono);color:var(--dim);margin-left:8px}
+.term-body{font:12px/1.7 var(--mono);padding:12px 15px;overflow-y:auto;flex:1;white-space:pre-wrap;word-break:break-word}
+.tl{opacity:0;transform:translateY(2px);transition:opacity .25s,transform .25s;display:block}
+.tl.on{opacity:1;transform:none}
+.tl.cmd{color:var(--ink)} .tl.cmd::before{content:"$ ";color:var(--dim)}
+.tl.human{color:var(--acc)} .tl.human::before{content:"⌨ ";color:var(--dim)}
+.tl.leg{color:var(--acc);margin-top:6px}
+.tl.ok{color:var(--good)}
+.tl.gap{color:var(--warn)}
+.tl.dim{color:var(--muted)}
+.tl.hot{color:var(--bad)}
+.cursor{display:inline-block;width:7px;height:13px;background:var(--ink);
+  vertical-align:-2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+@media (prefers-reduced-motion: reduce){
+  .tl{transition:none}
+  .cursor{animation:none}
+}
+
+/* ---------- artifacts panel ---------- */
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+  display:flex;flex-direction:column;min-height:420px;max-height:calc(100vh - 140px);overflow:hidden}
+.tabs{display:flex;gap:2px;padding:8px 10px 0;border-bottom:1px solid var(--border)}
+.tab{font:12px var(--mono);color:var(--muted);background:none;border:1px solid transparent;
+  border-bottom:0;border-radius:8px 8px 0 0;padding:6px 14px;cursor:pointer;font-weight:400;
+  display:flex;align-items:center;gap:6px}
+.tab[aria-selected="true"]{color:var(--ink);background:var(--panel2);border-color:var(--border)}
+.tab .dot{display:none;width:5px;height:5px;border-radius:99px;background:var(--acc)}
+.tab.fresh .dot{display:block}
+
+/* adopt gate */
+.adopt{display:none;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--border);
+  background:var(--panel2);flex-wrap:wrap}
+.adopt.on{display:flex}
+.adopt b{color:var(--warn);font-weight:600;font:10px var(--mono);letter-spacing:.08em}
+.adopt span{color:var(--muted);flex:1;min-width:200px;font-size:12px}
+.adopt button{background:var(--warn);color:#1c1503}
+
+.panel-body{padding:14px 16px;overflow-y:auto;flex:1}
+.placeholder{color:var(--dim);font-size:12.5px;text-align:center;margin-top:80px}
+.placeholder b{display:block;color:var(--muted);font-size:13px;margin-bottom:4px}
+.reveal{opacity:0;transform:translateY(4px);transition:opacity .35s,transform .35s}
+.reveal.on{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){.reveal{transition:none}}
+h3{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+  margin:16px 0 8px;font-weight:400}
+h3:first-child{margin-top:0}
+.mut{color:var(--muted);font-size:11.5px}
+
+/* coverage */
+.cov{display:grid;grid-template-columns:64px 1fr 46px;gap:7px 11px;align-items:center;margin-bottom:4px}
+.cov .lbl{font:10.5px var(--mono);letter-spacing:.06em;color:var(--muted)}
+.cov .lbl.must{color:var(--ink)}
+.bar{height:9px;border-radius:4px;background:var(--border);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--acc);border-radius:4px;transition:width .5s}
+@media (prefers-reduced-motion: reduce){.bar i{transition:none}}
+.cov .num{font:12px var(--mono);color:var(--ink);text-align:right}
+.covnote{font-size:11px;color:var(--dim);margin:6px 0 0}
+.packs{display:grid;grid-template-columns:1fr auto auto;gap:3px 14px;font-size:11.5px;margin-top:10px;align-items:baseline}
+.packs .pk{color:var(--muted)}
+.packs .pv{font:11px var(--mono);color:var(--ink);text-align:right}
+.packs .ph{font:9.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);text-align:right}
+
+/* verdict pills */
+.v{font:9.5px var(--mono);letter-spacing:.04em;border-radius:4px;padding:1px 6px;white-space:nowrap;display:inline-block}
+.v.meets{color:var(--good);border:1px solid color-mix(in srgb,var(--good) 40%,transparent)}
+.v.partial{color:var(--warn);border:1px solid color-mix(in srgb,var(--warn) 40%,transparent)}
+.v.gap{color:var(--bad);border:1px solid color-mix(in srgb,var(--bad) 40%,transparent)}
+.v.na{color:var(--dim);border:1px dashed var(--border)}
+.v.napp{color:var(--dim);border:1px solid transparent}
+.flag{font:9px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--acc);
+  border:1px solid color-mix(in srgb,var(--acc) 30%,transparent);border-radius:4px;padding:0 5px;margin-left:5px;
+  white-space:nowrap;display:inline-block}
+.ct td:nth-child(2){white-space:nowrap}
+
+/* conformance table */
+.ct{width:100%;border-collapse:separate;border-spacing:0;font-size:11.5px}
+.ct th{font:9.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);
+  text-align:left;padding:0 8px 6px 0;font-weight:400}
+.ct td{padding:4px 8px 4px 0;border-top:1px solid var(--border);vertical-align:top}
+.ct td:first-child{font:11px var(--mono);color:var(--ink);white-space:nowrap}
+.ct .lv{font:9.5px var(--mono);color:var(--dim)}
+.ct .evc{font:10.5px var(--mono);color:var(--muted);word-break:break-word}
+.ct tr.napprow td{opacity:.45}
+
+/* remediation */
+.rem{border:1px solid var(--border);border-radius:8px;padding:8px 11px;margin-bottom:7px;background:var(--panel2)}
+.rem .row{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.rem .id{font:10.5px var(--mono);color:var(--acc)}
+.rem b{font-size:12.5px;font-weight:600}
+.rem .why{margin:4px 0 0;font-size:11.5px;color:var(--muted);border-left:2px solid var(--border);padding-left:9px}
+.nalist{list-style:none;margin:0;padding:0;font-size:11.5px;color:var(--muted)}
+.nalist li{padding-left:16px;position:relative;margin:5px 0}
+.nalist li::before{content:"◦";position:absolute;left:2px;color:var(--dim)}
+.nalist small{color:var(--dim)}
+.deltabox{font-size:11.5px;color:var(--dim);border:1px dashed var(--border);border-radius:8px;padding:8px 11px}
+.deltabox.hit{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 45%,transparent)}
+
+/* questions */
+.q{border-left:2px solid var(--border);padding:2px 0 2px 12px;margin-bottom:12px}
+.q.high{border-color:var(--bad)}
+.q b{font-size:12.5px;font-weight:600}
+.q p{margin:2px 0 0;font-size:11.5px;color:var(--muted)}
+.q .who{font:10.5px var(--mono);color:var(--acc)}
+.qnote{font-size:11.5px;color:var(--dim);border:1px dashed var(--border);border-radius:8px;
+  padding:7px 11px;margin-bottom:12px}
+.prop{font-size:11.5px;color:var(--muted);margin:0 0 8px;padding-left:14px;position:relative}
+.prop::before{content:"+";position:absolute;left:1px;color:var(--dim);font-family:var(--mono)}
+.prop.pick{color:var(--ink);border:1px solid color-mix(in srgb,var(--warn) 35%,transparent);
+  border-radius:8px;padding:7px 11px 7px 24px;background:var(--panel2)}
+.prop.pick::before{left:11px;top:7px;color:var(--warn)}
+.prop.pick.done{border-color:color-mix(in srgb,var(--good) 35%,transparent)}
+.prop .tagd{font:9px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--good);
+  border:1px solid color-mix(in srgb,var(--good) 30%,transparent);border-radius:4px;padding:0 5px;margin-left:6px}
+
+@media (max-width:900px){
+  main{grid-template-columns:1fr}
+  .term,.panel{max-height:none}
+  .term{min-height:300px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="eyebrow">BibGauge · internal PoC</span>
+  <h1>Live demo - simulated conformance run</h1>
+  <p>A scripted replay against <span style="font-family:var(--mono)">fuelwatch</span>, a fictional fleet fuel-monitoring service, measured on the standard in force that day.</p>
+  <span class="stdver">standard: <b id="stdver">observability v1</b></span>
+  <button id="run">Run gauge</button>
+  <button id="skip" class="ghost" disabled>Skip to result</button>
+  <a href="flow.html">← Data flow</a>
+<a href="/kvnsky">&larr; kvnsky</a>
+</header>
+
+<main>
+
+  <!-- ============ terminal ============ -->
+  <section class="term" aria-label="Terminal replay">
+    <div class="term-bar"><i></i><i></i><i></i><span>claude - BibGauge</span></div>
+    <div class="term-body" id="tbody"><span class="cursor" id="cur"></span></div>
+  </section>
+
+  <!-- ============ artifacts ============ -->
+  <section class="panel" aria-label="Generated artifacts">
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-tab="report">report.md<span class="dot"></span></button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="conformance">conformance.md<span class="dot"></span></button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="questions">questions.md<span class="dot"></span></button>
+    </div>
+
+    <div class="adopt" id="adopt">
+      <b>PROPOSED</b>
+      <span>The audit found a risk no control covers. It cannot become a finding until a human puts it in the standard.</span>
+      <button id="adoptBtn">Adopt OBS-08</button>
+    </div>
+
+    <div class="panel-body">
+
+      <div id="placeholder" class="placeholder">
+        <b>No run yet</b>
+        Press "Run gauge" - the verdicts land as the evidence is read.
+      </div>
+
+      <!-- ---- report ---- -->
+      <div data-pane="report" hidden>
+        <h3 class="reveal" data-r="head">Coverage - measured against the standard, not against other teams</h3>
+        <div class="reveal" data-r="head">
+          <div class="cov">
+            <span class="lbl must">MUST</span>
+            <span class="bar"><i style="width:25%"></i></span>
+            <span class="num">3/12</span>
+            <span class="lbl">SHOULD</span>
+            <span class="bar"><i id="shouldBar" style="width:66.6%"></i></span>
+            <span class="num" id="shouldNum">4/6</span>
+          </div>
+          <p class="covnote">1 waived and 1 not assessable are counted separately - never folded into met or unmet.</p>
+          <div class="packs">
+            <span class="pk"></span><span class="ph">must</span><span class="ph">should</span>
+            <span class="pk">observability</span><span class="pv">0/4</span><span class="pv" id="pkObs">1/2</span>
+            <span class="pk">ownership-docs</span><span class="pv">2/4</span><span class="pv">1/2</span>
+            <span class="pk">data-privacy</span><span class="pv">1/4</span><span class="pv">2/2</span>
+          </div>
+        </div>
+
+        <h3 class="reveal" data-r="head">Remediation - MUST first, gaps before partials</h3>
+        <div class="rem reveal" data-r="dat">
+          <div class="row"><span class="v gap">GAP</span><span class="id">DAT-03 · MUST</span><b>No high-risk processing carries a DPIA reference</b></div>
+          <p class="why">Why the standard asks: high-risk processing without a DPIA is the exposure a regulator asks about first.</p>
+        </div>
+        <div class="rem reveal" data-r="dat">
+          <div class="row"><span class="v gap">GAP</span><span class="id">DAT-04 · MUST</span><b>Data subject requests have no process, owner or SLA</b></div>
+          <p class="why">Why the standard asks: the response clock starts on the request, not on the day someone works out who handles it.</p>
+        </div>
+        <div class="rem reveal" data-r="own">
+          <div class="row"><span class="v gap">GAP</span><span class="id">OWN-02 · MUST</span><b>No deputy contact recorded</b></div>
+          <p class="why">Why the standard asks: a single named contact is a bus factor of one at the level of the catalogue itself.</p>
+        </div>
+        <div class="rem reveal" data-r="obs">
+          <div class="row"><span class="v partial">PARTIAL</span><span class="id">OBS-01 · MUST</span><b>Traffic has no alert; saturation pages nobody</b></div>
+          <p class="why">Why the standard asks: un-paged degradation is discovered by the customer, not by the team.</p>
+        </div>
+        <div class="rem reveal" data-r="obs">
+          <div class="row"><span class="v partial">PARTIAL</span><span class="id">OBS-02 · MUST</span><b>Two of four alarms have no runbook link</b></div>
+          <p class="why">Why the standard asks: an alert without a response procedure moves the outage from detection to guesswork.</p>
+        </div>
+        <div class="rem reveal" data-r="own">
+          <div class="row"><span class="v partial">PARTIAL</span><span class="id">OWN-04 · MUST</span><b>Runbook last reviewed 2024-11-03 - about 21 months</b></div>
+          <p class="why">Why the standard asks: a stale runbook is more dangerous than a missing one, because it is trusted.</p>
+        </div>
+        <p class="mut reveal" data-r="own" style="margin:10px 0 0">Read together, the deputy, the runbook links and the stale review are one situation, not three: after the 2025-09 departures the operational knowledge has neither a second holder nor a current written form.</p>
+
+        <h3 class="reveal" data-r="na">Not assessable - the audit's reach, not the target's quality</h3>
+        <ul class="nalist reveal" data-r="na">
+          <li>OBS-06 · MUST - paging rotation <small>- oncall-schedule.json declared in the manifest, not found</small></li>
+        </ul>
+
+        <h3 class="reveal" data-r="waiv">Waivers</h3>
+        <p class="mut reveal" data-r="waiv">OBS-04 · log retention 14 days against a 90-day minimum. Accepted by Head of Platform until 2026-12-31.
+        The verdict stays GAP - the waiver takes it off this list and gives it an expiry date, it does not take it off the record.</p>
+
+        <h3 class="reveal" data-r="delta">Delta</h3>
+        <div class="deltabox reveal" data-r="delta" id="deltabox">No previous audit for this target - nothing to compare against yet.</div>
+      </div>
+
+      <!-- ---- conformance ---- -->
+      <div data-pane="conformance" hidden>
+        <h3 class="reveal" data-r="conf">Every control, every verdict, every citation</h3>
+        <table class="ct">
+          <tr class="reveal" data-r="conf"><th>Control</th><th>Verdict</th><th>Evidence</th></tr>
+
+          <tr class="reveal" data-r="obs"><td>OBS-01 <span class="lv">MUST</span></td><td><span class="v partial">PARTIAL</span></td><td class="evc">alarms.json - 3 signals mapped, traffic absent, saturation email-only</td></tr>
+          <tr class="reveal" data-r="obs"><td>OBS-02 <span class="lv">MUST</span></td><td><span class="v partial">PARTIAL</span></td><td class="evc">alarms.json - runbook_url null on 2 of 4</td></tr>
+          <tr class="reveal" data-r="obs"><td>OBS-03 <span class="lv">SHOULD</span></td><td><span class="v meets">MEETS</span></td><td class="evc">alarms.json dashboards[0] + runbook.md "Dashboards"</td></tr>
+          <tr class="reveal" data-r="obs"><td>OBS-04 <span class="lv">MUST</span></td><td><span class="v gap">GAP</span><span class="flag" id="waivFlag" hidden>waived</span></td><td class="evc">alarms.json log_groups - 14 days, both</td></tr>
+          <tr class="reveal" data-r="obs"><td>OBS-05 <span class="lv">SHOULD</span></td><td><span class="v gap">GAP</span></td><td class="evc">alarms.json - queue-depth fired 47× in 30d, runbook_url null</td></tr>
+          <tr class="reveal" data-r="obs"><td>OBS-06 <span class="lv">MUST</span></td><td><span class="v na">NOT ASSESSABLE</span></td><td class="evc">source-gaps.txt - oncall-schedule.json missing</td></tr>
+          <tr id="obs08row" hidden><td>OBS-08 <span class="lv">SHOULD</span></td><td><span class="v partial">PARTIAL</span><span class="flag">new in v2</span></td><td class="evc">alarms.json - golden_signal null on ingest-lag-warning</td></tr>
+          <tr class="napprow reveal" data-r="obs"><td>OBS-07 <span class="lv">MUST</span></td><td><span class="v napp">not applicable</span></td><td class="evc">applies_to: [batch] - target kind is service</td></tr>
+
+          <tr class="reveal" data-r="own"><td>OWN-01 <span class="lv">MUST</span></td><td><span class="v meets">MEETS</span></td><td class="evc">owners.md - owning team Fleet Insights</td></tr>
+          <tr class="reveal" data-r="own"><td>OWN-02 <span class="lv">MUST</span></td><td><span class="v gap">GAP</span></td><td class="evc">owners.md - deputy contact _not set_</td></tr>
+          <tr class="reveal" data-r="own"><td>OWN-03 <span class="lv">MUST</span></td><td><span class="v meets">MEETS</span></td><td class="evc">runbook.md - latency and error procedures</td></tr>
+          <tr class="reveal" data-r="own"><td>OWN-04 <span class="lv">MUST</span></td><td><span class="v partial">PARTIAL</span></td><td class="evc">runbook.md - last reviewed 2024-11-03 (12–24 month band)</td></tr>
+          <tr class="reveal" data-r="own"><td>OWN-05 <span class="lv">SHOULD</span></td><td><span class="v meets">MEETS</span></td><td class="evc">confluence-export.md Architecture + repo-tree docs/architecture.md</td></tr>
+          <tr class="reveal" data-r="own"><td>OWN-06 <span class="lv">SHOULD</span></td><td><span class="v partial">PARTIAL</span></td><td class="evc">repo-tree adr/ (2024) + confluence "Decisions not written down"</td></tr>
+
+          <tr class="reveal" data-r="dat"><td>DAT-01 <span class="lv">MUST</span></td><td><span class="v meets">MEETS</span></td><td class="evc">data-inventory.csv - classification on all 6 rows</td></tr>
+          <tr class="reveal" data-r="dat"><td>DAT-02 <span class="lv">MUST</span></td><td><span class="v partial">PARTIAL</span></td><td class="evc">data-inventory.csv - retention empty on geo_position, fuel_event</td></tr>
+          <tr class="reveal" data-r="dat"><td>DAT-03 <span class="lv">MUST</span></td><td><span class="v gap">GAP</span></td><td class="evc">data-inventory.csv - dpia_ref empty on both high_risk rows</td></tr>
+          <tr class="reveal" data-r="dat"><td>DAT-04 <span class="lv">MUST</span></td><td><span class="v gap">GAP</span></td><td class="evc">confluence-export.md Support - "no owner, no SLA"</td></tr>
+          <tr class="reveal" data-r="dat"><td>DAT-05 <span class="lv">SHOULD</span></td><td><span class="v meets">MEETS</span></td><td class="evc">confluence-export.md - SCCs, register entry TR-2024-118</td></tr>
+          <tr class="reveal" data-r="dat"><td>DAT-06 <span class="lv">SHOULD</span></td><td><span class="v meets">MEETS</span></td><td class="evc">confluence-export.md Logging + repo-tree src/ingest/scrub.py</td></tr>
+        </table>
+        <p class="mut reveal" data-r="conf" style="margin-top:12px">Not one row is an opinion. Every verdict points at a file that was frozen into <span style="font-family:var(--mono)">raw/</span> before the model read anything.</p>
+      </div>
+
+      <!-- ---- questions ---- -->
+      <div data-pane="questions" hidden>
+        <div class="qnote reveal" data-r="prop">Two things the audit could not settle by itself: evidence it could not reach, and risk that no control covers. Neither was counted in the report.</div>
+
+        <h3 class="reveal" data-r="prop">Questions that unlock a verdict</h3>
+        <div class="q high reveal" data-r="prop">
+          <b>Where is the on-call rotation recorded, and can the audit read it?</b>
+          <p>The manifest points at an export that does not exist. Turns the only unassessable MUST into a real verdict. <span class="who">ask: M. Duarte</span></p>
+        </div>
+        <div class="q reveal" data-r="prop">
+          <b>Is there a rotation at all, or is out-of-hours coverage best-effort by design for a Tier 2 service?</b>
+          <p>If best-effort is the deliberate position, this is a waiver conversation, not a gap. <span class="who">ask: Head of Platform</span></p>
+        </div>
+
+        <h3 class="reveal" data-r="prop">Proposed controls - 11 in total, top ones shown</h3>
+        <p class="prop pick reveal" data-r="prop" id="propObs08"><b>Every alert declares which golden signal it serves.</b>
+          <span id="propState">One alarm has no classification, no runbook and no paging route - it falls through every control in the pack.</span></p>
+        <p class="prop reveal" data-r="prop">High-risk fields rest on legitimate interest, but no control requires a balancing test.</p>
+        <p class="prop reveal" data-r="prop">Retention and deletion are not checked against the Brazilian read replica.</p>
+        <p class="prop reveal" data-r="prop">The log scrub list is never reconciled against the personal-data inventory.</p>
+        <p class="prop reveal" data-r="prop">Documented procedures are required to exist and be fresh - never to have been exercised.</p>
+        <p class="prop reveal" data-r="prop">Nothing requires knowledge transfer when a team loses its engineers.</p>
+        <p class="mut reveal" data-r="prop" style="margin-top:12px">The audit never promotes its own proposal. It reports what it saw, and the standard's owner decides whether that becomes a rule.</p>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const tbody=$('#tbody'), cur=$('#cur');
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let timer=null, step=0, running=false, started=false, adopted=false, proposed=false;
+
+/* ---- terminal script: [css-class, text, delay-after-ms, reveal-key, flag] ---- */
+const S=[
+ ['cmd','gauge fuelwatch',700],
+ ['leg','▸ step 0 · validation',350],
+ ['dim','  targets/fuelwatch.yaml - found · kind=service · owner Fleet Insights',300],
+ ['dim','  audits/fuelwatch/2026-07-28/ created - the target itself is never written to',450],
+ ['leg','▸ step 1 · evidence → raw/',350],
+ ['dim','  monitoring-alarms.json   4 alarms · 2 log groups · 1 dashboard',170],
+ ['dim','  owners.md                owning team, contacts, turnover history',170],
+ ['dim','  runbook.md               2 alert procedures · last reviewed 2024-11-03',170],
+ ['dim','  data-inventory.csv       6 fields · 5 classified as personal data',170],
+ ['dim','  confluence-export.md     architecture · transfer · logging · support',170],
+ ['dim','  repo-tree.txt            file census · docs/adr/',170],
+ ['gap','  ⚠ oncall-schedule.json declared in the manifest, not found → source-gaps.txt',420],
+ ['dim','  standard-version.txt     observability v1 · ownership-docs v1 · data-privacy v1',400],
+ ['leg','▸ step 2 · control selection',350],
+ ['dim','  20 controls in the packs · target kind = service',250],
+ ['dim','  OBS-07 filtered out - applies_to: [batch]',250],
+ ['ok','  19 controls to assess',450,'conf'],
+ ['leg','▸ step 3 · 3 evaluators in parallel - one agent, one pack each',400],
+ ['dim','  ⧖ observability · ownership-docs · data-privacy',900],
+ ['ok','  ✓ observability    1 MEETS · 2 PARTIAL · 2 GAP · 1 NOT ASSESSABLE',750,'obs'],
+ ['ok','  ✓ ownership-docs   3 MEETS · 2 PARTIAL · 1 GAP',750,'own'],
+ ['ok','  ✓ data-privacy     3 MEETS · 1 PARTIAL · 2 GAP',750,'dat'],
+ ['leg','▸ step 4 · waivers',350],
+ ['dim','  OBS-04 waived - Head of Platform, until 2026-12-31',300,'waiv'],
+ ['dim','  verdict unchanged: GAP. Off the remediation list, still on the record.',450],
+ ['leg','▸ step 5 · delta',350],
+ ['dim','  no previous audit for this target - comparison skipped',400,'delta'],
+ ['leg','▸ step 6 · synthesis',400],
+ ['dim','  conformance.md ✓   report.md ✓   questions.md ✓',400,'head'],
+ ['ok','  MUST 3/12 · SHOULD 4/6 · 1 waived · 1 not assessable',600,'na'],
+ ['hot','  ⚠ 11 observations had no control covering them',450],
+ ['dim','  → questions.md as proposed controls. Not findings - nothing invented a rule.',300,'prop','pause'],
+];
+
+/* ---- lines after the human adopts ---- */
+const A=[
+ ['human','adopt OBS-08 into standard/observability.yaml',600],
+ ['dim','  observability v1 → v2 · 8 controls',400],
+ ['dim','  re-running observability only - nothing else changed',600],
+ ['ok','  ✓ OBS-08  PARTIAL - 3 of 4 alarms classified',650],
+ ['gap','  SHOULD 4/6 → 4/7 - coverage fell and the target never moved',600],
+ ['dim','  the bar rose. delta reports that as standard changed, never as a regression.',450],
+ ['ok','done - 19 verdicts · 1 waived · 1 not assessable · 10 proposals left',0,'donedelta'],
+];
+
+function line(cls,txt){
+  const el=document.createElement('span');
+  el.className='tl '+cls; el.textContent=txt;
+  tbody.insertBefore(el,cur);
+  void el.offsetWidth; el.classList.add('on');
+  tbody.scrollTop=tbody.scrollHeight;
+}
+function fresh(tab){
+  const el=$('.tab[data-tab="'+tab+'"]');
+  if(el.getAttribute('aria-selected')!=='true') el.classList.add('fresh');
+}
+function reveal(key){
+  if(!key)return;
+  $('#placeholder').hidden=true;
+  const sel=$('.tab[aria-selected="true"]').dataset.tab;
+  $('[data-pane="'+sel+'"]').hidden=false;
+  $$('[data-r="'+key+'"]').forEach(e=>e.classList.add('on'));
+  if(key==='waiv') $('#waivFlag').hidden=false;
+  if(['obs','own','dat','conf'].includes(key)) fresh('conformance');
+  if(['head','na','waiv','delta'].includes(key)) fresh('report');
+  if(key==='prop') fresh('questions');
+  if(key==='donedelta'){
+    $('#deltabox').classList.add('hit');
+    $('#deltabox').textContent='Standard changed: observability v1 → v2 (OBS-08 added). SHOULD coverage moved 4/6 → 4/7 with no change to the target. Target changed: nothing.';
+  }
+}
+function play(list,i,after){
+  if(i>=list.length){ if(after)after(); return; }
+  const [cls,txt,d,key,flag]=list[i];
+  line(cls,txt); reveal(key);
+  if(flag==='pause'){ proposed=true; $('#adopt').classList.add('on'); fresh('questions');
+    if(!adopted){ timer=null; return; } }
+  timer=setTimeout(()=>play(list,i+1,after), reduced?0:d);
+}
+function doAdopt(){
+  if(adopted||!proposed)return;
+  adopted=true;
+  $('#adopt').classList.remove('on');
+  $('#stdver').textContent='observability v2';
+  $('#obs08row').hidden=false;
+  $('#shouldNum').textContent='4/7';
+  $('#shouldBar').style.width='57.1%';
+  $('#pkObs').textContent='1/3';
+  $('#propObs08').classList.add('done');
+  $('#propState').innerHTML='Adopted into the standard as OBS-08 · assessed PARTIAL <span class="tagd">now a control</span>';
+  fresh('conformance'); fresh('report');
+}
+$('#adoptBtn').addEventListener('click',()=>{
+  const wasRunning=running;
+  doAdopt();
+  if(wasRunning) play(A,0,finish);
+});
+function finish(){
+  running=false; timer=null;
+  $('#run').textContent='Replay'; $('#run').disabled=false; $('#skip').disabled=true;
+}
+function reset(){
+  clearTimeout(timer); step=0; adopted=false; proposed=false;
+  $$('.tl').forEach(e=>e.remove());
+  $$('.reveal').forEach(e=>e.classList.remove('on'));
+  $$('[data-pane]').forEach(e=>e.hidden=true);
+  $$('.tab').forEach(t=>t.classList.remove('fresh'));
+  $('#placeholder').hidden=false;
+  $('#adopt').classList.remove('on');
+  $('#stdver').textContent='observability v1';
+  $('#obs08row').hidden=true; $('#waivFlag').hidden=true;
+  $('#shouldNum').textContent='4/6'; $('#shouldBar').style.width='66.6%';
+  $('#pkObs').textContent='1/2';
+  $('#propObs08').classList.remove('done');
+  $('#propState').textContent='One alarm has no classification, no runbook and no paging route - it falls through every control in the pack.';
+  $('#deltabox').classList.remove('hit');
+  $('#deltabox').textContent='No previous audit for this target - nothing to compare against yet.';
+  started=false; selectTab('report');
+}
+$('#run').addEventListener('click',()=>{
+  if(running)return;
+  reset(); running=true; started=true;
+  $('#run').disabled=true; $('#skip').disabled=false;
+  play(S,0,()=>{ /* paused at the gate */ });
+});
+$('#skip').addEventListener('click',()=>{
+  clearTimeout(timer);
+  const rest=(list,from)=>{ for(let i=from;i<list.length;i++){ const [cls,txt,,key]=list[i]; line(cls,txt); reveal(key);} };
+  // finish the main script from wherever the replay stopped, then adopt, then the tail
+  $$('.tl').forEach(e=>e.remove());
+  rest(S,0); proposed=true; doAdopt(); rest(A,0);
+  finish();
+});
+
+/* ---- tabs ---- */
+function selectTab(name){
+  $$('.tab').forEach(t=>{
+    t.setAttribute('aria-selected', t.dataset.tab===name?'true':'false');
+    if(t.dataset.tab===name)t.classList.remove('fresh');
+  });
+  $$('[data-pane]').forEach(p=>{ p.hidden=!(p.dataset.pane===name&&started); });
+  $('#placeholder').hidden=started;
+}
+$$('.tab').forEach(t=>t.addEventListener('click',()=>selectTab(t.dataset.tab)));
+})();
+</script>
+</body>
+</html>

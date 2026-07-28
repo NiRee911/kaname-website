@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BibGauge - Conformance data flow</title>
+<style>
+:root{
+  --bg:#fafafa; --card:#fff; --border:#e4e4e7; --ink:#09090b; --muted:#71717a;
+  --secondary:#f4f4f5; --green:#16a34a; --amber:#d97706; --red:#dc2626;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace; --radius:8px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{font:13px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  margin:0;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
+
+/* ---------- header ---------- */
+header{padding:12px 24px;border-bottom:1px solid var(--border);background:var(--card);
+  display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.eyebrow{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+header h1{font-size:17px;font-weight:600;letter-spacing:-.02em;margin:0}
+header p{margin:0;color:var(--muted);font-size:12.5px;flex:1}
+.modes{display:flex;gap:5px}
+.modes span{font:10px var(--mono);border:1px solid var(--border);background:var(--secondary);
+  color:#3f3f46;border-radius:99px;padding:1px 9px}
+.modes span.hot{border-color:#bbf7d0;background:#f0fdf4;color:var(--green)}
+header a{font-size:12px;color:var(--ink);text-decoration:none;border:1px solid var(--border);
+  border-radius:99px;padding:2px 11px;background:var(--card);white-space:nowrap}
+header a:hover{background:var(--secondary)}
+header a:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+/* ---------- flow ---------- */
+.wrap{position:relative;flex:1;min-height:0;overflow-y:auto}
+#wires{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.flow{display:grid;grid-template-columns:1.05fr 1fr 1fr 1.2fr;gap:38px;
+  padding:12px 24px;align-items:start;height:100%}
+.col>h2{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 7px}
+.col>h2 b{color:var(--ink)}
+.subhead{font:10px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+  margin:12px 0 6px;display:flex;align-items:baseline;gap:6px}
+.subhead:first-of-type{margin-top:0}
+.subhead em{font-style:normal;color:#a1a1aa;letter-spacing:0;text-transform:none;font-family:inherit;font-size:11px}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:8px 12px;margin-bottom:8px;box-shadow:0 1px 2px #0000000d}
+.card h3{font-size:13px;font-weight:600;margin:0}
+.card p{margin:1px 0 0;font-size:11.5px;color:var(--muted)}
+.card.std{border-left:3px solid var(--ink)}
+.badge{display:inline-block;font:10px var(--mono);background:var(--secondary);
+  border:1px solid var(--border);color:#3f3f46;border-radius:99px;padding:0 8px;margin-top:5px}
+.badge.ro{color:var(--red);border-color:#fecaca;background:#fef2f2}
+.value{font-size:11.5px;color:var(--green);margin-top:4px}
+.value::before{content:"↳ "}
+.ev{display:inline-block;font:10px var(--mono);color:#3f3f46;background:var(--secondary);
+  border:1px solid var(--border);border-radius:5px;padding:0 6px;margin:5px 4px 0 0}
+.ev::before{content:"⌁ ";color:var(--green)}
+.note{font-size:11px;color:var(--muted);border:1px dashed var(--border);
+  border-radius:var(--radius);padding:6px 10px;margin-bottom:8px}
+.gap{display:inline-block;font:10px var(--mono);color:var(--amber);background:#fffbeb;
+  border:1px dashed var(--amber);border-radius:6px;padding:0 8px;margin-top:5px}
+
+/* control anatomy */
+.anat{display:grid;grid-template-columns:auto 1fr;gap:2px 9px;margin-top:6px;font-size:11px}
+.anat code{font:10px var(--mono);color:#3f3f46;background:var(--secondary);
+  border-radius:4px;padding:0 5px;justify-self:start}
+.anat span{color:var(--muted)}
+.anat code.key{color:var(--ink);border:1px solid var(--border);background:var(--card);font-weight:600}
+
+/* ---------- comparison cell (dark) ---------- */
+.cell{background:#09090b;color:#a1a1aa;border-radius:12px;padding:13px 13px 10px}
+.cell .agent{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;
+  text-align:center;color:#e4e4e7;margin-bottom:9px}
+.compare{display:grid;grid-template-columns:1fr auto 1fr;gap:7px;align-items:stretch}
+.side{background:var(--card);color:var(--ink);border:1px solid var(--border);
+  border-radius:9px;padding:8px 9px;text-align:center}
+.side h3{margin:0;font-size:12.5px;font-weight:600;font-family:var(--mono)}
+.side .sub{font-size:10px;color:var(--muted);line-height:1.3;margin-top:1px}
+.vs{align-self:center;font:10px var(--mono);color:#52525b;letter-spacing:.1em}
+.rawfiles{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;margin-top:6px}
+.rawfiles span{font:9.5px var(--mono);background:var(--secondary);border:1px solid var(--border);
+  border-radius:5px;padding:1px 5px;color:#3f3f46}
+.outcome{margin-top:8px;text-align:center;font:10px var(--mono);letter-spacing:.1em;
+  text-transform:uppercase;color:#e4e4e7}
+.outcome::before{content:"▼";display:block;color:#3f3f46;font-size:9px;margin-bottom:4px}
+.rules{list-style:none;margin:9px 0 0;padding:0;font-size:11.5px}
+.rules li{margin:4px 0;padding-left:14px;position:relative}
+.rules li::before{content:"";position:absolute;left:1px;top:6px;width:5px;height:5px;
+  border-radius:99px;background:var(--green)}
+.cell .one{margin:9px 2px 0;font-size:11px;color:#71717a;text-align:center}
+
+/* ---------- evaluation ---------- */
+.agentcard h3::before{content:"◆ ";color:var(--ink);font-size:10px;vertical-align:1px}
+.par{font:10px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+  text-align:center;border:1px dashed var(--border);border-radius:99px;padding:1px 0;margin-bottom:8px}
+.verdicts{display:grid;gap:5px;margin-top:2px}
+.vd{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:baseline;font-size:11px}
+.vd b{font:9.5px var(--mono);letter-spacing:.05em;border-radius:4px;padding:1px 7px;
+  white-space:nowrap;font-weight:600}
+.vd.meets b{color:var(--green);background:#f0fdf4;border:1px solid #bbf7d0}
+.vd.partial b{color:var(--amber);background:#fffbeb;border:1px solid #fde68a}
+.vd.gapv b{color:var(--red);background:#fef2f2;border:1px solid #fecaca}
+.vd.na b{color:var(--muted);background:var(--secondary);border:1px dashed var(--border)}
+.vd span{color:var(--muted)}
+
+/* ---------- bottom ---------- */
+.bottom{border-top:1px solid var(--border);background:var(--card);padding:8px 24px 10px}
+.strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.strip .v{border:1px solid var(--border);border-radius:var(--radius);padding:6px 11px}
+.strip b{display:block;font-size:12px;font-weight:600}
+.strip p{margin:0;font-size:11px;color:var(--muted)}
+.meta-row{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:8px}
+details summary{cursor:pointer;font:10px var(--mono);letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);list-style:none}
+details summary::before{content:"▸ "}
+details[open] summary::before{content:"▾ "}
+.tablewrap{overflow-x:auto}
+table{border-collapse:separate;border-spacing:0;width:100%;background:var(--card);
+  border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;font-size:12px;margin-top:6px}
+th,td{border-bottom:1px solid var(--border);padding:4px 11px;text-align:left}
+th{background:var(--secondary);font-size:11px;font-weight:600}
+tr:last-child td{border-bottom:none}
+code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radius:4px}
+.foot{font-size:11px;color:var(--muted);white-space:nowrap}
+
+@media (max-width:1050px){
+  .flow{grid-template-columns:1fr 1fr;height:auto}
+  #wires{display:none}
+  body{height:auto}
+}
+@media (max-width:640px){
+  .flow{grid-template-columns:1fr;gap:16px}
+  .strip{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="eyebrow">BibGauge · internal PoC</span>
+  <h1>Conformance data flow</h1>
+  <p>Two inputs, one comparison: what the thing is, and what the standard says it should be. Every verdict keeps a link to its evidence.</p>
+  <div class="modes" aria-label="Run modes">
+    <span class="hot">full</span><span>gate</span><span>per pack</span>
+  </div>
+  <a href="demo.html">Watch the demo →</a>
+<a href="/kvnsky">&larr; kvnsky</a>
+</header>
+
+<div class="wrap">
+<svg id="wires" aria-hidden="true"></svg>
+<div class="flow">
+
+  <div class="col" id="inputs">
+    <h2><b>Inputs</b> · two of them</h2>
+
+    <div class="subhead">What it is <em>- evidence</em></div>
+    <div class="card src">
+      <h3>Target manifest</h3>
+      <p>What the thing is (<code>kind</code>), who owns it, where its sources live, what is already waived.</p>
+      <span class="badge ro">read-only - sources are copied, never written back</span>
+    </div>
+    <div class="card src">
+      <h3>Sources</h3>
+      <p>Monitoring export, service catalogue, runbook, data inventory, wiki export, repo tree. Anything readable is a source.</p>
+      <span class="badge">one file, one source tag</span>
+      <span class="gap">declared but missing = recorded gap, never a guess</span>
+    </div>
+
+    <div class="subhead">What it should be <em>- standard</em></div>
+    <div class="card std">
+      <h3>Control packs</h3>
+      <p>One YAML per domain. Adding a control is a YAML edit - the engine never changes. Three domains authored, eight deliberately left empty: the content of a standard comes from whoever owns it, never from the audit.</p>
+      <span class="badge">MUST / SHOULD · applies_to scoping</span>
+    </div>
+    <div class="card std">
+      <h3>Anatomy of one control</h3>
+      <div class="anat">
+        <code>requirement</code><span>what the standard demands</span>
+        <code>rationale</code><span>why - this text ships with every gap</span>
+        <code>evidence</code><span>where the proof is looked for</span>
+        <code class="key">assess</code><span>draws the MEETS / PARTIAL / GAP line, so the model never invents it</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2><b>Comparison</b> · the trust core</h2>
+    <div class="cell" id="core">
+      <div class="agent">Agent - Claude Code</div>
+      <div class="compare">
+        <div class="side">
+          <h3>raw/</h3>
+          <div class="sub">frozen evidence<br>what is</div>
+        </div>
+        <div class="vs">vs</div>
+        <div class="side">
+          <h3>assess</h3>
+          <div class="sub">explicit thresholds<br>what should be</div>
+        </div>
+      </div>
+      <div class="rawfiles">
+        <span>monitoring-alarms</span><span>owners</span><span>runbook</span>
+        <span>data-inventory</span><span>repo-tree</span><span>source-gaps</span><span>standard-version</span>
+      </div>
+      <div class="outcome">one verdict, one citation</div>
+      <ul class="rules">
+        <li>No control, no finding - a risk with no control is a proposal</li>
+        <li>Every verdict cites a place in <code>raw/</code></li>
+        <li>No evidence → NOT ASSESSABLE, never a guess</li>
+        <li>Thresholds live in the YAML, not in the model</li>
+        <li>The verdict judges the system, never the team</li>
+      </ul>
+      <div class="one">The standard version is stamped into every run - so a later comparison cannot lie.</div>
+    </div>
+  </div>
+
+  <div class="col" id="evalcol">
+    <h2><b>Evaluation</b> · one agent, N packs</h2>
+    <div class="par">in parallel, isolated context</div>
+    <div class="card agentcard ag">
+      <h3>control-evaluator</h3>
+      <p>Reads one pack and the evidence, returns a verdict per control with the exact place it came from.</p>
+      <span class="ev">findings/&lt;pack&gt;.md</span>
+      <div class="value">the domain lives in the YAML - a new pack adds no code</div>
+    </div>
+    <div class="card">
+      <h3>Four verdicts</h3>
+      <div class="verdicts">
+        <div class="vd meets"><b>MEETS</b><span>evidence satisfies the threshold</span></div>
+        <div class="vd partial"><b>PARTIAL</b><span>covered, but not all the way</span></div>
+        <div class="vd gapv"><b>GAP</b><span>evidence shows it is not met</span></div>
+        <div class="vd na"><b>NOT ASSESSABLE</b><span>no source reached it - measures the audit, not the target</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Waivers, applied after</h3>
+      <p>Accepted risk with an approver and an expiry date. The evaluator never sees them.</p>
+      <span class="badge">the agent judges reality - a waiver is a decision</span>
+      <div class="value">verdict unchanged, remediation list shorter, record intact</div>
+    </div>
+  </div>
+
+  <div class="col" id="outputs">
+    <h2><b>Artifacts</b> · English, per run</h2>
+    <div class="card out">
+      <h3>conformance.md</h3>
+      <p>Every control, its verdict, the place the evidence came from, and any flag.</p>
+      <span class="badge">the full record - including what is waived</span>
+      <div class="value">an answer to "does it comply", provable line by line</div>
+    </div>
+    <div class="card out">
+      <h3>report.md</h3>
+      <p>Coverage headline, remediation list ordered MUST before SHOULD, what could not be assessed, waivers, delta.</p>
+      <span class="badge">MUST x/y · SHOULD x/y - never one composite score</span>
+      <div class="value">the team stays, so remediation is the right output</div>
+    </div>
+    <div class="card out">
+      <h3>questions.md</h3>
+      <p>What would unlock a NOT ASSESSABLE verdict, and risk the evidence showed that no control covers yet.</p>
+      <span class="badge">proposed controls - never counted as findings</span>
+      <div class="value">the audit feeds the standard; the standard produces the findings</div>
+    </div>
+    <div class="note">From the second run on, a delta separates <b>target changed</b> from <b>standard changed</b> - a number that moves because the bar moved is never reported as progress.</div>
+  </div>
+
+</div>
+</div>
+
+<div class="bottom">
+  <div class="strip">
+    <div class="v"><b>Normative, not descriptive</b><p>"3 of 12 MUST" is a fact people can act on. "Monitoring is weak" is an opinion people argue with.</p></div>
+    <div class="v"><b>The standard is data</b><p>A new control is a YAML edit. The engine has never been touched to add one.</p></div>
+    <div class="v"><b>Not assessable is a number</b><p>Unreachable evidence is reported as its own category - it measures our reach, not their quality.</p></div>
+    <div class="v"><b>No composite score</b><p>One number invites ranking teams against each other. That is how a standard gets killed.</p></div>
+  </div>
+  <div class="meta-row">
+    <details>
+      <summary>Demo today vs. production</summary>
+      <div class="tablewrap">
+      <table>
+        <tr><th>Area</th><th>Demo (mock data)</th><th>Production</th></tr>
+        <tr><td>Standard</td><td>3 packs, 20 controls, authored as a format example</td><td>the real internal standard, owned and versioned outside this tool</td></tr>
+        <tr><td>Evidence</td><td>files in <code>mock/&lt;target&gt;/</code></td><td>cloud API (read-only role), CI export, Confluence, Jira - same evidence locker</td></tr>
+        <tr><td>Targets</td><td>one fictional service</td><td>service catalogue, one manifest per target, <code>kind</code> drives scoping</td></tr>
+        <tr><td>Cadence</td><td>manual run</td><td>periodic + <code>mode=gate</code> before release, delta as the headline</td></tr>
+      </table>
+      </div>
+    </details>
+    <span class="foot">BibGauge · internal PoC · 2026</span>
+  </div>
+</div>
+
+<script>
+(function(){
+  const svg=document.getElementById('wires'), NS='http://www.w3.org/2000/svg';
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function el(n,a){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);return e;}
+  function draw(){
+    if(getComputedStyle(svg).display==='none')return;
+    svg.innerHTML='';
+    const R=svg.getBoundingClientRect();
+    const core=document.getElementById('core').getBoundingClientRect();
+    const cy=core.top-R.top+core.height/2;
+    let i=0;
+    function wire(x1,y1,x2,y2,dashed){
+      const mx=(x1+x2)/2, d=`M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
+      const a={d,fill:'none',stroke:'#d4d4d8','stroke-width':1.5,id:'w'+i};
+      if(dashed)a['stroke-dasharray']='4 3';
+      const p=el('path',a);
+      svg.appendChild(p);
+      if(!reduced){
+        for(let j=0;j<2;j++){
+          const dot=el('circle',{r:2.4,fill:'#18181b',opacity:.75});
+          const m=el('animateMotion',{dur:'2.8s',repeatCount:'indefinite',begin:(i*0.33+j*1.4)+'s'});
+          m.appendChild(el('mpath',{href:'#w'+i}));
+          dot.appendChild(m); svg.appendChild(dot);
+        }
+      }
+      i++;
+    }
+    // both input kinds feed the comparison core; the standard side is drawn dashed
+    document.querySelectorAll('#inputs .src, #inputs .std').forEach(c=>{
+      const r=c.getBoundingClientRect();
+      wire(r.right-R.left, r.top-R.top+18, core.left-R.left, cy, c.classList.contains('std'));
+    });
+    // core -> evaluator
+    const ags=[...document.querySelectorAll('#evalcol .ag')];
+    ags.forEach(c=>{
+      const r=c.getBoundingClientRect();
+      wire(core.right-R.left, cy, r.left-R.left, r.top-R.top+18);
+    });
+    // evaluator -> artifacts
+    if(ags.length){
+      const ar=ags[0].getBoundingClientRect();
+      const ax=ar.right-R.left, ay=ar.top-R.top+18;
+      document.querySelectorAll('#outputs .out').forEach(c=>{
+        const r=c.getBoundingClientRect();
+        wire(ax, ay, r.left-R.left, r.top-R.top+18);
+      });
+    }
+  }
+  addEventListener('load',draw);
+  let t;addEventListener('resize',()=>{clearTimeout(t);t=setTimeout(draw,150)});
+})();
+</script>
+</body>
+</html>

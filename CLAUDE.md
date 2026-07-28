@@ -72,7 +72,7 @@ Nav order: Manifesto · Convictions · Values · Delivery Cycle · Artifacts · 
 Unlisted concept-lab page (`app/kvnsky/page.tsx`) + static demo copies in `public/kvnsky/<project>/{flow,demo}.html`. Rules:
 
 - **Never link it** from nav, footer, sitemap.ts, or any public page. Not in robots.txt either - a Disallow line would advertise the path. Hiding = noindex meta on the page + `X-Robots-Tag` headers in `next.config.ts` for `/kvnsky/:path*`.
-- Source of truth for demos is the Obsidian vault (`PROJECTS/BibCell/`, `PROJECTS/BibRelay/`). After a demo changes there, re-sync the copy - it must strip em dashes and inject the noindex meta:
+- Source of truth for demos is the Obsidian vault (`PROJECTS/BibCell/`, `PROJECTS/BibRelay/`, `PROJECTS/BibGauge/`). After a demo changes there, re-sync the copy - it must strip em dashes and inject the noindex meta:
 
 ```bash
 python3 -c "
@@ -81,7 +81,9 @@ for src,dst in [
  ('/Users/kavinsky/Documents/Obsidian/PROJECTS/BibCell/flow.html','public/kvnsky/bibcell/flow.html'),
  ('/Users/kavinsky/Documents/Obsidian/PROJECTS/BibCell/demo.html','public/kvnsky/bibcell/demo.html'),
  ('/Users/kavinsky/Documents/Obsidian/PROJECTS/BibRelay/flow.html','public/kvnsky/bibrelay/flow.html'),
- ('/Users/kavinsky/Documents/Obsidian/PROJECTS/BibRelay/demo.html','public/kvnsky/bibrelay/demo.html')]:
+ ('/Users/kavinsky/Documents/Obsidian/PROJECTS/BibRelay/demo.html','public/kvnsky/bibrelay/demo.html'),
+ ('/Users/kavinsky/Documents/Obsidian/PROJECTS/BibGauge/flow.html','public/kvnsky/bibgauge/flow.html'),
+ ('/Users/kavinsky/Documents/Obsidian/PROJECTS/BibGauge/demo.html','public/kvnsky/bibgauge/demo.html')]:
     t=pathlib.Path(src).read_text().replace(chr(8212),'-')
     t=t.replace('<head>','<head>\n<meta name=\"robots\" content=\"noindex, nofollow\">',1)
     t=t.replace('</header>','<a href=\"/kvnsky\">&larr; kvnsky</a>\n</header>',1)
