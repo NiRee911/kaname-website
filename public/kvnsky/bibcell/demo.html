@@ -133,8 +133,8 @@ h3:first-child{margin-top:0}
 
 @media (max-width:900px){
   main{grid-template-columns:1fr}
-  .feed,.panel{max-height:none}
-  .feed{min-height:300px}
+  .panel{max-height:none}
+  .feed{min-height:300px;max-height:60vh}
 }
 </style>
 </head>
@@ -230,6 +230,10 @@ let timer=null, step=0, running=false, approved=false, started=false, ctoDrafted
 
 /* ---------- content helpers ---------- */
 function feed(ch,who,text,t,cls){
+  // ponytail: follow the tail only while the reader is already at the bottom.
+  // Scrolling up to re-read something must never be yanked back by the next line.
+  const fb=$('#fbody');
+  const stick=fb.scrollHeight-fb.scrollTop-fb.clientHeight<32;
   const m=document.createElement('div');
   m.className='msg '+(cls||'');
   m.innerHTML='<span class="t">'+t+'</span><div class="b">'+
@@ -237,7 +241,7 @@ function feed(ch,who,text,t,cls){
     '<p>'+text+'</p></div>';
   $('#fbody').appendChild(m);
   void m.offsetWidth; m.classList.add('on');
-  $('#fbody').scrollTop=$('#fbody').scrollHeight;
+  if(stick) fb.scrollTop=fb.scrollHeight;
 }
 function tl(t,text,src,hot){
   const li=document.createElement('li');

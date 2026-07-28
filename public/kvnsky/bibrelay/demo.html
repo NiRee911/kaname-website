@@ -126,8 +126,8 @@ h3:first-child{margin-top:0}
 
 @media (max-width:900px){
   main{grid-template-columns:1fr}
-  .term,.panel{max-height:none}
-  .term{min-height:300px}
+  .panel{max-height:none}
+  .term{min-height:300px;max-height:60vh}
 }
 </style>
 </head>
@@ -386,11 +386,14 @@ const S=[
 ];
 
 function line(cls,txt){
+  // ponytail: follow the tail only while the reader is already at the bottom.
+  // Scrolling up to re-read something must never be yanked back by the next line.
+  const stick=tbody.scrollHeight-tbody.scrollTop-tbody.clientHeight<32;
   const el=document.createElement('span');
   el.className='tl '+cls; el.textContent=txt;
   tbody.insertBefore(el,cur);
   void el.offsetWidth; el.classList.add('on');
-  tbody.scrollTop=tbody.scrollHeight;
+  if(stick) tbody.scrollTop=tbody.scrollHeight;
 }
 function reveal(key){
   if(!key)return;
