@@ -205,7 +205,7 @@ text.rax.axwarn{fill:var(--warn)}
   <p>A scripted replay against <span style="font-family:var(--mono)">fuelwatch</span>, a fictional fleet fuel-monitoring service, measured on the standard in force that day.</p>
   <span class="stdver">standard: <b id="stdver">observability v2</b></span>
   <button id="run">Run gauge</button>
-  <button id="skip" class="ghost" disabled>Skip to result</button>
+  <button id="skip" class="ghost">Skip to the result</button>
   <a href="flow.html">← Data flow</a>
 <a href="/kvnsky">&larr; kvnsky</a>
 </header>
@@ -223,7 +223,7 @@ text.rax.axwarn{fill:var(--warn)}
     <div class="tabs" role="tablist">
       <button class="tab" role="tab" aria-selected="true" data-tab="riskmap">risk map<span class="dot"></span></button>
       <button class="tab" role="tab" aria-selected="false" data-tab="report">report.md<span class="dot"></span></button>
-      <button class="tab" role="tab" aria-selected="false" data-tab="conformance">conformance.md<span class="dot"></span></button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="conformance">checks.md<span class="dot"></span></button>
       <button class="tab" role="tab" aria-selected="false" data-tab="questions">questions.md<span class="dot"></span></button>
     </div>
 
@@ -382,8 +382,8 @@ text.rax.axwarn{fill:var(--warn)}
 
         <h3 class="reveal" data-r="prop">Things no check covers yet - 11 in total, top ones shown</h3>
         <p class="prop pick reveal" data-r="prop" id="propObs08"><b>Every alert declares which golden signal it serves.</b>
-          <span id="propState">One alarm has no classification, no runbook and no paging route - it falls through every control in the pack.</span></p>
-        <p class="prop reveal" data-r="prop">High-risk fields rest on legitimate interest, but no control requires a balancing test.</p>
+          <span id="propState">One alarm has no classification, no runbook and no paging route - it falls through every check in the pack.</span></p>
+        <p class="prop reveal" data-r="prop">High-risk fields rest on legitimate interest, but no check requires a balancing test.</p>
         <p class="prop reveal" data-r="prop">Retention and deletion are not checked against the Brazilian read replica.</p>
         <p class="prop reveal" data-r="prop">The log scrub list is never reconciled against the personal-data inventory.</p>
         <p class="prop reveal" data-r="prop">Documented procedures are required to exist and be fresh - never to have been exercised.</p>
@@ -522,7 +522,7 @@ const S=[
  ['leg','▸ step 5 · delta',350],
  ['dim','  no previous audit for this target - comparison skipped',400,'delta'],
  ['leg','▸ step 6 · synthesis',400],
- ['dim','  conformance.md ✓   report.md ✓   questions.md ✓',400,'head'],
+ ['dim','  checks.md ✓   report.md ✓   questions.md ✓',400,'head'],
  ['dim','  scripts/exposure.py - answers + risks → exposure.json',350],
  ['ok','  carrying 43% of the risk (21.75 / 50.5 points) · 3.0 never checked · 3.0 signed off',400,'na'],
  ['gap','  weakest: "will we notice?" 67% - "can we look back?" reads 50% on one check, do not read it',600,'waiv'],
@@ -586,7 +586,7 @@ function doAdopt(){
   $('#obs08row').hidden=false;
   renderMap('post');
   $('#propObs08').classList.add('done');
-  $('#propState').innerHTML='Adopted into the standard as OBS-08 · assessed PARTIAL <span class="tagd">now a control</span>';
+  $('#propState').innerHTML='Adopted into the standard as OBS-08 · assessed PARTIAL <span class="tagd">now a check</span>';
   fresh('conformance'); fresh('report'); fresh('riskmap');
 }
 $('#adoptBtn').addEventListener('click',()=>{
@@ -596,7 +596,7 @@ $('#adoptBtn').addEventListener('click',()=>{
 });
 function finish(){
   running=false; timer=null;
-  $('#run').textContent='Replay'; $('#run').disabled=false; $('#skip').disabled=true;
+  $('#run').textContent='Replay'; $('#run').disabled=false;
 }
 function reset(){
   clearTimeout(timer); step=0; adopted=false; proposed=false;
@@ -610,7 +610,7 @@ function reset(){
   $('#obs08row').hidden=true; $('#waivFlag').hidden=true;
   renderMap('pre');
   $('#propObs08').classList.remove('done');
-  $('#propState').textContent='One alarm has no classification, no runbook and no paging route - it falls through every control in the pack.';
+  $('#propState').textContent='One alarm has no classification, no runbook and no paging route - it falls through every check in the pack.';
   $('#deltabox').classList.remove('hit');
   $('#deltabox').textContent='No previous audit for this target - nothing to compare against yet.';
   started=false; selectTab('riskmap');
@@ -618,11 +618,14 @@ function reset(){
 $('#run').addEventListener('click',()=>{
   if(running)return;
   reset(); running=true; started=true;
-  $('#run').disabled=true; $('#skip').disabled=false;
+  $('#run').disabled=true;
   play(S,0,()=>{ /* paused at the gate */ });
 });
 $('#skip').addEventListener('click',()=>{
   clearTimeout(timer);
+  // ponytail: kto pride na stranku studeny, ma byt jeden klik od vysledku.
+  // Bez tohto by Skip bez predchadzajuceho Run nechal `started=false` a taby by sa skryli.
+  if(!started){ reset(); started=true; }
   const rest=(list,from)=>{ for(let i=from;i<list.length;i++){ const [cls,txt,,key]=list[i]; line(cls,txt); reveal(key);} };
   // finish the main script from wherever the replay stopped, then adopt, then the tail
   $$('.tl').forEach(e=>e.remove());

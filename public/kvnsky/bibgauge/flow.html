@@ -61,7 +61,7 @@ header a:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 .gap{display:inline-block;font:10px var(--mono);color:var(--amber);background:#fffbeb;
   border:1px dashed var(--amber);border-radius:6px;padding:0 8px;margin-top:5px}
 
-/* control anatomy */
+/* check anatomy */
 .anat{display:grid;grid-template-columns:auto 1fr;gap:2px 9px;margin-top:6px;font-size:11px}
 .anat code{font:10px var(--mono);color:#3f3f46;background:var(--secondary);
   border-radius:4px;padding:0 5px;justify-self:start}
@@ -176,14 +176,14 @@ code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radi
       <div class="value">MUST/SHOULD stops being a label somebody typed</div>
     </div>
     <div class="card std">
-      <h3>Control packs</h3>
-      <p>One YAML per domain. Adding a control is a YAML edit - the engine never changes. Three domains authored, eight deliberately left empty: the content of a standard comes from whoever owns it, never from the audit.</p>
+      <h3>Check packs</h3>
+      <p>One YAML per domain. Adding a check is a YAML edit - the engine never changes. Three domains authored, eight deliberately left empty: the content of a standard comes from whoever owns it, never from the audit.</p>
       <span class="badge">MUST / SHOULD · applies_to scoping</span>
     </div>
     <div class="card std">
-      <h3>Anatomy of one control</h3>
+      <h3>Anatomy of one check</h3>
       <div class="anat">
-        <code class="key">mitigates</code><span>which risk it reduces - no risk, no control</span>
+        <code class="key">mitigates</code><span>which risk it reduces - no risk, no check</span>
         <code>coverage</code><span>primary or supporting share of that risk</span>
         <code>requirement</code><span>what the standard demands</span>
         <code>rationale</code><span>why - this text ships with every gap</span>
@@ -214,7 +214,7 @@ code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radi
       </div>
       <div class="outcome">one verdict, one citation</div>
       <ul class="rules">
-        <li>No control, no finding - a risk with no control is a proposal</li>
+        <li>No check, no finding - a risk with no check is a proposal</li>
         <li>Every verdict cites a place in <code>raw/</code></li>
         <li>No evidence → UNKNOWN, never a guess</li>
         <li>Thresholds live in the YAML, not in the model</li>
@@ -228,8 +228,8 @@ code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radi
     <h2><b>Evaluation</b> · one agent, N packs</h2>
     <div class="par">in parallel, isolated context</div>
     <div class="card agentcard ag">
-      <h3>control-evaluator</h3>
-      <p>Reads one pack and the evidence, returns a verdict per control with the exact place it came from.</p>
+      <h3>check-evaluator</h3>
+      <p>Reads one pack and the evidence, returns a verdict per check with the exact place it came from.</p>
       <span class="ev">findings/&lt;pack&gt;.md</span>
       <div class="value">the domain lives in the YAML - a new pack adds no code</div>
     </div>
@@ -244,7 +244,7 @@ code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radi
     </div>
     <div class="card">
       <h3>exposure.py - the arithmetic</h3>
-      <p>Consequence of the risk × how far the evidence is from the control. Aggregated per area, ranked into weak links.</p>
+      <p>Consequence of the risk × how far the evidence is from the check. Aggregated per area, ranked into weak links.</p>
       <span class="badge">deterministic - the model never computes</span>
       <div class="value">ordinal points, stated openly; euros only when a named person says one</div>
     </div>
@@ -259,8 +259,8 @@ code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radi
   <div class="col" id="outputs">
     <h2><b>Artifacts</b> · English, per run</h2>
     <div class="card out">
-      <h3>conformance.md</h3>
-      <p>Every control, its verdict, the place the evidence came from, and any flag.</p>
+      <h3>checks.md</h3>
+      <p>Every check, its verdict, the place the evidence came from, and any flag.</p>
       <span class="badge">the full record - including what is waived</span>
       <div class="value">an answer to "does it comply", provable line by line</div>
     </div>
@@ -272,8 +272,8 @@ code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radi
     </div>
     <div class="card out">
       <h3>questions.md</h3>
-      <p>What would unlock a UNKNOWN verdict, and risk the evidence showed that no control covers yet.</p>
-      <span class="badge">proposed controls - never counted as findings</span>
+      <p>What would unlock a UNKNOWN verdict, and risk the evidence showed that no check covers yet.</p>
+      <span class="badge">proposed checks - never counted as findings</span>
       <div class="value">the audit feeds the standard; the standard produces the findings</div>
     </div>
     <div class="note">From the second run on, a delta separates <b>target changed</b> from <b>standard changed</b> - a number that moves because the bar moved is never reported as progress.</div>
@@ -284,8 +284,8 @@ code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radi
 
 <div class="bottom">
   <div class="strip">
-    <div class="v"><b>Risk first, rule second</b><p>Every control names the risk it reduces. That is what makes MUST answerable instead of asserted.</p></div>
-    <div class="v"><b>The standard is data</b><p>A new control is a YAML edit. The engine has never been touched to add one.</p></div>
+    <div class="v"><b>Risk first, rule second</b><p>Every check names the risk it reduces. That is what makes MUST answerable instead of asserted.</p></div>
+    <div class="v"><b>The standard is data</b><p>A new check is a YAML edit. The engine has never been touched to add one.</p></div>
     <div class="v"><b>Not assessable is a number</b><p>Unreachable evidence is reported as its own category - it measures our reach, not their quality.</p></div>
     <div class="v"><b>Weak links, not folders</b><p>Risk areas cut across packs, so the map shows where the system actually bends.</p></div>
   </div>
@@ -295,7 +295,7 @@ code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radi
       <div class="tablewrap">
       <table>
         <tr><th>Area</th><th>Demo (mock data)</th><th>Production</th></tr>
-        <tr><td>Standard</td><td>3 packs, 20 controls, authored as a format example</td><td>the real internal standard, owned and versioned outside this tool</td></tr>
+        <tr><td>Standard</td><td>3 packs, 20 checks, authored as a format example</td><td>the real internal standard, owned and versioned outside this tool</td></tr>
         <tr><td>Evidence</td><td>files in <code>mock/&lt;target&gt;/</code></td><td>cloud API (read-only role), CI export, Confluence, Jira - same evidence locker</td></tr>
         <tr><td>Targets</td><td>one fictional service</td><td>service catalogue, one manifest per target, <code>kind</code> drives scoping</td></tr>
         <tr><td>Cadence</td><td>manual run</td><td>periodic + <code>mode=gate</code> before release, delta as the headline</td></tr>
