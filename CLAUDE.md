@@ -90,7 +90,9 @@ for src,dst in [
  ('/Users/kavinsky/Documents/Obsidian/PROJECTS/BibHorizon/demo.html','public/kvnsky/bibhorizon/demo.html'),
  ('/Users/kavinsky/Documents/Obsidian/PROJECTS/BibHorizon/horizons.html','public/kvnsky/bibhorizon/horizons.html'),
  ('/Users/kavinsky/Documents/Obsidian/PROJECTS/BibCascade/flow.html','public/kvnsky/bibcascade/flow.html'),
- ('/Users/kavinsky/Documents/Obsidian/PROJECTS/BibCascade/demo.html','public/kvnsky/bibcascade/demo.html')]:
+ ('/Users/kavinsky/Documents/Obsidian/PROJECTS/BibCascade/demo.html','public/kvnsky/bibcascade/demo.html'),
+ ('/Users/kavinsky/Documents/Obsidian/PROJECTS/BibValve/flow.html','public/kvnsky/bibvalve/flow.html'),
+ ('/Users/kavinsky/Documents/Obsidian/PROJECTS/BibValve/demo.html','public/kvnsky/bibvalve/demo.html')]:
     t=pathlib.Path(src).read_text().replace(chr(8212),'-')
     t=t.replace('<head>','<head>\n<meta name=\"robots\" content=\"noindex, nofollow\">',1)
     t=t.replace('</header>','<a href=\"/kvnsky\">&larr; kvnsky</a>\n</header>',1)

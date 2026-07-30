@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BibValve - Live demo: where does coldchain jam?</title>
+<style>
+:root{
+  --bg:#0b0d10; --panel:#12151a; --panel2:#171b21; --border:#242a32;
+  --ink:#e6e8eb; --muted:#8b939e; --dim:#5c6570;
+  --good:#34d399; --warn:#fbbf24; --bad:#f87171; --acc:#7dd3fc;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace; --radius:10px;
+}
+*{box-sizing:border-box}
+body{font:13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  margin:0;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+header{padding:12px 24px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.eyebrow{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+header h1{font-size:16px;font-weight:600;letter-spacing:-.01em;margin:0}
+header p{margin:0;color:var(--muted);font-size:12px;flex:1;min-width:200px}
+header a{font-size:12px;color:var(--ink);text-decoration:none;border:1px solid var(--border);
+  border-radius:99px;padding:3px 12px}
+header a:hover{background:var(--panel2)}
+button{font:12.5px inherit;color:var(--bg);background:var(--ink);border:0;border-radius:99px;
+  padding:5px 16px;cursor:pointer;font-weight:600}
+button.ghost{background:transparent;color:var(--muted);border:1px solid var(--border);font-weight:400}
+button:hover{opacity:.9}
+button.ghost:hover{color:var(--ink);opacity:1}
+button:focus-visible,header a:focus-visible,.tab:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+button[disabled]{opacity:.4;cursor:default}
+.sigbadge{font:10px var(--mono);color:var(--dim);letter-spacing:.06em;white-space:nowrap}
+.sigbadge b{color:var(--bad);font-weight:400}
+
+main{flex:1;display:grid;grid-template-columns:minmax(360px,42%) 1fr;gap:16px;padding:16px 24px;min-height:0}
+.term{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+  display:flex;flex-direction:column;min-height:420px;max-height:calc(100vh - 140px);overflow:hidden}
+.term-bar{display:flex;align-items:center;gap:6px;padding:9px 13px;border-bottom:1px solid var(--border)}
+.term-bar i{width:10px;height:10px;border-radius:99px;background:var(--border);display:inline-block}
+.term-bar span{font:11px var(--mono);color:var(--dim);margin-left:8px}
+.term-body{font:12px/1.7 var(--mono);padding:12px 15px;overflow-y:auto;flex:1;white-space:pre-wrap;word-break:break-word}
+.tl{opacity:0;transform:translateY(2px);transition:opacity .25s,transform .25s;display:block}
+.tl.on{opacity:1;transform:none}
+.tl.cmd{color:var(--ink)} .tl.cmd::before{content:"$ ";color:var(--dim)}
+.tl.human{color:var(--acc)} .tl.human::before{content:"⌨ ";color:var(--dim)}
+.tl.ok{color:var(--good)} .tl.gap{color:var(--warn)} .tl.dim{color:var(--muted)} .tl.hot{color:var(--bad)}
+.cursor{display:inline-block;width:7px;height:14px;background:var(--acc);vertical-align:-2px;
+  animation:blink 1.1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+@media (prefers-reduced-motion: reduce){.cursor{animation:none}.tl{transition:none}}
+
+.side{display:flex;flex-direction:column;min-height:0}
+.tabs{display:flex;gap:5px;margin-bottom:9px;flex-wrap:wrap}
+.tab{font:11px var(--mono);letter-spacing:.05em;color:var(--muted);background:var(--panel);
+  border:1px solid var(--border);border-radius:99px;padding:4px 13px;cursor:pointer}
+.tab[aria-selected="true"]{color:var(--bg);background:var(--ink);border-color:var(--ink);font-weight:600}
+.tab.fresh::after{content:"";display:inline-block;width:5px;height:5px;border-radius:99px;
+  background:var(--acc);margin-left:6px;vertical-align:1px}
+.pane{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+  padding:15px 17px;overflow-y:auto;flex:1;min-height:0}
+.pane h2{font:11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+.pane h3{font-size:13.5px;margin:14px 0 3px}
+.pane h3:first-of-type{margin-top:8px}
+.mut{color:var(--muted);font-size:12px}
+.reveal{opacity:0;transform:translateY(3px);transition:opacity .3s,transform .3s}
+.reveal.on{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){.reveal{transition:none}}
+
+.big{font-size:34px;font-weight:600;letter-spacing:-.03em;line-height:1}
+.big span{font-size:13px;font-weight:400;color:var(--muted);letter-spacing:0}
+.lifebar{display:flex;height:28px;border-radius:4px;overflow:hidden;border:1px solid var(--border);margin:10px 0 5px}
+.lifebar i{display:block}
+.lifebar i.work{background:var(--acc)}
+.lifebar i.wait{background:repeating-linear-gradient(45deg,#171b21 0 5px,#232830 5px 10px)}
+.lifebar i.jam{background:repeating-linear-gradient(45deg,#2a1417 0 5px,#3d1a20 5px 10px);
+  box-shadow:inset 0 0 0 1.5px var(--bad)}
+.lkey{display:flex;gap:12px;font:10px var(--mono);color:var(--muted);flex-wrap:wrap}
+.lkey s{text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+.lkey em{width:9px;height:9px;border-radius:2px;display:inline-block;font-style:normal}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.two div{border:1px solid var(--border);border-radius:6px;padding:7px 10px}
+.two b{display:block;font-size:17px;font-weight:600;letter-spacing:-.02em}
+.two span{font-size:11px;color:var(--muted)}
+.two div.hot{border-color:#5b2b2b;background:#1a1113}.two div.hot b{color:var(--bad)}
+
+table{border-collapse:separate;border-spacing:0;width:100%;font-size:12px;margin-top:7px}
+th,td{border-bottom:1px solid var(--border);padding:4px 8px;text-align:left}
+th{color:var(--muted);font:10px var(--mono);letter-spacing:.08em;text-transform:uppercase;font-weight:400}
+td.n{font-family:var(--mono);text-align:right}
+tr:last-child td{border-bottom:none}
+tr.hot td{color:var(--bad)} tr.dimr td{color:var(--dim)}
+.callout{border:1px solid var(--border);border-radius:8px;padding:9px 12px;margin-top:11px;
+  background:var(--panel2);font-size:12px}
+.callout.bad{border-color:#5b2b2b;background:#1a1113}.callout.bad b{color:var(--bad)}
+.callout.warn{border-color:#5b4a1f;background:#1a1710}.callout.warn b{color:var(--warn)}
+.callout.good{border-color:#2b5b47;background:#101a16}.callout.good b{color:var(--good)}
+.fals{font:11px var(--mono);background:#0b0d10;border:1px solid var(--border);color:var(--ink);
+  border-radius:6px;padding:8px 10px;margin-top:8px;white-space:pre-wrap}
+.gatebar{border:1px solid var(--border);border-radius:var(--radius);background:var(--panel2);
+  padding:11px 14px;margin-top:11px;display:none;align-items:center;gap:12px;flex-wrap:wrap}
+.gatebar.on{display:flex}
+.gatebar p{margin:0;flex:1;min-width:200px;font-size:12px}
+.gatebar p b{color:var(--warn)}
+.decided{display:none;margin-top:11px}.decided.on{display:block}
+.ph{color:var(--dim);font-size:12.5px;text-align:center;padding:38px 10px}
+footer{border-top:1px solid var(--border);padding:9px 24px;display:flex;justify-content:space-between;
+  gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--dim)}
+footer b{color:var(--muted);font-weight:400}
+@media (max-width:900px){
+  main{grid-template-columns:1fr}
+  /* bez stropu terminal pocas behu rastie a tlaci obsah pod sebou nizsie */
+  .term{min-height:300px;max-height:60vh}
+  .two{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="eyebrow">BibValve · demo</span>
+  <h1 id="hdr">coldchain - where does it jam?</h1>
+  <p>A scripted replay of one run. Nothing is fetched, nothing is written back.</p>
+  <span class="sigbadge">flow efficiency <b id="fe">-</b></span>
+  <button id="run">Run</button>
+  <button id="skip" class="ghost">Skip to the result</button>
+  <a href="flow.html">← How it works</a>
+<a href="/kvnsky">&larr; kvnsky</a>
+</header>
+
+<main>
+  <section class="term">
+    <div class="term-bar"><i></i><i></i><i></i><span>claude - BibValve</span></div>
+    <div class="term-body" id="term"><span class="cursor" id="cur"></span></div>
+  </section>
+
+  <section class="side">
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" data-tab="con" aria-selected="true">constraint.md</button>
+      <button class="tab" role="tab" data-tab="q" aria-selected="false">questions.md</button>
+      <button class="tab" role="tab" data-tab="i" aria-selected="false">improvements</button>
+      <button class="tab" role="tab" data-tab="w" aria-selected="false">withheld</button>
+    </div>
+
+    <div class="pane">
+      <div class="ph" id="placeholder">Press <b>Run</b> to replay the run - or <b>Skip to the result</b>.</div>
+
+      <div data-pane="con" hidden>
+        <h2>one constraint</h2>
+        <div class="reveal" data-r="c0">
+          <div class="callout warn"><b>60 sprints in the record. 26 measured, 340 items excluded.</b>
+            A record reaching back years describes teams that no longer exist. And this window
+            still spans a change of team - overlap between blocks drops to <b>0.43</b>.</div>
+          <table>
+            <tr><th>Basis</th><th>Sprints</th><th>Items</th><th>Flow eff.</th><th>Awaiting Test</th></tr>
+            <tr><td>whole window</td><td class="n">26</td><td class="n">260</td><td class="n">17.2 %</td><td class="n">107.2 h</td></tr>
+            <tr class="hot"><td>after the change</td><td class="n">21</td><td class="n">210</td><td class="n">18.3 %</td><td class="n">97.8 h</td></tr>
+          </table>
+          <p class="mut" style="margin-top:7px">Both are given because neither is wrong - they
+            answer different questions, and averaging them answers neither.
+            <b style="color:var(--ink)">Why the composition changed is not in a changelog</b>,
+            and inferring it would mean profiling individuals. The boundary is derived; the reason
+            has to come from a person.</p>
+        </div>
+        <div class="reveal" data-r="c1">
+          <div class="big">17.2 %<span> flow efficiency</span></div>
+          <div class="lifebar" role="img" aria-label="Awaiting Test holds 72.1 percent of elapsed time">
+            <i class="work" style="width:11.3%"></i><i class="wait" style="width:11.1%"></i>
+            <i class="wait" style="width:70.0%PLACE"></i><i class="jam" style="width:70.0%"></i>
+            <i class="work" style="width:5.9%"></i>
+          </div>
+          <div class="lkey">
+            <s><em style="background:#7dd3fc"></em>work 11.3 + 5.9 %</s>
+            <s><em style="background:#232830"></em>review 11.1 · blocked 1.7</s>
+            <s><em style="background:#3d1a20"></em>awaiting test 70.1 %</s>
+          </div>
+          <div class="two">
+            <div><b>27.3 h</b><span>the median item is worked on</span></div>
+            <div class="hot"><b>122.5 h</b><span>and the median item waits</span></div>
+          </div>
+        </div>
+
+        <div class="reveal" data-r="c2">
+          <div class="callout bad"><b>6 848.2 hours of work. 32 930.2 hours of waiting.</b>
+            Asking the team to work faster addresses 17.2 % of the elapsed time. The rest is
+            queueing, and a queue is a property of the system rather than of effort.</div>
+        </div>
+
+        <div class="reveal" data-r="c3">
+          <h3>The constraint</h3>
+          <table>
+            <tr><th>State</th><th></th><th>Hours</th><th>Share</th><th>Mean/item</th></tr>
+            <tr class="hot"><td>Awaiting Test</td><td>waiting</td><td class="n">27 868.5</td><td class="n">70.1 %</td><td class="n">107.2 h</td></tr>
+            <tr><td>In Progress</td><td>work</td><td class="n">4 501.3</td><td class="n">11.3 %</td><td class="n">17.3 h</td></tr>
+            <tr><td>Code Review</td><td>waiting</td><td class="n">4 402.3</td><td class="n">11.1 %</td><td class="n">16.9 h</td></tr>
+            <tr><td>In Test</td><td>work</td><td class="n">2 346.9</td><td class="n">5.9 %</td><td class="n">9.0 h</td></tr>
+            <tr><td>Blocked</td><td>waiting</td><td class="n">659.4</td><td class="n">1.7 %</td><td class="n">50.7 h</td></tr>
+          </table>
+          <p class="mut" style="margin-top:7px">Work sits in <b style="color:var(--ink)">Awaiting
+            Test for 107.2 hours</b> on average. Testing itself takes <b style="color:var(--ink)">9.0</b>.
+            <b style="color:var(--ink)">The queue in front of the step is twelve times the step.</b></p>
+        </div>
+
+        <div class="reveal" data-r="c4">
+          <h3>The smallest experiment</h3>
+          <div class="callout good"><b>Limit work in <code>Awaiting Test</code> to 3 items.</b>
+            No new role, no new meeting, no reorganisation. When the limit is reached, the next
+            person to finish development picks up testing instead of starting something new.
+            Reversible in a day.</div>
+          <div class="fals">falsified if, within 3 sprints:
+
+  queue shortens AND flow efficiency stays flat
+      -> the waiting relocated, it did not go
+  throughput falls
+      -> the limit starves the team rather than focusing it; remove it</div>
+          <p class="mut" style="margin-top:7px">Both outcomes are worth more than the experiment
+            quietly succeeding, because both are answers.</p>
+        </div>
+
+        <div class="gatebar" id="gate">
+          <p><b>Human decision.</b> The run proposes one experiment and its falsification. It does
+            not adopt it.</p>
+          <button id="adoptBtn">Adopt the experiment</button>
+          <button id="laterBtn" class="ghost">Not now</button>
+        </div>
+        <div class="decided" id="decided"><div class="callout good" id="decidedTxt"></div></div>
+      </div>
+
+      <div data-pane="q" hidden>
+        <h2>candidates and limits</h2>
+        <div class="reveal" data-r="q1">
+          <h3>Ranked, deliberately not reported as findings</h3>
+          <table>
+            <tr><th>State</th><th>Share</th><th>Mean/item</th></tr>
+            <tr class="dimr"><td>Code Review</td><td class="n">11.1 %</td><td class="n">16.9 h</td></tr>
+            <tr class="dimr"><td>Blocked</td><td class="n">1.7 %</td><td class="n">50.7 h</td></tr>
+          </table>
+          <p class="mut" style="margin-top:7px">Real, and not the constraint. Reporting five
+            problems is the same as reporting none. <b style="color:var(--ink)">Relieve the test
+            queue first, then run this again</b> - the ranking will have changed, and second place
+            may no longer matter.</p>
+          <div class="callout" style="margin-top:10px"><code>Blocked</code> is 1.7 % of the time but
+            <b style="color:var(--ink)">50.7 hours per item</b> when it happens. Rare and expensive
+            rather than common and cheap - a different problem, and too small a sample to act on.</div>
+        </div>
+        <div class="reveal" data-r="q2">
+          <h3>Knowledge concentration</h3>
+          <p class="mut" style="margin:0 0 4px">Measured as time before anyone <em>starts</em> an
+            item. Team median <b style="color:var(--ink)">20.6 h</b>.</p>
+          <table>
+            <tr><th>Component</th><th>To first touch</th><th>vs team</th><th>N</th></tr>
+            <tr class="hot"><td>sensor-sync</td><td class="n">72.6 h</td><td class="n">×3.52</td><td class="n">52</td></tr>
+            <tr><td>alerts</td><td class="n">19.5 h</td><td class="n">×0.94</td><td class="n">44</td></tr>
+            <tr><td>depot-ui</td><td class="n">18.9 h</td><td class="n">×0.92</td><td class="n">54</td></tr>
+          </table>
+          <p class="mut" style="margin-top:7px">This names a <b style="color:var(--ink)">component</b>,
+            and it cannot name anything else - the record has no field for a person. The reading is
+            "work here does not start easily". Whether that is knowledge, access, dependencies or
+            unclear requirements cannot be answered from timestamps.</p>
+        </div>
+      </div>
+
+      <div data-pane="i" hidden>
+        <h2>does anything actually get improved?</h2>
+        <div class="reveal" data-r="i1">
+          <table>
+            <tr><th></th><th></th></tr>
+            <tr><td>Raised</td><td class="n">34</td></tr>
+            <tr><td>Closed</td><td class="n">6 · 17.6 %</td></tr>
+            <tr class="hot"><td>Still open</td><td class="n">28 · 82.4 %</td></tr>
+            <tr><td>Median age of the open ones</td><td class="n">166 days</td></tr>
+            <tr class="hot"><td>Open and never in a sprint</td><td class="n">18 of 28</td></tr>
+          </table>
+          <div class="callout bad"><b>The team names problems and does not schedule them.</b>
+            Eighteen of twenty-eight were never brought to planning at all - not deprioritised,
+            never presented. A different failure from noticing nothing, and arguably a worse one:
+            the diagnosis already exists, written down, and stops there.</div>
+        </div>
+        <div class="reveal" data-r="i2">
+          <div class="callout warn"><b>Which is why the experiment above matters less than what
+            happens to it.</b> A proposal that goes the way of the other 28 changes no number, and
+            the next run finds the same constraint and writes the same report.</div>
+          <h3>What the script refuses to decide</h3>
+          <p class="mut" style="margin:0"><code>targets_the_constraint: null</code> - whether any
+            open item addresses the test queue is a question about <b style="color:var(--ink)">text</b>,
+            not timestamps. The titles are handed out instead, and reading them is an
+            <b style="color:var(--ink)">ASSUMPTION</b> shown next to the titles it came from.</p>
+          <div class="callout" style="margin-top:10px"><b>On a freshly introduced type, expect a
+            refusal.</b> Below 12 improvements the close rate is not computed - one closed out of
+            three is not 33 %, it is nothing. These figures come from a fixture with enough history
+            to show the shape of the signal.</div>
+        </div>
+      </div>
+
+      <div data-pane="w" hidden>
+        <h2>computed and left out</h2>
+        <div class="reveal" data-r="w1">
+          <table>
+            <tr><th>Metric</th><th>Value</th><th>Why it is not in the report</th></tr>
+            <tr class="dimr"><td>lead time variance</td><td class="n">63.5 h</td>
+                <td>no decision attaches to it</td></tr>
+          </table>
+          <div class="callout" style="margin-top:10px"><b>A number that cannot change a decision is
+            not information, it is furniture</b> - and a report full of furniture stops being read.
+            It is listed here so it is clear the run is not silent out of ignorance.</div>
+          <p class="mut" style="margin-top:9px">This tab is the rule that keeps the tool from
+            turning back into a wall of charts. Every number in <code>constraint.md</code> has a
+            sentence beginning "and therefore". Everything else lands here.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span><b>Synthetic fixture.</b> Shape copied from a Jira export, content invented. No real project data appears here.</span>
+  <span><b>Nothing about a person.</b> The input is states and timestamps; there is no field to name anyone from.</span>
+</footer>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const term=$('#term'), cur=$('#cur');
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let timer=null, running=false, started=false, offered=false, decided=false;
+
+const S=[
+ ['cmd','valve coldchain',420],
+ ['dim','reading mock/coldchain/jira.json - 60 sprints in the record',340],
+ ['gap','window = last 26 sprints. 340 items excluded, not down-weighted.',420],
+ ['hot','the window still spans a change of team - block overlap 0.43',480,'c0'],
+ ['dim','counts only: 8, 12, 8, 8, 8, 5 contributors per block. no identity leaves the tool.',420],
+ ['dim','why it changed is not in a changelog. that has to come from a person.',400],
+ ['dim','so: two bases. whole window 17.2%, after the change 18.3% (21 sprints, one team)',440],
+ ['dim','subtracting timestamps: hours spent in every state',340],
+ ['dim','Blocked is set on 45 of 600 - "where it waits" is not readable from status',380],
+ ['dim','so waiting is taken from the gaps, not from a field',340],
+ ['hot','flow efficiency 17.2%',520,'c1'],
+ ['dim','6848.2 h of work. 32930.2 h of waiting.',420,'c2'],
+ ['dim','median item: 150.3 h alive, 27.3 h worked on, 122.5 h waiting',420],
+ ['dim','step 2 - where does the time go',300],
+ ['hot','Awaiting Test   27868.5 h   70.1% of all elapsed time',480,'c3'],
+ ['dim','Code Review      4402.3 h   11.1%',240],
+ ['dim','Blocked           659.4 h    1.9%',240],
+ ['ok','one constraint named: Awaiting Test (107.2 h per item, testing takes 9.0)',460],
+ ['dim','2 further waiting states ranked - NOT reported as findings',420,'q1'],
+ ['dim','a system has one constraint at a time; five findings is the same as none',400],
+ ['dim','step 3 - knowledge concentration',300],
+ ['gap','sensor-sync waits 72.6 h before anyone starts it - x3.47 the team median',460,'q2'],
+ ['dim','names the component. there is no field here to name a person from.',380],
+ ['dim','step 4 - what was computed and left out',300],
+ ['dim','step 5 - does anything actually get improved',300],
+ ['hot','34 improvements raised, 6 closed. 18 of 28 open ones never entered a sprint.',480,'i1'],
+ ['dim','targets_the_constraint: null - that is a question about text, not timestamps',420,'i2'],
+ ['gap','lead time variance 63.5 h -> WITHHELD, no decision attaches to it',460,'w1'],
+ ['ok','1 experiment proposed, with the result that would disprove it',440,'c4','pause']
+];
+
+function tail(choice){
+  const first = choice==='adopt'
+    ? [['human','adopt the experiment',380],
+       ['ok','WIP limit 3 on Awaiting Test, recorded with its falsification and a 3-sprint check',480]]
+    : [['human','not now',380],
+       ['dim','left in constraint.md as proposed, falsification attached. The run does not argue twice.',460]];
+  return first.concat([
+   ['dim','nothing was written to Jira. every artifact is a file.',400],
+   ['dim',' ',240],
+   ['ok','constraint.md · questions.md written',380],
+   ['dim','done. 260 items in the window, 1 constraint, 2 candidates held back, 1 metric withheld.',340]
+  ]);
+}
+
+function line(cls,txt){
+  // sledovanie konca len ked je citatel uz dole - inak mu replay kradne scroll
+  const stick=term.scrollHeight-term.scrollTop-term.clientHeight<32;
+  const el=document.createElement('span');
+  el.className='tl '+cls; el.textContent=txt;
+  term.insertBefore(el,cur);
+  void el.offsetWidth; el.classList.add('on');
+  if(stick) term.scrollTop=term.scrollHeight;
+}
+function fresh(tab){
+  const el=$('.tab[data-tab="'+tab+'"]');
+  if(el.getAttribute('aria-selected')!=='true') el.classList.add('fresh');
+}
+function reveal(key){
+  if(!key)return;
+  $('#placeholder').hidden=true;
+  const sel=$('.tab[aria-selected="true"]').dataset.tab;
+  $('[data-pane="'+sel+'"]').hidden=false;
+  $$('[data-r="'+key+'"]').forEach(e=>e.classList.add('on'));
+  if(key[0]==='c') fresh('con');
+  if(key[0]==='q') fresh('q');
+  if(key[0]==='w') fresh('w');
+  if(key[0]==='i') fresh('i');
+  if(key==='c1') $('#fe').textContent='17.2 %';
+}
+function play(list,i,after){
+  if(i>=list.length){ if(after)after(); return; }
+  const [cls,txt,d,key,flag]=list[i];
+  line(cls,txt); reveal(key);
+  if(flag==='pause'){
+    offered=true; $('#gate').classList.add('on'); fresh('con');
+    // timer je null: co drzi replay je clovek, nie cakanie
+    if(!decided){ timer=null; return; }
+  }
+  timer=setTimeout(()=>play(list,i+1,after), reduced?0:d);
+}
+function doDecide(choice){
+  if(decided||!offered)return false;
+  decided=true;
+  $('#gate').classList.remove('on');
+  $('#decidedTxt').innerHTML = choice==='adopt'
+    ? '<b>Adopted.</b> WIP limit 3 on Awaiting Test, recorded together with what would disprove it: if the queue shortens and flow efficiency stays flat, the waiting relocated and the diagnosis was wrong. Checked in three sprints, not defended.'
+    : '<b>Left as proposed.</b> It stays in constraint.md with its falsification attached, so the next run picks it up unchanged rather than rediscovering it.';
+  $('#decided').classList.add('on'); fresh('con');
+  return true;
+}
+function bindGate(id,choice){
+  $(id).addEventListener('click',()=>{
+    // guard: klik pred otvorenim gate by spustil tail paralelne s hlavnym skriptom
+    if(!offered)return;
+    const wasRunning=running;
+    if(doDecide(choice) && wasRunning) play(tail(choice),0,finish);
+  });
+}
+bindGate('#adoptBtn','adopt'); bindGate('#laterBtn','later');
+
+function finish(){ running=false; timer=null; $('#run').textContent='Replay'; $('#run').disabled=false; }
+function reset(){
+  clearTimeout(timer); decided=false; offered=false;
+  $$('.tl').forEach(e=>e.remove());
+  $$('.reveal').forEach(e=>e.classList.remove('on'));
+  $$('[data-pane]').forEach(e=>e.hidden=true);
+  $$('.tab').forEach(t=>t.classList.remove('fresh'));
+  $('#placeholder').hidden=false;
+  $('#gate').classList.remove('on');
+  $('#decided').classList.remove('on');
+  $('#fe').textContent='-';
+  started=false; selectTab('con');
+}
+$('#run').addEventListener('click',()=>{
+  if(running)return;
+  reset(); running=true; started=true; $('#run').disabled=true;
+  play(S,0,()=>{});
+});
+$('#skip').addEventListener('click',()=>{
+  clearTimeout(timer);
+  // kto pride studeny, ma byt jeden klik od vysledku
+  if(!started){ reset(); started=true; }
+  const rest=list=>list.forEach(([cls,txt,,key])=>{ line(cls,txt); reveal(key); });
+  $$('.tl').forEach(e=>e.remove());
+  rest(S); offered=true; doDecide('adopt'); rest(tail('adopt'));
+  finish();
+});
+function selectTab(name){
+  $$('.tab').forEach(t=>{
+    t.setAttribute('aria-selected', t.dataset.tab===name?'true':'false');
+    if(t.dataset.tab===name)t.classList.remove('fresh');
+  });
+  $$('[data-pane]').forEach(p=>{ p.hidden=!(p.dataset.pane===name&&started); });
+  $('#placeholder').hidden=started;
+}
+$$('.tab').forEach(t=>t.addEventListener('click',()=>selectTab(t.dataset.tab)));
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BibValve - One constraint, with evidence</title>
+<style>
+:root{
+  --bg:#fafafa; --card:#fff; --border:#e4e4e7; --ink:#09090b; --muted:#71717a;
+  --secondary:#f4f4f5; --green:#16a34a; --amber:#d97706; --red:#dc2626; --blue:#2563eb;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace; --radius:8px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{font:13px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  margin:0;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
+
+header{padding:12px 24px;border-bottom:1px solid var(--border);background:var(--card);
+  display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.eyebrow{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+header h1{font-size:17px;font-weight:600;letter-spacing:-.02em;margin:0}
+header p{margin:0;color:var(--muted);font-size:12.5px;flex:1;min-width:180px}
+.modes{display:flex;gap:5px}
+.modes span{font:10px var(--mono);border:1px solid var(--border);background:var(--secondary);
+  color:#3f3f46;border-radius:99px;padding:1px 9px}
+.modes span.hot{border-color:#fecaca;background:#fef2f2;color:var(--red)}
+.modes span.cold{border-color:#e4e4e7;background:var(--card);color:var(--muted);border-style:dashed}
+header a{font-size:12px;color:var(--ink);text-decoration:none;border:1px solid var(--border);
+  border-radius:99px;padding:2px 11px;background:var(--card);white-space:nowrap}
+header a:hover{background:var(--secondary)}
+header a:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+.wrap{position:relative;flex:1;min-height:0;overflow-y:auto}
+#wires{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.flow{display:grid;grid-template-columns:.9fr .85fr 1.4fr 1fr;gap:32px;
+  padding:12px 24px;align-items:start;height:100%}
+.col>h2{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 7px}
+.col>h2 b{color:var(--ink)}
+.subhead{font:10px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:12px 0 6px}
+.subhead:first-of-type{margin-top:0}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:8px 12px;margin-bottom:8px;box-shadow:0 1px 2px #0000000d}
+.card h3{font-size:13px;font-weight:600;margin:0}
+.card p{margin:1px 0 0;font-size:11.5px;color:var(--muted)}
+.badge{display:inline-block;font:10px var(--mono);background:var(--secondary);
+  border:1px solid var(--border);color:#3f3f46;border-radius:99px;padding:0 8px;margin-top:5px}
+.badge.ro{color:var(--red);border-color:#fecaca;background:#fef2f2}
+.value{font-size:11.5px;color:var(--green);margin-top:4px}
+.value::before{content:"↳ "}
+/* .src nema styl - je to len selektor pre kreslenie wires */
+
+.cell{background:#09090b;color:#a1a1aa;border-radius:12px;padding:13px 13px 10px}
+.cell .agent{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;
+  text-align:center;color:#e4e4e7;margin-bottom:9px}
+.split{display:grid;gap:4px;font:10.5px var(--mono);margin-bottom:9px}
+.split div{display:grid;grid-template-columns:auto 1fr;gap:8px;padding:3px 0;border-bottom:1px solid #27272a}
+.split div:last-child{border-bottom:none}
+.split b{color:#e6e8eb;font-weight:600}
+.split b.w{color:var(--amber)}
+.split i{font-style:normal;color:#71717a}
+.rules{list-style:none;margin:0;padding:0;font-size:11.5px}
+.rules li{margin:4px 0;padding-left:14px;position:relative}
+.rules li::before{content:"";position:absolute;left:1px;top:6px;width:5px;height:5px;
+  border-radius:99px;background:var(--green)}
+.cell .one{margin:9px 2px 0;font-size:11px;color:#71717a;text-align:center}
+
+/* ---------- the signature: work against waiting ---------- */
+.eff{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:13px 15px 12px;box-shadow:0 1px 2px #0000000d}
+.big{font-size:30px;font-weight:600;letter-spacing:-.03em;line-height:1}
+.big span{font-size:13px;font-weight:400;color:var(--muted);letter-spacing:0}
+.lifebar{display:flex;height:30px;border-radius:4px;overflow:hidden;border:1px solid var(--border);
+  margin:11px 0 4px}
+.lifebar i{display:block;position:relative}
+.lifebar i.work{background:#18181b}
+.lifebar i.wait{background:repeating-linear-gradient(45deg,#fafafa 0 5px,#e4e4e7 5px 10px)}
+.lifebar i.jam{background:repeating-linear-gradient(45deg,#fff1f2 0 5px,#fecdd3 5px 10px);
+  box-shadow:inset 0 0 0 1.5px var(--red)}
+.lkey{display:flex;gap:12px;font:10px var(--mono);color:var(--muted);flex-wrap:wrap}
+.lkey s{text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+.lkey em{width:9px;height:9px;border-radius:2px;display:inline-block;font-style:normal}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:11px}
+.two div{border:1px solid var(--border);border-radius:6px;padding:7px 10px}
+.two b{display:block;font-size:16px;font-weight:600;letter-spacing:-.02em}
+.two span{font-size:11px;color:var(--muted)}
+.two div.hot{border-color:#fecaca;background:#fef2f2}
+.two div.hot b{color:var(--red)}
+.jamnote{margin-top:10px;padding-top:9px;border-top:1px dashed var(--border);font-size:11.5px}
+.jamnote b{color:var(--red)}
+
+.out h3{font-family:var(--mono);font-size:12px}
+.one2{border-left:3px solid var(--red)}
+.exp{border-left:3px solid var(--green)}
+.held{border-style:dashed;background:var(--secondary)}
+.fals{font:10.5px var(--mono);background:#09090b;color:#e4e4e7;border-radius:6px;
+  padding:6px 9px;margin-top:6px;white-space:pre-wrap}
+
+.bottom{border-top:1px solid var(--border);background:var(--card);padding:8px 24px 10px}
+.strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.strip .v{border:1px solid var(--border);border-radius:var(--radius);padding:6px 11px}
+.strip b{display:block;font-size:12px;font-weight:600}
+.strip p{margin:0;font-size:11px;color:var(--muted)}
+.meta-row{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:8px}
+details summary{cursor:pointer;font:10px var(--mono);letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);list-style:none}
+details summary::before{content:"▸ "}
+details[open] summary::before{content:"▾ "}
+.tablewrap{overflow-x:auto}
+table{border-collapse:separate;border-spacing:0;width:100%;background:var(--card);
+  border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;font-size:12px;margin-top:6px}
+th,td{border-bottom:1px solid var(--border);padding:4px 11px;text-align:left}
+th{background:var(--secondary);font-size:11px;font-weight:600}
+tr:last-child td{border-bottom:none}
+code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radius:4px}
+.foot{font-size:11px;color:var(--muted);white-space:nowrap}
+
+@media (max-width:1050px){
+  .flow{grid-template-columns:1fr 1fr;height:auto}
+  #wires{display:none}
+  body{height:auto}
+}
+@media (max-width:640px){
+  .flow{grid-template-columns:1fr;gap:16px}
+  .strip,.two{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="eyebrow">BibValve · internal PoC</span>
+  <h1>One constraint, with evidence</h1>
+  <p>Not a list of what looks bad. One place the work stops, the smallest thing that would move it, and the result that would prove the diagnosis wrong.</p>
+  <div class="modes" aria-label="Outputs">
+    <span class="hot">one constraint</span><span class="cold">withheld</span>
+  </div>
+  <a href="demo.html">Watch the demo →</a>
+<a href="/kvnsky">&larr; kvnsky</a>
+</header>
+
+<div class="wrap">
+<svg id="wires" aria-hidden="true"></svg>
+<div class="flow">
+
+  <div class="col" id="inputs">
+    <h2><b>The record</b> · read-only</h2>
+
+    <div class="subhead">First: which team is this about</div>
+    <div class="card src">
+      <h3>60 sprints. Only 26 measured.</h3>
+      <p><b>340 items excluded</b>, not down-weighted. A record reaching back years describes
+        teams that no longer exist, and an average across them belongs to nobody.</p>
+      <span class="badge ro">and the window still spans a change of team</span>
+      <div class="value">overlap between blocks drops to 0.43 - fewer than half carried over</div>
+    </div>
+
+    <div class="subhead">What is actually there</div>
+    <div class="card src">
+      <h3>Transitions, with timestamps</h3>
+      <p>Every state a piece of work entered and the moment it entered it. That is the whole
+        input. Waiting comes from the gaps, not from a status nobody sets consistently.</p>
+      <span class="badge">counts of contributors, never an identity</span>
+      <div class="value">nothing has to change about how the team works first</div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2><b>The one judgement</b></h2>
+    <div class="cell" id="core">
+      <div class="agent">scripts/valve.py</div>
+      <div class="split">
+        <div><b>In Progress</b><i>someone is on it</i></div>
+        <div><b>In Test</b><i>someone is on it</i></div>
+        <div><b class="w">Code Review</b><i>it lies there</i></div>
+        <div><b class="w">Awaiting Test</b><i>it lies there</i></div>
+        <div><b class="w">Blocked</b><i>it lies there</i></div>
+      </div>
+      <ul class="rules">
+        <li>this split is the only opinion in the script</li>
+        <li>everything else is subtraction between timestamps</li>
+        <li>a metric with no decision attached is not reported</li>
+      </ul>
+      <p class="one">The model names the constraint. It never counts the hours.</p>
+    </div>
+  </div>
+
+  <div class="col" id="effcol">
+    <h2><b>Work against waiting</b> · 260 items in the window</h2>
+    <div class="eff" id="effbox">
+      <div class="big">17.2 %<span> flow efficiency</span></div>
+
+      <div class="lifebar" role="img" aria-label="Where elapsed time went: Awaiting Test holds 72.1 percent">
+        <i class="work" style="width:11.3%"></i>
+        <i class="wait" style="width:11.1%"></i>
+        <i class="wait" style="width:70.0%PLACE"></i>
+        <i class="jam" style="width:70.0%"></i>
+        <i class="work" style="width:5.9%"></i>
+      </div>
+      <div class="lkey">
+        <s><em style="background:#18181b"></em>work 11.3 + 5.9 %</s>
+        <s><em style="background:#e4e4e7"></em>review 11.1 · blocked 1.7</s>
+        <s><em style="background:#fecdd3"></em>awaiting test 70.1 %</s>
+      </div>
+
+      <div class="two">
+        <div><b>27.3 h</b><span>the median item is worked on</span></div>
+        <div class="hot"><b>122.5 h</b><span>and the median item waits</span></div>
+      </div>
+
+      <div class="jamnote">
+        <b>6 848.2 hours of work. 32 930.2 hours of waiting.</b>
+        <p style="margin:3px 0 0;color:var(--muted);font-size:11.5px">Asking the team to work
+          faster addresses the black segments. Everything else is queueing, and a queue is a
+          property of the system rather than of effort.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col" id="outputs">
+    <h2><b>What comes back</b> · one thing</h2>
+
+    <div class="card out one2" id="onecard">
+      <h3>constraint.md</h3>
+      <p><b>Awaiting Test</b> holds <b>70.1 %</b> of all elapsed time. Work sits there
+        <b>107.2 h</b> on average. Testing itself takes <b>9.0 h</b>.</p>
+      <div class="value">the queue in front of the step is twelve times the step</div>
+    </div>
+
+    <div class="card out exp">
+      <h3>The smallest experiment</h3>
+      <p>Limit work in <code>Awaiting Test</code> to 3 items. No new role, no new meeting,
+        reversible in a day.</p>
+      <div class="fals">falsified if, in 3 sprints:
+  queue shortens AND flow efficiency stays flat
+  -> the waiting moved, it did not go
+  throughput falls
+  -> the limit starves the team; remove it</div>
+    </div>
+
+    <div class="card out" style="border-left:3px solid var(--blue)">
+      <h3>Two bases, not one average</h3>
+      <p>Whole window: <b>17.2 %</b> flow efficiency, <b>107.2 h</b> in the queue.<br>
+        After the team change: <b>18.3 %</b>, <b>97.8 h</b> - 21 sprints, one team.</p>
+      <div class="value">same constraint on both sides: the jam is structural, not personal</div>
+    </div>
+
+    <div class="card out" style="border-left:3px solid var(--amber)">
+      <h3>improvements.md</h3>
+      <p><b>34 raised, 6 closed</b> (17.6 %). Median age of the open ones <b>166 days</b>, and
+        <b>18 of 28</b> never entered a sprint.</p>
+      <div class="value">a proposal that goes the way of the other 28 changes no number</div>
+    </div>
+
+    <div class="card out held" id="heldcard">
+      <h3>Withheld on purpose</h3>
+      <p>Lead time variance, <b>63.5 h</b>. Computed and left out: no decision attaches to it.
+        Listed so it is clear the run is not silent out of ignorance.</p>
+      <div class="value">a report full of furniture stops being read</div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<div class="bottom">
+  <div class="strip">
+    <div class="v"><b>One constraint per run</b><p>A system has one at a time. Five findings is the same as none, because nobody knows where to start.</p></div>
+    <div class="v"><b>No metric without a decision</b><p>Every number in the report has a "and therefore". The rest is named as withheld.</p></div>
+    <div class="v"><b>Nothing about a person</b><p>The record holds states and timestamps. There is no field here to name anyone from.</p></div>
+    <div class="v"><b>The diagnosis can be killed</b><p>Every finding ships with the result that would disprove it, before anyone tries it.</p></div>
+  </div>
+
+  <div class="meta-row">
+    <details>
+      <summary>PoC versus production</summary>
+      <div class="tablewrap">
+      <table>
+        <tr><th>Area</th><th>PoC (synthetic fixture)</th><th>Production</th></tr>
+        <tr><td>Input</td><td><code>mock/coldchain/jira.json</code>, fixed seed</td><td>Jira export with <code>expand=changelog</code> - timestamps are the whole requirement</td></tr>
+        <tr><td>Work / waiting split</td><td>two active states, three waiting</td><td>the same split against the real workflow's state names, agreed with the team before the first run</td></tr>
+        <tr><td>Why it waited</td><td>not available</td><td>still not available. States say where time went, never what it was waiting for.</td></tr>
+        <tr><td>First real output</td><td>the constraint</td><td>flow efficiency. It reframes the conversation before any diagnosis is argued.</td></tr>
+        <tr><td>Write-back</td><td>none</td><td>none. Read-only by design.</td></tr>
+      </table>
+      </div>
+    </details>
+    <span class="foot">BibValve · internal PoC · 2026</span>
+  </div>
+</div>
+
+<script>
+(function(){
+  const svg=document.getElementById('wires'), NS='http://www.w3.org/2000/svg';
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function el(n,a){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);return e;}
+  function draw(){
+    if(getComputedStyle(svg).display==='none')return;
+    svg.innerHTML='';
+    const R=svg.getBoundingClientRect();
+    const core=document.getElementById('core').getBoundingClientRect();
+    const cy=core.top-R.top+core.height/2;
+    let i=0;
+    function wire(x1,y1,x2,y2,dashed){
+      const mx=(x1+x2)/2, d=`M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
+      const a={d,fill:'none',stroke:'#d4d4d8','stroke-width':1.5,id:'w'+i};
+      if(dashed)a['stroke-dasharray']='4 3';
+      svg.appendChild(el('path',a));
+      if(!reduced){
+        for(let j=0;j<2;j++){
+          const dot=el('circle',{r:2.4,fill:'#18181b',opacity:.75});
+          const m=el('animateMotion',{dur:'2.8s',repeatCount:'indefinite',begin:(i*0.33+j*1.4)+'s'});
+          m.appendChild(el('mpath',{href:'#w'+i}));
+          dot.appendChild(m); svg.appendChild(dot);
+        }
+      }
+      i++;
+    }
+    document.querySelectorAll('#inputs .src').forEach(c=>{
+      const r=c.getBoundingClientRect();
+      wire(r.right-R.left, r.top-R.top+18, core.left-R.left, cy, false);
+    });
+    const eb=document.getElementById('effbox');
+    if(eb){
+      const r=eb.getBoundingClientRect();
+      wire(core.right-R.left, cy, r.left-R.left, r.top-R.top+24, false);
+      // Z merania vedie JEDNA plna vetva na nalez. Ciarkovana ide na zamlcane -
+      // spocitane, ale zamerne nereportovane.
+      const x=r.right-R.left, y=r.top-R.top+24;
+      ['onecard','heldcard'].forEach(id=>{
+        const o=document.getElementById(id); if(!o)return;
+        const orr=o.getBoundingClientRect();
+        wire(x, y, orr.left-R.left, orr.top-R.top+18, id==='heldcard');
+      });
+    }
+  }
+  addEventListener('load',draw);
+  let t;addEventListener('resize',()=>{clearTimeout(t);t=setTimeout(draw,150)});
+})();
+</script>
+</body>
+</html>

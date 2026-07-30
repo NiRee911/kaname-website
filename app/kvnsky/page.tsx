@@ -85,6 +85,18 @@ const projects = [
       { label: "Live demo", href: "/kvnsky/bibcascade/demo.html" },
     ],
   },
+  {
+    tag: "BibValve",
+    year: "2026",
+    status: "PoC",
+    oneLiner: "One constraint, with evidence",
+    description:
+      "A team says it is not keeping up and nobody can point at where. This subtracts timestamps and answers with a ratio first: an item lives 150 hours and is worked on for 27 of them, so asking anyone to go faster addresses a sixth of the elapsed time and the rest is queueing. Then it names one place, not five, because five findings is the same as none. Every number in the report carries a decision; the ones that do not are listed as withheld, with the reason. And because a record that reaches back years describes teams that no longer exist, it windows the history, detects where the composition changed, and hands back two bases rather than averaging two different teams into one figure - as counts, never as a person.",
+    links: [
+      { label: "Data flow", href: "/kvnsky/bibvalve/flow.html" },
+      { label: "Live demo", href: "/kvnsky/bibvalve/demo.html" },
+    ],
+  },
 ]
 
 export default function KvnskyPage() {
