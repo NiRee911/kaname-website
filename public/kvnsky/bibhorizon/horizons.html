@@ -121,6 +121,11 @@ table.rm s{text-decoration:none;font-size:10.5px;color:var(--muted)}
   line-height:1.15;white-space:nowrap}
 .mk.m85 span{color:var(--ink)}
 .grow{display:grid;grid-template-columns:132px 1fr;gap:9px;align-items:center;margin-bottom:5px}
+/* uzky bar neuzivi text vnutri - hodnota ide do tretieho stlpca */
+.grow.r3{grid-template-columns:132px 1fr 64px}
+.gwrap.conv .gover{right:73px}
+.gwrap.conv .gaxis{margin-right:73px}
+.grow.r3 .val{font:10.5px var(--mono);color:var(--blue);font-weight:600}
 .grow .lab{font:10.5px var(--mono);color:var(--muted);text-align:right;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .track{position:relative;height:22px;border-radius:4px;
@@ -137,6 +142,10 @@ table.rm s{text-decoration:none;font-size:10.5px;color:var(--muted)}
 .track.y4{background:repeating-linear-gradient(to right,
     var(--secondary) 0, var(--secondary) calc(25% - 1px),
     var(--border) calc(25% - 1px), var(--border) 25%)}
+.track.plain{background:var(--secondary)}
+.bar.rng{justify-content:center;background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a}
+.bar.rng.w1{opacity:.55}.bar.rng.w2{opacity:.7}.bar.rng.w3{opacity:.85}
+.bar.rng.w4{background:#dbeafe;border-color:var(--blue);font-weight:600}
 .bar.sce{background:transparent;border:1px dashed #a1a1aa;color:var(--muted);font-weight:400}
 .pihatch{position:absolute;top:0;bottom:0;right:0;left:75%;
   background:repeating-linear-gradient(45deg,transparent 0 6px,#f4f4f5 6px 12px);
@@ -215,7 +224,7 @@ table.rm s{text-decoration:none;font-size:10.5px;color:var(--muted)}
 <header>
   <span class="eyebrow">BibHorizon · the bigger picture</span>
   <h1>One record, three rooms</h1>
-  <p>Where this goes, and what is actually running today.</p>
+  <p>Where this goes - and what actually exists, which is less.</p>
   <a href="flow.html">How it works →</a>
   <a href="demo.html">Watch the demo →</a>
 <a href="/kvnsky">&larr; kvnsky</a>
@@ -234,7 +243,7 @@ table.rm s{text-decoration:none;font-size:10.5px;color:var(--muted)}
   <div class="rooms">
 
     <div class="room live">
-      <div class="rhead"><span class="n">Horizon 1</span><span class="state on">running</span></div>
+      <div class="rhead"><span class="n">Horizon 1</span><span class="state on">prototype</span></div>
       <h3>Sprint Planning</h3>
       <div class="when">the team · every two weeks</div>
       <p class="q">"Can we take this on?"</p>
@@ -249,12 +258,12 @@ table.rm s{text-decoration:none;font-size:10.5px;color:var(--muted)}
       </dl>
       <div class="cost"><b>cost of being wrong</b>
         One sprint. Recoverable, and everyone watches it happen - which is why this room is the
-        cheapest place to prove the method.</div>
-      <a class="go" href="demo.html">see this running →</a>
+        cheapest place to find out whether the method holds.</div>
+      <a class="go" href="demo.html">see the prototype →</a>
     </div>
 
     <div class="room">
-      <div class="rhead"><span class="n">Horizon 2</span><span class="state off">proposed</span></div>
+      <div class="rhead"><span class="n">Horizon 2</span><span class="state off">designed</span></div>
       <h3>PI Planning</h3>
       <div class="when">the ART · once a quarter, two days, everyone in the room</div>
       <p class="q">"How much of this fits in the PI?"</p>
@@ -275,7 +284,7 @@ table.rm s{text-decoration:none;font-size:10.5px;color:var(--muted)}
     </div>
 
     <div class="room">
-      <div class="rhead"><span class="n">Horizon 3</span><span class="state off">proposed</span></div>
+      <div class="rhead"><span class="n">Horizon 3</span><span class="state off">sketch</span></div>
       <h3>The annual roadmap</h3>
       <div class="when">product management and the business · once a year</div>
       <p class="q">"When will this be delivered?"</p>
@@ -424,7 +433,7 @@ table.rm s{text-decoration:none;font-size:10.5px;color:var(--muted)}
         <div class="grow"><span class="lab">Billing export</span>
           <div class="track y4"><b class="bar str" style="left:0%;width:50%">PI-5 stretch, likely lands PI-6</b></div></div>
         <div class="grow"><span class="lab">Partner API</span>
-          <div class="track y4"><b class="bar unk" style="left:25%;width:50%">unsized - placement is a guess until it is scoped</b></div></div>
+          <div class="track y4"><b class="bar unk" style="left:25%;width:50%">unsized - cannot be placed</b></div></div>
         <div class="grow"><span class="lab">Depot planning</span>
           <div class="track y4"><b class="bar sce" style="left:50%;width:25%">PI-7 scenario</b></div></div>
         <div class="gaxis" aria-hidden="true">
@@ -440,6 +449,68 @@ table.rm s{text-decoration:none;font-size:10.5px;color:var(--muted)}
         <b>The honest part is the last band.</b> A roadmap that fades out where the evidence ends
         is more useful than one that runs confidently to December, because the reader can see
         which promises are load-bearing.
+      </div>
+    </div>
+  </div>
+
+  <h2 class="sec"><b>It should get sharper as the team refines</b> · designed, not built</h2>
+  <p class="sub" style="margin-bottom:12px">A forecast made once is a guess with a date on it. The
+  interesting artifact is the <b>series</b>: the same initiative re-forecast as the epic gets split
+  into stories and the stories get acceptance criteria. Every run is already a dated folder, so the
+  snapshots exist - what is missing is the view across them.</p>
+
+  <div class="preview">
+    <div class="pvbar">
+      <span class="pvtag">convergence</span>
+      <span class="pvnote">designed · illustrative</span>
+    </div>
+    <div class="pvbody">
+      <h4>One initiative, re-forecast as it comes out of the fog</h4>
+      <div class="gwrap conv">
+        <div class="gover" aria-hidden="true">
+          <i class="mk m85" style="left:47%"><span>actual<br>47</span></i>
+        </div>
+        <div class="grow r3"><span class="lab">week 1 · epic</span>
+          <div class="track plain"><b class="bar rng w1" data-v="18 – 90" style="left:18%;width:72%"></b></div><span class="val">18 – 90</span></div>
+        <div class="grow r3"><span class="lab">week 3 · split ×4</span>
+          <div class="track plain"><b class="bar rng w2" data-v="28 – 72" style="left:28%;width:44%"></b></div><span class="val">28 – 72</span></div>
+        <div class="grow r3"><span class="lab">week 5 · 3 refined</span>
+          <div class="track plain"><b class="bar rng w3" data-v="38 – 58" style="left:38%;width:20%"></b></div><span class="val">38 – 58</span></div>
+        <div class="grow r3"><span class="lab">week 7 · all ready</span>
+          <div class="track plain"><b class="bar rng w4" data-v="44 – 52" style="left:44%;width:8%"></b></div><span class="val">44 – 52</span></div>
+        <div class="gaxis" aria-hidden="true">
+          <span style="left:0%">0</span><span style="left:25%">25</span>
+          <span style="left:50%">50</span><span style="left:75%">75 pts</span>
+        </div>
+      </div>
+
+      <p class="mut" style="margin:10px 0 0">The range narrowed by a factor of nine; the midpoint
+        moved seven points. <b class="ink">Refinement reduced uncertainty rather than just changing
+        the answer</b> - and that is not what always happens. A team can refine for a month and
+        watch the range stay exactly as wide, which says something about the refinement, not about
+        the estimate. Nobody can see that today because nobody keeps the earlier number.</p>
+
+      <h4 style="margin-top:16px">What the series is actually for</h4>
+      <ul class="qs">
+        <li><b>Scope growth, caught early.</b> When the split stories add up to more than the epic
+          they came from, that is not an estimation error - it is scope discovered, and it is the
+          most common way a roadmap quietly dies.</li>
+        <li><b>Three causes, told apart.</b> A forecast that moved did so because the initiative
+          changed, because our knowledge of it changed, or because the team's throughput changed.
+          Merging them puts the blame in the wrong place, so the delta names which one it was.</li>
+        <li><b>Where the AI estimate belongs.</b> Reading story text to find comparable finished
+          work is a language problem, and a good one for a model. The number that comes back is
+          still arithmetic over what the team actually spent on that comparable work - the model
+          matches, the script counts. An estimate that cannot show its comparables is fortune
+          telling with a decimal point.</li>
+      </ul>
+
+      <div class="limits">
+        <b>The risk this design has to survive is anchoring.</b> If the team sees a number before
+        estimating, they will settle near it, and the tool will have replaced the judgment it was
+        supposed to inform. So the estimate goes to one person preparing for the conversation, not
+        onto a screen in the refinement session. That is a decision about process, not code, and it
+        decides whether this helps or harms.
       </div>
     </div>
   </div>
@@ -486,14 +557,19 @@ table.rm s{text-decoration:none;font-size:10.5px;color:var(--muted)}
   <div class="today">
     <b>What exists today, without rounding up:</b>
     <ul>
-      <li><b>Horizon 1 is running.</b> A script with no dependencies and a self-check, verified on
-        two teams - one that gets a forecast and one that is refused. Every number in its output
-        traces to a single JSON file.</li>
-      <li><b>Horizons 2 and 3 are the shape, not the build.</b> They stand on the same extract, and
-        the order is a data dependency rather than a roadmap preference: the quarter needs the
-        sprint record, the year needs the quarter's patterns.</li>
-      <li><b>Nothing here has touched a real system.</b> The demo runs on a synthetic fixture whose
-        shape copies a Jira export and whose content is invented.</li>
+      <li><b>Nobody uses any of this.</b> It is one person's idea, built far enough to see whether
+        it survives contact with detail. No team has run it, no real project data has passed
+        through it, and nothing is deployed anywhere.</li>
+      <li><b>Horizon 1 is a working prototype, not a running tool.</b> A script with no
+        dependencies and a self-check, exercised on two synthetic teams - one that gets a forecast
+        and one that is refused. Every number it produces traces to a single JSON file. That is
+        the whole claim: the arithmetic holds on invented data.</li>
+      <li><b>Horizon 2 is designed, horizon 3 is a sketch.</b> They stand on the same extract, and
+        the order is a data dependency rather than a preference: the quarter needs the sprint
+        record, the year needs the quarter's patterns.</li>
+      <li><b>The hardest part is not built at all.</b> Sizing an initiative from comparable past
+        work is what makes horizon 2 real, and it needs epic-level data the prototype has never
+        seen.</li>
     </ul>
   </div>
 
