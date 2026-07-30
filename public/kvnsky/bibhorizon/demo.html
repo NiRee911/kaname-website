@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BibHorizon - Live demo: how much can loadboard carry?</title>
+<style>
+:root{
+  --bg:#0b0d10; --panel:#12151a; --panel2:#171b21; --border:#242a32;
+  --ink:#e6e8eb; --muted:#8b939e; --dim:#5c6570;
+  --good:#34d399; --warn:#fbbf24; --bad:#f87171; --acc:#7dd3fc;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace; --radius:10px;
+}
+*{box-sizing:border-box}
+body{font:13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  margin:0;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+
+header{padding:12px 24px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.eyebrow{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+header h1{font-size:16px;font-weight:600;letter-spacing:-.01em;margin:0}
+header p{margin:0;color:var(--muted);font-size:12px;flex:1;min-width:200px}
+header a{font-size:12px;color:var(--ink);text-decoration:none;border:1px solid var(--border);
+  border-radius:99px;padding:3px 12px}
+header a:hover{background:var(--panel2)}
+button{font:12.5px inherit;color:var(--bg);background:var(--ink);border:0;border-radius:99px;
+  padding:5px 16px;cursor:pointer;font-weight:600}
+button.ghost{background:transparent;color:var(--muted);border:1px solid var(--border);font-weight:400}
+button:hover{opacity:.9}
+button.ghost:hover{color:var(--ink);opacity:1}
+button:focus-visible,header a:focus-visible,.tab:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+button[disabled]{opacity:.4;cursor:default}
+.sigbadge{font:10px var(--mono);color:var(--dim);letter-spacing:.06em;white-space:nowrap}
+.sigbadge b{color:var(--acc);font-weight:400}
+.sigbadge b.warn{color:var(--warn)}
+
+main{flex:1;display:grid;grid-template-columns:minmax(360px,42%) 1fr;gap:16px;padding:16px 24px;min-height:0}
+
+.term{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+  display:flex;flex-direction:column;min-height:420px;max-height:calc(100vh - 140px);overflow:hidden}
+.term-bar{display:flex;align-items:center;gap:6px;padding:9px 13px;border-bottom:1px solid var(--border)}
+.term-bar i{width:10px;height:10px;border-radius:99px;background:var(--border);display:inline-block}
+.term-bar span{font:11px var(--mono);color:var(--dim);margin-left:8px}
+.term-body{font:12px/1.7 var(--mono);padding:12px 15px;overflow-y:auto;flex:1;white-space:pre-wrap;word-break:break-word}
+.tl{opacity:0;transform:translateY(2px);transition:opacity .25s,transform .25s;display:block}
+.tl.on{opacity:1;transform:none}
+.tl.cmd{color:var(--ink)} .tl.cmd::before{content:"$ ";color:var(--dim)}
+.tl.human{color:var(--acc)} .tl.human::before{content:"⌨ ";color:var(--dim)}
+.tl.ok{color:var(--good)}
+.tl.gap{color:var(--warn)}
+.tl.dim{color:var(--muted)}
+.tl.hot{color:var(--bad)}
+.cursor{display:inline-block;width:7px;height:14px;background:var(--acc);vertical-align:-2px;
+  animation:blink 1.1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+@media (prefers-reduced-motion: reduce){
+  .cursor{animation:none}
+  .tl{transition:none}
+}
+
+.side{display:flex;flex-direction:column;min-height:0}
+.tabs{display:flex;gap:5px;margin-bottom:9px;flex-wrap:wrap}
+.tab{font:11px var(--mono);letter-spacing:.05em;color:var(--muted);background:var(--panel);
+  border:1px solid var(--border);border-radius:99px;padding:4px 13px;cursor:pointer}
+.tab[aria-selected="true"]{color:var(--bg);background:var(--ink);border-color:var(--ink);font-weight:600}
+.tab.fresh::after{content:"";display:inline-block;width:5px;height:5px;border-radius:99px;
+  background:var(--acc);margin-left:6px;vertical-align:1px}
+.pane{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+  padding:15px 17px;overflow-y:auto;flex:1;min-height:0}
+.pane h2{font:11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+  margin:0 0 4px}
+.pane h3{font-size:13.5px;margin:14px 0 3px}
+.pane h3:first-of-type{margin-top:8px}
+.mut{color:var(--muted);font-size:12px}
+.reveal{opacity:0;transform:translateY(3px);transition:opacity .3s,transform .3s}
+.reveal.on{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){.reveal{transition:none}}
+
+.bar{display:flex;height:22px;border-radius:5px;overflow:hidden;margin:8px 0 5px;border:1px solid var(--border)}
+.bar i{display:block;position:relative}
+.bar i.b{background:#e6e8eb}
+.bar i.t{background:#5c6570}
+.bar i.r{background:var(--warn)}
+.bar i.u{background:#242a32}
+.plan{position:relative;height:22px;margin-bottom:7px}
+.plan span{position:absolute;top:0;font:9.5px var(--mono);color:var(--muted);white-space:nowrap;
+  transform:translateX(-50%);text-align:center}
+.plan span::before{content:"▲";display:block;color:var(--dim);font-size:8px;line-height:1.3}
+.barkey{display:flex;gap:12px;font:10.5px var(--mono);color:var(--muted);flex-wrap:wrap}
+.barkey s{text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+.barkey em{width:9px;height:9px;border-radius:2px;display:inline-block;font-style:normal}
+.barkey u{text-decoration:none;color:var(--bad)}
+
+table{border-collapse:separate;border-spacing:0;width:100%;font-size:12px;margin-top:7px}
+th,td{border-bottom:1px solid var(--border);padding:4px 8px;text-align:left}
+th{color:var(--muted);font:10px var(--mono);letter-spacing:.08em;text-transform:uppercase;font-weight:400}
+td.n{font-family:var(--mono);text-align:right}
+tr:last-child td{border-bottom:none}
+tr.hot td{color:var(--warn)}
+
+.lv{display:grid;grid-template-columns:44px 1fr 62px;gap:10px;align-items:center;
+  font-size:12px;padding:3px 0}
+.lv code{font:10.5px var(--mono);color:var(--muted)}
+.lv .track{height:8px;background:#1b2027;border-radius:4px;overflow:hidden}
+.lv .track i{display:block;height:100%;background:var(--acc);opacity:.85}
+.lv b{font-family:var(--mono);font-size:12.5px;text-align:right}
+.lv.low .track i{background:var(--warn)}
+
+.callout{border:1px solid var(--border);border-radius:8px;padding:9px 12px;margin-top:11px;
+  background:var(--panel2);font-size:12px}
+.callout.bad{border-color:#5b2b2b;background:#1a1113}
+.callout.bad b{color:var(--bad)}
+.callout.warn{border-color:#5b4a1f;background:#1a1710}
+.callout.warn b{color:var(--warn)}
+.callout.good{border-color:#2b5b47;background:#101a16}
+.callout.good b{color:var(--good)}
+
+.gatebar{border:1px solid var(--border);border-radius:var(--radius);background:var(--panel2);
+  padding:11px 14px;margin-top:11px;display:none;align-items:center;gap:12px;flex-wrap:wrap}
+.gatebar.on{display:flex}
+.gatebar p{margin:0;flex:1;min-width:200px;font-size:12px}
+.gatebar p b{color:var(--warn)}
+.decided{display:none;margin-top:11px}
+.decided.on{display:block}
+
+.ph{color:var(--dim);font-size:12.5px;text-align:center;padding:38px 10px}
+
+footer{border-top:1px solid var(--border);padding:9px 24px;display:flex;justify-content:space-between;
+  gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--dim)}
+footer b{color:var(--muted);font-weight:400}
+
+@media (max-width:900px){
+  main{grid-template-columns:1fr}
+  /* bez stropu terminal pocas behu rastie a tlaci obsah pod sebou nizsie */
+  .term{min-height:300px;max-height:60vh}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="eyebrow">BibHorizon · demo</span>
+  <h1 id="hdr">loadboard - how much can it carry?</h1>
+  <p>A scripted replay of one run. Nothing is fetched, nothing is written back.</p>
+  <span class="sigbadge">history <b id="hist">20</b> sprints · window <b id="win">12</b></span>
+  <button id="run">Run</button>
+  <button id="skip" class="ghost">Skip to the result</button>
+  <a href="flow.html">← How it works</a>
+<a href="/kvnsky">&larr; kvnsky</a>
+</header>
+
+<main>
+  <section class="term">
+    <div class="term-bar"><i></i><i></i><i></i><span>claude - BibHorizon</span></div>
+    <div class="term-body" id="term"><span class="cursor" id="cur"></span></div>
+  </section>
+
+  <section class="side">
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" data-tab="alloc" aria-selected="true">allocation.md</button>
+      <button class="tab" role="tab" data-tab="fc" aria-selected="false">forecast.md</button>
+      <button class="tab" role="tab" data-tab="q" aria-selected="false">questions.md</button>
+      <button class="tab" role="tab" data-tab="ref" aria-selected="false">refused</button>
+    </div>
+
+    <div class="pane">
+      <div class="ph" id="placeholder">Press <b>Run</b> to replay the run - or <b>Skip to the result</b>.</div>
+
+      <!-- ---------------- allocation ---------------- -->
+      <div data-pane="alloc" hidden>
+        <h2>where the capacity actually went</h2>
+        <div class="reveal" data-r="a1">
+          <h3>Plan against reality</h3>
+          <p class="mut" style="margin:0">Last 12 sprints, weighted by points.</p>
+          <div class="bar" role="img" aria-label="BUILD 43.2, TECH 16.5, RUN 38.8, unclassified 1.4 percent">
+            <i class="b" style="width:43.2%"></i><i class="t" style="width:16.5%"></i><i class="r" style="width:38.8%"></i><i class="u" style="width:1.4%"></i>
+          </div>
+          <!-- znacky planu: kde ma koncit BUILD (50) a BUILD+TECH (75).
+               Bez popisu boli dve cisla, ktore nikto nevie precitat. -->
+          <div class="plan" aria-hidden="true">
+            <span style="left:50%">plan: BUILD ends</span><span style="left:75%">+TECH ends</span>
+          </div>
+          <div class="barkey">
+            <s><em style="background:#e6e8eb"></em>BUILD 43.2 <u>−6.8</u></s>
+            <s><em style="background:#5c6570"></em>TECH 16.5 <u>−8.5</u></s>
+            <s><em style="background:#fbbf24"></em>RUN 38.8 <u>+13.8</u></s>
+            <s><em style="background:#242a32"></em>UNCL. 1.4</s>
+          </div>
+        </div>
+
+        <div class="reveal" data-r="a2">
+          <div class="callout bad"><b>Below plan in the window:</b> BUILD 9 of 12 · TECH 11 of 12 · RUN 0 of 12.
+            TECH is not merely under - it is under in almost every sprint. A category that
+            yields this consistently is the one that gives way when something has to.</div>
+        </div>
+
+        <div class="reveal" data-r="a3">
+          <h3>The drift</h3>
+          <table>
+            <tr><th>Sprint</th><th>Pts</th><th>BUILD</th><th>TECH</th><th>RUN</th></tr>
+            <tr><td>1</td><td class="n">60</td><td class="n">55.0</td><td class="n">33.3</td><td class="n">11.7</td></tr>
+            <tr><td>2</td><td class="n">48</td><td class="n">62.5</td><td class="n">25.0</td><td class="n">12.5</td></tr>
+            <tr><td>3</td><td class="n">113</td><td class="n">58.4</td><td class="n">17.7</td><td class="n">23.9</td></tr>
+            <tr><td>…</td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td></tr>
+            <tr><td>18</td><td class="n">88</td><td class="n">40.9</td><td class="n">11.4</td><td class="n">47.7</td></tr>
+            <tr><td>19</td><td class="n">87</td><td class="n">46.0</td><td class="n">21.8</td><td class="n">32.2</td></tr>
+            <tr class="hot"><td>20</td><td class="n">89</td><td class="n">34.8</td><td class="n">6.7</td><td class="n">58.4</td></tr>
+          </table>
+          <p class="mut" style="margin-top:8px">A drift, not a bad month. The plan was never changed -
+            nobody decided this.</p>
+        </div>
+
+        <div class="reveal" data-r="a4">
+          <div class="callout warn"><b>CORRELATION</b> - 77 issues changed sprint across the record,
+            and carryover is higher in the sprints with the higher RUN share. The two move together.
+            That is not a cause, and this run measured neither.</div>
+        </div>
+      </div>
+
+      <!-- ---------------- forecast ---------------- -->
+      <div data-pane="fc" hidden>
+        <h2>what history supports</h2>
+        <div class="reveal" data-r="f1">
+          <h3>Next sprint</h3>
+          <p class="mut" style="margin:0 0 7px">Monte Carlo, 10 000 trials, seed 20260730, sampled from the last 12 sprints.</p>
+          <div class="lv"><code>50 %</code><span class="track"><i style="width:100%"></i></span><b>87 pts</b></div>
+          <div class="lv"><code>70 %</code><span class="track"><i style="width:86%"></i></span><b>75 pts</b></div>
+          <div class="lv"><code>85 %</code><span class="track"><i style="width:76%"></i></span><b>66 pts</b></div>
+          <div class="lv low"><code>95 %</code><span class="track"><i style="width:36%"></i></span><b>31 pts</b></div>
+          <p class="mut" style="margin-top:8px">Read as: <em>in 85 sprints of 100, this team finished
+            66 points or more.</em></p>
+        </div>
+
+        <div class="reveal" data-r="f2">
+          <div class="callout"><b>Why 95 % drops to 31.</b> Sprint 14 delivered 31 points - one collapse
+            in twelve. A method that smooths that away reports a tidier number and hides the only
+            sprint worth asking about. This team is usually good for the high seventies, and roughly
+            once a quarter something takes a sprint away. Both halves are planning input.</div>
+        </div>
+
+        <div class="reveal" data-r="f3">
+          <h3>Commitment check</h3>
+          <div class="callout bad">Proposed <b>95 points</b> · lands <b>25.7 %</b> of the time · <b>over-committed</b>.
+            Close enough to the 87-point median to look reachable, which is exactly what makes it dangerous.</div>
+        </div>
+
+        <div class="gatebar" id="gate">
+          <p><b>Human decision.</b> The tool does not choose. On this history, 95 lands 25.7 % of the time
+            and 75 lands 75.1 %.</p>
+          <button id="keepBtn">Commit 95 anyway</button>
+          <button id="trimBtn" class="ghost">Trim to 75</button>
+        </div>
+        <div class="decided" id="decided">
+          <div class="callout good" id="decidedTxt"></div>
+        </div>
+      </div>
+
+      <!-- ---------------- questions ---------------- -->
+      <div data-pane="q" hidden>
+        <h2>what this run could not answer</h2>
+        <div class="reveal" data-r="q1">
+          <table>
+            <tr><th>What</th><th>N</th><th>Why it matters</th></tr>
+            <tr><td>type <code>Automation Request</code> not in the mapping</td><td class="n">4</td>
+                <td>counted as UNCLASSIFIED, never dropped - which category is it?</td></tr>
+            <tr><td>resolved with no sprint</td><td class="n">6</td>
+                <td>work that was done and no allocation figure can see</td></tr>
+            <tr><td>still open</td><td class="n">5</td>
+                <td>excluded from every number, listed so the totals reconcile</td></tr>
+          </table>
+        </div>
+        <div class="reveal" data-r="q2">
+          <h3>Not in the record at all</h3>
+          <p class="mut" style="margin:0">Absence is inside the history but cannot be separated from it -
+            a sprint with three people away cannot be told apart from a bad sprint.
+            <b>Sprint 14 is exactly that question, and this run cannot answer it.</b></p>
+          <div class="callout" style="margin-top:10px"><b>Proposed, not applied.</b>
+            <code>Automation Request</code> could map to TECH. This run does not do it. An audit that
+            quietly extends its own classification is writing the plan it is measuring against.
+            Adopting it is one line in <code>targets/loadboard.yaml</code>, and the next run reports
+            the delta as <em>mapping changed</em> - never as a shift in the team's behaviour.</div>
+        </div>
+      </div>
+
+      <!-- ---------------- refused ---------------- -->
+      <div data-pane="ref" hidden>
+        <h2>a second squad, same engine</h2>
+        <div class="reveal" data-r="r1">
+          <h3>loadboard-new</h3>
+          <div class="callout warn"><b>No forecast written.</b> 3 closed sprints against a threshold of 6.
+            <code>forecast: null · reason: not enough history</code></div>
+          <p class="mut" style="margin-top:9px">A forecast from three sprints looks exactly as convincing
+            as one from thirty. That is the whole reason the threshold exists.</p>
+        </div>
+        <div class="reveal" data-r="r2">
+          <h3>What is returned instead</h3>
+          <p class="mut" style="margin:0"><code>questions.md</code> - what is missing, and what it would
+            take to answer: three more closed sprints, or an explicit decision to forecast on a
+            comparable team's history and label it as borrowed.</p>
+          <div class="callout" style="margin-top:10px"><b>This is the half that makes the other half credible.</b>
+            A tool that produces a number for every team is a tool whose numbers mean nothing.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span><b>Synthetic fixture.</b> Shape copied from a Jira export, content invented. No real project data appears here.</span>
+  <span><b>Read-only.</b> Nothing is written to Jira, in the demo or in the tool.</span>
+</footer>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const term=$('#term'), cur=$('#cur');
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let timer=null, running=false, started=false, offered=false, decided=false;
+
+/* ---- main script: up to the human decision ---- */
+const S=[
+ ['cmd','horizon loadboard --commit 95',420],
+ ['dim','reading mock/loadboard/jira.json - 516 issues, 20 closed sprints',330],
+ ['dim','mapping from targets/loadboard.yaml - no Jira name is hardcoded in the tool',330],
+ ['ok','classified 505 issues into BUILD / TECH / RUN',300],
+ ['gap','4 x Automation Request - type not in the mapping -> UNKNOWN, reported not dropped',380,'q1'],
+ ['gap','6 resolved with no sprint - outside every allocation figure',330,'q2'],
+ ['dim','step 2 - allocation against plan',300],
+ ['ok','window = last 12 sprints, weighted by points',300,'a1'],
+ ['hot','BUILD 43.2 / 50   TECH 16.5 / 25   RUN 38.8 / 25',480,'a2'],
+ ['hot','TECH below plan in 11 of the last 12 sprints',420,'a3'],
+ ['dim','carryover 77 issues - read from the changelog, not estimated',330,'a4'],
+ ['dim','CORRELATION tagged: moves with the RUN share. Cause not established.',380],
+ ['dim','step 3 - forecast',300],
+ ['cmd','monte carlo - 10000 trials, seed 20260730, sampled from the last 12 sprints',420],
+ ['ok','50% -> at least 87 pts',260,'f1'],
+ ['ok','70% -> at least 75 pts',240],
+ ['ok','85% -> at least 66 pts',240],
+ ['gap','95% -> at least 31 pts   (sprint 14 delivered 31 - not smoothed away)',480,'f2'],
+ ['dim','step 4 - commitment check',300],
+ ['hot','proposed 95 pts -> lands 25.7% of the time -> OVER-COMMITTED',460,'f3','pause']
+];
+
+/* ---- tail: after the human decides ---- */
+function tail(choice){
+  const first = choice==='keep'
+    ? [['human','commit 95 anyway',380],
+       ['dim','recorded with its probability: 95 pts at 25.7%. The tool does not argue twice.',460]]
+    : [['human','trim to 75',380],
+       ['ok','75 pts at 75.1% - inside what this history supports',420]];
+  return first.concat([
+   ['dim','nothing was written to Jira. forecast.md is an artifact, not a commitment.',420],
+   ['dim',' ',240],
+   ['human','horizon loadboard-new',420],
+   ['dim','different squad, same engine, same shape of config',330],
+   ['cmd','reading mock/loadboard-new/jira.json - 3 closed sprints',380],
+   ['gap','history 3 sprints, threshold 6 -> NO FORECAST WRITTEN',520,'r1'],
+   ['dim','forecast: null   reason: not enough history',330],
+   ['ok','questions.md   what is missing and what it would take',420,'r2'],
+   ['dim','done. 2 squads, 1 forecast, 1 refusal.',300]
+  ]);
+}
+
+function line(cls,txt){
+  // sledovanie konca len ked je citatel uz dole - inak mu replay kradne scroll
+  const stick=term.scrollHeight-term.scrollTop-term.clientHeight<32;
+  const el=document.createElement('span');
+  el.className='tl '+cls; el.textContent=txt;
+  term.insertBefore(el,cur);
+  void el.offsetWidth; el.classList.add('on');
+  if(stick) term.scrollTop=term.scrollHeight;
+}
+function fresh(tab){
+  const el=$('.tab[data-tab="'+tab+'"]');
+  if(el.getAttribute('aria-selected')!=='true') el.classList.add('fresh');
+}
+function reveal(key){
+  if(!key)return;
+  $('#placeholder').hidden=true;
+  const sel=$('.tab[aria-selected="true"]').dataset.tab;
+  $('[data-pane="'+sel+'"]').hidden=false;
+  $$('[data-r="'+key+'"]').forEach(e=>e.classList.add('on'));
+  if(key[0]==='a') fresh('alloc');
+  if(key[0]==='f') fresh('fc');
+  if(key[0]==='q') fresh('q');
+  if(key[0]==='r'){
+    fresh('ref');
+    $('#hdr').textContent='loadboard-new - how much can it carry?';
+    $('#hist').textContent='3'; $('#hist').className='warn';
+    $('#win').textContent='-';
+  }
+}
+function play(list,i,after){
+  if(i>=list.length){ if(after)after(); return; }
+  const [cls,txt,d,key,flag]=list[i];
+  line(cls,txt); reveal(key);
+  if(flag==='pause'){
+    offered=true; $('#gate').classList.add('on'); fresh('fc');
+    // timer je null: co drzi replay je clovek, nie cakanie
+    if(!decided){ timer=null; return; }
+  }
+  timer=setTimeout(()=>play(list,i+1,after), reduced?0:d);
+}
+function doDecide(choice){
+  if(decided||!offered)return false;
+  decided=true;
+  $('#gate').classList.remove('on');
+  $('#decidedTxt').innerHTML = choice==='keep'
+    ? '<b>Committed at 95.</b> Recorded together with its probability - 25.7 %. The tool states the odds once and does not argue.'
+    : '<b>Trimmed to 75.</b> 75.1 % on this history. The forecast did not decide; it priced the choice.';
+  $('#decided').classList.add('on');
+  fresh('fc');
+  return true;
+}
+function bindGate(id,choice){
+  $(id).addEventListener('click',()=>{
+    // buttony ziju v skrytom bare, ale guard je jednoriadkovy: klik pred otvorenim
+    // gate by spustil tail paralelne s hlavnym skriptom
+    if(!offered)return;
+    const wasRunning=running;
+    if(doDecide(choice) && wasRunning) play(tail(choice),0,finish);
+  });
+}
+bindGate('#keepBtn','keep'); bindGate('#trimBtn','trim');
+
+function finish(){
+  running=false; timer=null;
+  $('#run').textContent='Replay'; $('#run').disabled=false;
+}
+function reset(){
+  clearTimeout(timer); decided=false; offered=false;
+  $$('.tl').forEach(e=>e.remove());
+  $$('.reveal').forEach(e=>e.classList.remove('on'));
+  $$('[data-pane]').forEach(e=>e.hidden=true);
+  $$('.tab').forEach(t=>t.classList.remove('fresh'));
+  $('#placeholder').hidden=false;
+  $('#gate').classList.remove('on');
+  $('#decided').classList.remove('on');
+  $('#hdr').textContent='loadboard - how much can it carry?';
+  $('#hist').textContent='20'; $('#hist').className='';
+  $('#win').textContent='12';
+  started=false; selectTab('alloc');
+}
+$('#run').addEventListener('click',()=>{
+  if(running)return;
+  reset(); running=true; started=true;
+  $('#run').disabled=true;
+  play(S,0,()=>{ /* paused at the human decision */ });
+});
+$('#skip').addEventListener('click',()=>{
+  clearTimeout(timer);
+  // kto pride studeny, ma byt jeden klik od vysledku
+  if(!started){ reset(); started=true; }
+  const rest=list=>list.forEach(([cls,txt,,key])=>{ line(cls,txt); reveal(key); });
+  $$('.tl').forEach(e=>e.remove());
+  rest(S); offered=true; doDecide('trim'); rest(tail('trim'));
+  finish();
+});
+
+function selectTab(name){
+  $$('.tab').forEach(t=>{
+    t.setAttribute('aria-selected', t.dataset.tab===name?'true':'false');
+    if(t.dataset.tab===name)t.classList.remove('fresh');
+  });
+  $$('[data-pane]').forEach(p=>{ p.hidden=!(p.dataset.pane===name&&started); });
+  $('#placeholder').hidden=started;
+}
+$$('.tab').forEach(t=>t.addEventListener('click',()=>selectTab(t.dataset.tab)));
+})();
+</script>
+</body>
+</html>

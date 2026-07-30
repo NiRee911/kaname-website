@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BibHorizon - What history says we can carry</title>
+<style>
+:root{
+  --bg:#fafafa; --card:#fff; --border:#e4e4e7; --ink:#09090b; --muted:#71717a;
+  --secondary:#f4f4f5; --green:#16a34a; --amber:#d97706; --red:#dc2626; --blue:#2563eb;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace; --radius:8px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{font:13px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  margin:0;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
+
+header{padding:12px 24px;border-bottom:1px solid var(--border);background:var(--card);
+  display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.eyebrow{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+header h1{font-size:17px;font-weight:600;letter-spacing:-.02em;margin:0}
+header p{margin:0;color:var(--muted);font-size:12.5px;flex:1}
+.modes{display:flex;gap:5px}
+.modes span{font:10px var(--mono);border:1px solid var(--border);background:var(--secondary);
+  color:#3f3f46;border-radius:99px;padding:1px 9px}
+.modes span.hot{border-color:#bbf7d0;background:#f0fdf4;color:var(--green)}
+.modes span.cold{border-color:#e4e4e7;background:var(--card);color:var(--muted);border-style:dashed}
+header a{font-size:12px;color:var(--ink);text-decoration:none;border:1px solid var(--border);
+  border-radius:99px;padding:2px 11px;background:var(--card);white-space:nowrap}
+header a:hover{background:var(--secondary)}
+header a:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+.wrap{position:relative;flex:1;min-height:0;overflow-y:auto}
+#wires{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.flow{display:grid;grid-template-columns:1.1fr .9fr 1fr 1.15fr;gap:38px;
+  padding:12px 24px;align-items:start;height:100%}
+.col>h2{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 7px}
+.col>h2 b{color:var(--ink)}
+.subhead{font:10px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+  margin:12px 0 6px;display:flex;align-items:baseline;gap:6px}
+.subhead:first-of-type{margin-top:0}
+.subhead em{font-style:normal;color:#a1a1aa;letter-spacing:0;text-transform:none;font-family:inherit;font-size:11px}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:8px 12px;margin-bottom:8px;box-shadow:0 1px 2px #0000000d}
+.card h3{font-size:13px;font-weight:600;margin:0}
+.card p{margin:1px 0 0;font-size:11.5px;color:var(--muted)}
+.badge{display:inline-block;font:10px var(--mono);background:var(--secondary);
+  border:1px solid var(--border);color:#3f3f46;border-radius:99px;padding:0 8px;margin-top:5px}
+.badge.ro{color:var(--red);border-color:#fecaca;background:#fef2f2}
+.value{font-size:11.5px;color:var(--green);margin-top:4px}
+.value::before{content:"↳ "}
+.gap{display:inline-block;font:10px var(--mono);color:var(--amber);background:#fffbeb;
+  border:1px dashed var(--amber);border-radius:6px;padding:0 8px;margin-top:5px}
+
+/* ---------- the record: 20 sprints as a strip. Nothing else in the series
+              has a time axis; this is the visual signature. ---------- */
+.record{display:flex;align-items:flex-end;gap:2px;height:54px;margin-top:7px}
+.record i{flex:1;background:#d4d4d8;border-radius:1px 1px 0 0;min-height:2px}
+.record i.win{background:#18181b}
+.record i.low{background:var(--amber)}
+.axis{display:flex;justify-content:space-between;font:9.5px var(--mono);color:#a1a1aa;margin-top:3px}
+.legendrow{font-size:11px;color:var(--muted);margin-top:6px}
+.legendrow b{color:var(--ink);font-weight:600}
+
+/* ---------- deterministic core (dark) ---------- */
+.cell{background:#09090b;color:#a1a1aa;border-radius:12px;padding:13px 13px 10px}
+.cell .agent{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;
+  text-align:center;color:#e4e4e7;margin-bottom:9px}
+.steps{list-style:none;margin:0;padding:0;font:11px var(--mono)}
+.steps li{display:grid;grid-template-columns:auto 1fr;gap:8px;padding:4px 0;border-bottom:1px solid #27272a}
+.steps li:last-child{border-bottom:none}
+.steps b{color:#e4e4e7;font-weight:600}
+.steps span{color:#71717a;font-family:-apple-system,sans-serif;font-size:11px}
+.gatebox{background:var(--card);color:var(--ink);border:1px solid var(--border);
+  border-radius:9px;padding:8px 9px;text-align:center;margin-top:10px}
+.gatebox h3{margin:0;font-size:12.5px;font-weight:600;font-family:var(--mono)}
+.gatebox .sub{font-size:10px;color:var(--muted);line-height:1.3;margin-top:1px}
+.rules{list-style:none;margin:9px 0 0;padding:0;font-size:11.5px}
+.rules li{margin:4px 0;padding-left:14px;position:relative}
+.rules li::before{content:"";position:absolute;left:1px;top:6px;width:5px;height:5px;
+  border-radius:99px;background:var(--green)}
+.cell .one{margin:9px 2px 0;font-size:11px;color:#71717a;text-align:center}
+
+/* ---------- past ---------- */
+.bar{display:flex;height:14px;border-radius:4px;overflow:hidden;margin-top:6px;
+  border:1px solid var(--border)}
+.bar i{display:block}
+.bar i.b{background:#18181b}
+.bar i.t{background:#a1a1aa}
+.bar i.r{background:var(--amber)}
+.bar i.u{background:#e4e4e7}
+.barkey{display:flex;gap:10px;font:10px var(--mono);color:var(--muted);margin-top:4px;flex-wrap:wrap}
+.barkey s{text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.barkey em{width:8px;height:8px;border-radius:2px;display:inline-block;font-style:normal}
+.miss{font-size:11.5px;margin-top:6px}
+.miss b{color:var(--red)}
+
+/* ---------- horizon cone ---------- */
+.cone{width:100%;height:126px;display:block;margin-top:4px}
+.conelabels{display:flex;font:9.5px var(--mono);color:#a1a1aa;letter-spacing:.06em;
+  text-transform:uppercase;margin-top:2px}
+.conelabels span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding-right:4px}
+/* kazdy popisok patri k svojmu pasmu - bez cierky splynu do jedneho retazca */
+.conelabels span+span{border-left:1px solid var(--border);padding-left:6px}
+.conelabels b{color:var(--ink);font-weight:600}
+.conekey{font-size:11px;color:var(--muted);margin-top:5px}
+.lv{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;
+  font-size:11.5px;padding:2px 0}
+.lv code{font:10px var(--mono);background:var(--secondary);border:1px solid var(--border);
+  border-radius:4px;padding:0 6px}
+.lv .track{height:6px;background:var(--secondary);border-radius:3px;overflow:hidden}
+.lv .track i{display:block;height:100%;background:#18181b}
+.lv b{font-family:var(--mono);font-size:11px}
+.silent{border-style:dashed;background:var(--secondary)}
+
+.bottom{border-top:1px solid var(--border);background:var(--card);padding:8px 24px 10px}
+.strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.strip .v{border:1px solid var(--border);border-radius:var(--radius);padding:6px 11px}
+.strip b{display:block;font-size:12px;font-weight:600}
+.strip p{margin:0;font-size:11px;color:var(--muted)}
+.meta-row{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:8px}
+details summary{cursor:pointer;font:10px var(--mono);letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);list-style:none}
+details summary::before{content:"▸ "}
+details[open] summary::before{content:"▾ "}
+.tablewrap{overflow-x:auto}
+table{border-collapse:separate;border-spacing:0;width:100%;background:var(--card);
+  border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;font-size:12px;margin-top:6px}
+th,td{border-bottom:1px solid var(--border);padding:4px 11px;text-align:left}
+th{background:var(--secondary);font-size:11px;font-weight:600}
+tr:last-child td{border-bottom:none}
+code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radius:4px}
+.foot{font-size:11px;color:var(--muted);white-space:nowrap}
+
+@media (max-width:1050px){
+  .flow{grid-template-columns:1fr 1fr;height:auto}
+  #wires{display:none}
+  body{height:auto}
+}
+@media (max-width:640px){
+  .flow{grid-template-columns:1fr;gap:16px}
+  .strip{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="eyebrow">BibHorizon · internal PoC</span>
+  <h1>What history says we can carry</h1>
+  <p>Every planning tool asks a person for a number. This one reads what the team actually did, and answers with a range - or refuses.</p>
+  <div class="modes" aria-label="Outcomes">
+    <span class="hot">forecast</span><span class="cold">refuse</span>
+  </div>
+  <a href="demo.html">Watch the demo →</a>
+<a href="/kvnsky">&larr; kvnsky</a>
+</header>
+
+<div class="wrap">
+<svg id="wires" aria-hidden="true"></svg>
+<div class="flow">
+
+  <div class="col" id="inputs">
+    <h2><b>The record</b> · read-only</h2>
+
+    <div class="subhead">What was delivered <em>- 20 closed sprints</em></div>
+    <div class="card src">
+      <h3>Sprint history</h3>
+      <div class="record" id="rec" aria-label="Delivered points per sprint, 20 sprints"></div>
+      <div class="axis"><span>sprint 1</span><span>sprint 20</span></div>
+      <p class="legendrow">Black = the last 12, the window the forecast samples.
+        <b>Amber = sprint 14, 31 points</b> - the one collapse in the window.</p>
+      <span class="badge">changelog required - carryover is read, not estimated</span>
+    </div>
+
+    <div class="subhead">What was intended <em>- and never revisited</em></div>
+    <div class="card src">
+      <h3>The plan</h3>
+      <p>Target allocation 50 / 25 / 25 and the type-to-category mapping. Configuration, owned by the team.</p>
+      <span class="badge ro">no Jira name lives in the code</span>
+      <div class="value">an unmapped type becomes UNKNOWN, never silently dropped</div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2><b>Deterministic core</b> · no model</h2>
+    <div class="cell" id="core">
+      <div class="agent">scripts/horizon.py</div>
+      <ul class="steps">
+        <li><b>classify</b><span>closed work into BUILD / TECH / RUN, per sprint</span></li>
+        <li><b>compare</b><span>actual allocation against the plan</span></li>
+        <li><b>read</b><span>carryover from the changelog</span></li>
+        <li><b>simulate</b><span>10 000 trials, sampled from the window</span></li>
+      </ul>
+
+      <div class="gatebox">
+        <h3>history &lt; 6 sprints ?</h3>
+        <div class="sub">below the threshold, no forecast is written</div>
+      </div>
+
+      <ul class="rules">
+        <li>fixed seed - two runs give the same answer</li>
+        <li>85 % confidence is the 15th percentile, not the 85th</li>
+        <li>every number in the report traces to one JSON file</li>
+      </ul>
+      <p class="one">The model writes the sentences. It never writes a number.</p>
+    </div>
+  </div>
+
+  <div class="col" id="pastcol">
+    <h2><b>What the past says</b></h2>
+
+    <div class="card out" id="alloc">
+      <h3>Plan against reality</h3>
+      <p>Last 12 sprints, weighted by points.</p>
+      <div class="bar" role="img" aria-label="Actual allocation: BUILD 43.2, TECH 16.5, RUN 38.8, unclassified 1.4 percent">
+        <i class="b" style="width:43.2%"></i><i class="t" style="width:16.5%"></i><i class="r" style="width:38.8%"></i><i class="u" style="width:1.4%"></i>
+      </div>
+      <div class="barkey">
+        <s><em style="background:#18181b"></em>BUILD 43.2 <span style="color:#a1a1aa">/ 50</span></s>
+        <s><em style="background:#a1a1aa"></em>TECH 16.5 <span style="color:#a1a1aa">/ 25</span></s>
+        <s><em style="background:#d97706"></em>RUN 38.8 <span style="color:#a1a1aa">/ 25</span></s>
+        <s><em style="background:#e4e4e7"></em>UNCL. 1.4</s>
+      </div>
+      <p class="miss">Below plan in the window: BUILD <b>9 of 12</b> · TECH <b>11 of 12</b> · RUN 0 of 12.</p>
+      <div class="value">the plan was never changed - nobody decided this</div>
+    </div>
+
+    <div class="card out">
+      <h3>Carryover</h3>
+      <p><b>77 issues</b> changed sprint across the record. Taken from the changelog, not estimated.</p>
+      <span class="gap">CORRELATION - moves with the RUN share, cause not established</span>
+    </div>
+  </div>
+
+  <div class="col" id="outputs">
+    <h2><b>What the horizon says</b> · never one number</h2>
+
+    <div class="card out" id="conecard">
+      <h3>Next sprint</h3>
+      <svg class="cone" viewBox="0 0 300 132" preserveAspectRatio="none" role="img"
+           aria-label="Uncertainty widening across three planning horizons">
+        <defs>
+          <linearGradient id="fade" x1="0" x2="1">
+            <stop offset="0" stop-color="#18181b" stop-opacity=".16"/>
+            <stop offset="1" stop-color="#18181b" stop-opacity=".03"/>
+          </linearGradient>
+        </defs>
+        <path d="M6 66 C 90 40, 150 24, 294 10 L294 122 C150 108, 90 92, 6 66 Z" fill="url(#fade)"/>
+        <path d="M6 66 C 90 40, 150 24, 294 10" fill="none" stroke="#18181b" stroke-width="1.2" stroke-dasharray="4 3"/>
+        <path d="M6 66 C 90 92, 150 108, 294 122" fill="none" stroke="#18181b" stroke-width="1.2" stroke-dasharray="4 3"/>
+        <path d="M6 66 C 90 66, 150 66, 294 66" fill="none" stroke="#18181b" stroke-width="1.5"/>
+        <line x1="72" y1="6" x2="72" y2="126" stroke="#e4e4e7"/>
+        <line x1="176" y1="6" x2="176" y2="126" stroke="#e4e4e7"/>
+      </svg>
+      <!-- popisky su mimo SVG: preserveAspectRatio="none" by ich horizontalne roztiahol
+           a pri sirsom stlpci sa zlepia do seba -->
+      <div class="conelabels" aria-hidden="true">
+        <span style="flex:72"><b>SPRINT</b></span>
+        <span style="flex:104">PI</span>
+        <span style="flex:124">YEAR</span>
+      </div>
+      <p class="conekey">The further out, the wider - and the tool says so instead of hiding it.
+        V1 answers the left slice; the other two are not built.</p>
+
+      <div class="lv"><code>50 %</code><span class="track"><i style="width:100%"></i></span><b>87 pts</b></div>
+      <div class="lv"><code>70 %</code><span class="track"><i style="width:86%"></i></span><b>75 pts</b></div>
+      <div class="lv"><code>85 %</code><span class="track"><i style="width:76%"></i></span><b>66 pts</b></div>
+      <div class="lv"><code>95 %</code><span class="track"><i style="width:36%"></i></span><b>31 pts</b></div>
+      <div class="value">read as: in 85 sprints of 100, this team finished 66 points or more</div>
+    </div>
+
+    <div class="card out">
+      <h3>Commitment check</h3>
+      <p>Someone proposes <b>95 points</b> for next sprint.</p>
+      <p style="color:var(--red);font-weight:600;margin-top:4px">lands 25.7 % of the time - over-committed</p>
+      <div class="value">close enough to the median to look reachable, which is what makes it dangerous</div>
+    </div>
+
+    <div class="card out silent" id="silentcard">
+      <h3>Or: nothing</h3>
+      <p>A team with 3 closed sprints gets no forecast - only what is missing and why.
+        A forecast from three sprints looks exactly as convincing as one from thirty.</p>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<div class="bottom">
+  <div class="strip">
+    <div class="v"><b>Never one number</b><p>A single figure becomes a commitment within a week, then a measuring stick.</p></div>
+    <div class="v"><b>The model never computes</b><p>Simulation runs in a script with a fixed seed. The model writes the sentences.</p></div>
+    <div class="v"><b>Refusal is an output</b><p>Thin history means no forecast, stated as such.</p></div>
+    <div class="v"><b>Nothing about a person</b><p>No individual velocity, no ranking, in any artifact.</p></div>
+  </div>
+
+  <div class="meta-row">
+    <details>
+      <summary>PoC versus production</summary>
+      <div class="tablewrap">
+      <table>
+        <tr><th>Area</th><th>PoC (synthetic fixture)</th><th>Production</th></tr>
+        <tr><td>Input</td><td><code>mock/loadboard/jira.json</code>, generated with a fixed seed</td><td>Jira export with <code>expand=changelog</code> - same shape, real content</td></tr>
+        <tr><td>Field names</td><td><code>targets/loadboard.yaml</code></td><td>same file, filled from a discovery run against the real instance - no code change</td></tr>
+        <tr><td>Unit</td><td>story points</td><td>points or item counts; counts are often the steadier of the two</td></tr>
+        <tr><td>First real output</td><td>allocation</td><td><code>questions.md</code> - what the workflow does not record. This is expected, and useful.</td></tr>
+        <tr><td>Write-back</td><td>none</td><td>none. Read-only by design.</td></tr>
+      </table>
+      </div>
+    </details>
+    <span class="foot">BibHorizon · internal PoC · 2026</span>
+  </div>
+</div>
+
+<script>
+(function(){
+  // Delivered points per sprint - the actual run output, not decoration.
+  const PTS=[60,48,113,67,77,62,70,80,108,75,85,70,66,31,100,95,79,88,87,89];
+  const WIN=12, LOW=13; // index of sprint 14
+  const rec=document.getElementById('rec'), max=Math.max(...PTS);
+  PTS.forEach((v,i)=>{
+    const b=document.createElement('i');
+    b.style.height=(100*v/max)+'%';
+    if(i>=PTS.length-WIN)b.className='win';
+    if(i===LOW)b.className='low';
+    b.title='Sprint '+(i+1)+' - '+v+' points';
+    rec.appendChild(b);
+  });
+
+  const svg=document.getElementById('wires'), NS='http://www.w3.org/2000/svg';
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function el(n,a){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);return e;}
+  function draw(){
+    if(getComputedStyle(svg).display==='none')return;
+    svg.innerHTML='';
+    const R=svg.getBoundingClientRect();
+    const core=document.getElementById('core').getBoundingClientRect();
+    const cy=core.top-R.top+core.height/2;
+    let i=0;
+    function wire(x1,y1,x2,y2,dashed){
+      const mx=(x1+x2)/2, d=`M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
+      const a={d,fill:'none',stroke:'#d4d4d8','stroke-width':1.5,id:'w'+i};
+      if(dashed)a['stroke-dasharray']='4 3';
+      svg.appendChild(el('path',a));
+      if(!reduced){
+        for(let j=0;j<2;j++){
+          const dot=el('circle',{r:2.4,fill:'#18181b',opacity:.75});
+          const m=el('animateMotion',{dur:'2.8s',repeatCount:'indefinite',begin:(i*0.33+j*1.4)+'s'});
+          m.appendChild(el('mpath',{href:'#w'+i}));
+          dot.appendChild(m); svg.appendChild(dot);
+        }
+      }
+      i++;
+    }
+    // record + plan feed the core
+    document.querySelectorAll('#inputs .src').forEach(c=>{
+      const r=c.getBoundingClientRect();
+      wire(r.right-R.left, r.top-R.top+18, core.left-R.left, cy, false);
+    });
+    // core -> what the past says
+    document.querySelectorAll('#pastcol .out').forEach(c=>{
+      const r=c.getBoundingClientRect();
+      wire(core.right-R.left, cy, r.left-R.left, r.top-R.top+18, false);
+    });
+    // past -> horizon. The signature: the forecast is not fed by the sources,
+    // it is fed by what already happened. Time only ever runs one way here.
+    const alloc=document.getElementById('alloc');
+    if(alloc){
+      const a=alloc.getBoundingClientRect(), ax=a.right-R.left, ay=a.top-R.top+18;
+      ['conecard','silentcard'].forEach(id=>{
+        const c=document.getElementById(id); if(!c)return;
+        const r=c.getBoundingClientRect();
+        wire(ax, ay, r.left-R.left, r.top-R.top+18, id==='silentcard');
+      });
+    }
+  }
+  addEventListener('load',draw);
+  let t;addEventListener('resize',()=>{clearTimeout(t);t=setTimeout(draw,150)});
+})();
+</script>
+</body>
+</html>

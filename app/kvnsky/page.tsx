@@ -60,6 +60,18 @@ const projects = [
       { label: "Live demo", href: "/kvnsky/bibtrace/demo.html" },
     ],
   },
+  {
+    tag: "BibHorizon",
+    year: "2026",
+    status: "PoC",
+    oneLiner: "What history says we can carry",
+    description:
+      "Every planning tool asks a person for a number. This one reads what the team already delivered and answers with a range, because a single figure becomes a commitment within a week and a measuring stick shortly after. The simulation runs in a script against the team's own record, so the model writes the sentences and never the numbers. The one sprint that collapsed stays visible instead of being averaged away, and a team with too little history gets no forecast at all.",
+    links: [
+      { label: "Data flow", href: "/kvnsky/bibhorizon/flow.html" },
+      { label: "Live demo", href: "/kvnsky/bibhorizon/demo.html" },
+    ],
+  },
 ]
 
 export default function KvnskyPage() {
