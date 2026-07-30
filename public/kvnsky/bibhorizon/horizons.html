@@ -59,6 +59,59 @@ h2.sec b{color:var(--ink)}
   text-decoration:none;border:1px solid var(--border);border-radius:99px;padding:2px 10px}
 .room .go:hover{background:var(--secondary)}
 
+/* ---------- artifact preview ---------- */
+.preview{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  overflow:hidden;box-shadow:0 1px 2px #0000000d}
+.pvbar{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding:8px 16px;
+  background:var(--secondary);border-bottom:1px solid var(--border)}
+.pvtag{font:11px var(--mono);font-weight:600}
+.pvnote{font:10px var(--mono);color:var(--amber);letter-spacing:.04em}
+.pvbody{padding:14px 16px 16px}
+.pvbody h4{margin:0 0 2px;font-size:13.5px}
+.mut{color:var(--muted);font-size:12px}
+b.ink{color:var(--ink)}
+
+.caps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px}
+.caps div{border:1px solid var(--border);border-radius:6px;padding:7px 11px}
+.caps div.hi{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.caps code{font:10px var(--mono);color:var(--muted);display:block}
+.caps b{font-size:17px;font-weight:600;letter-spacing:-.02em;display:block;line-height:1.2}
+.caps span{font-size:11px;color:var(--muted)}
+
+table.rm{border-collapse:separate;border-spacing:0;width:100%;font-size:12.5px;margin-top:6px}
+table.rm th,table.rm td{border-bottom:1px solid var(--border);padding:5px 9px;text-align:left}
+table.rm th{font:9.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+  font-weight:400;background:var(--secondary)}
+table.rm td.n{font-family:var(--mono);text-align:right;white-space:nowrap}
+table.rm td.mut{font-size:11.5px}
+table.rm tr:last-child td{border-bottom:none}
+.vd{font:9.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;border-radius:99px;
+  padding:1px 9px;white-space:nowrap}
+.vd.go{color:var(--green);background:#f0fdf4;border:1px solid #bbf7d0}
+.vd.str{color:var(--amber);background:#fffbeb;border:1px solid #fde68a}
+.vd.unk{color:var(--muted);background:var(--secondary);border:1px dashed var(--border)}
+
+.qs{list-style:none;margin:6px 0 0;padding:0;font-size:12.5px}
+.qs li{margin:5px 0;padding-left:15px;position:relative}
+.qs li::before{content:"?";position:absolute;left:0;top:0;font:11px var(--mono);
+  color:var(--blue);font-weight:600}
+.limits{margin-top:13px;border:1px dashed var(--border);border-radius:6px;padding:8px 11px;
+  font-size:11.5px;color:var(--muted);background:var(--secondary)}
+.limits b{color:var(--ink)}
+
+.bands{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.band{border:1px solid var(--border);border-radius:6px;padding:9px 11px;display:flex;
+  flex-direction:column;gap:2px}
+.band .lbl{font:9.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+  margin-bottom:3px}
+.band b{font-size:12.5px;font-weight:600}
+.band i{font-style:normal;font-size:11.5px;color:var(--muted)}
+.band.b1{border-left:3px solid var(--ink)}
+.band.b2{border-left:3px solid #a1a1aa}
+.band.b3{border-left:3px solid #d4d4d8;border-style:dashed}
+.band.b4{border-style:dashed;background:var(--secondary)}
+.tablewrap{overflow-x:auto}
+
 /* ---------- rising cost ---------- */
 .stairs{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;align-items:end;
   height:132px;margin-top:4px}
@@ -98,12 +151,15 @@ h2.sec b{color:var(--ink)}
   gap:14px;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:10px}
 
 @media (max-width:980px){
-  .rooms,.consts{grid-template-columns:1fr 1fr}
+  .rooms,.consts,.bands{grid-template-columns:1fr 1fr}
   .spine{grid-template-columns:1fr}
-  .spine .arrow{transform:rotate(90deg)}
+  /* rotacia textu o 90 stupnov ho robi necitatelnym - v jednom stlpci
+     staci jeden riadok medzi blokmi */
+  /* br-ka ostavaju: skryt ich zlepi slova do "read atthree zooms" */
+  .spine .arrow{text-align:left;padding:2px 0}
 }
 @media (max-width:640px){
-  .rooms,.consts,.stairs{grid-template-columns:1fr}
+  .rooms,.consts,.stairs,.caps,.bands{grid-template-columns:1fr}
   .stairs{height:auto}
   .stair{height:auto !important}
 }
@@ -193,6 +249,119 @@ h2.sec b{color:var(--ink)}
         wrong is remembered by name.</div>
     </div>
 
+  </div>
+
+  <h2 class="sec"><b>What horizon 2 would hand you</b> · before the event, not during it</h2>
+  <p class="sub" style="margin-bottom:12px">Product management sends four initiatives ranked by
+  priority. You are not asking the team to estimate them yet - you are asking the record how far
+  down that list this team's capacity actually reaches, so you walk into PI Planning with
+  questions instead of a blank page.</p>
+
+  <div class="preview">
+    <div class="pvbar">
+      <span class="pvtag">pi-forecast.md</span>
+      <span class="pvnote">preview of a proposed artifact · capacity figures are computed from the
+        record, the initiative list is illustrative</span>
+    </div>
+
+    <div class="pvbody">
+      <h4>BUILD capacity in this PI</h4>
+      <p class="mut" style="margin:0 0 7px">Four development iterations. The IP iteration is not
+        counted - planning commitment across all five is a 20 % overrun before anything starts.</p>
+      <div class="caps">
+        <div><code>50 %</code><b>142 pts</b><span>of BUILD work</span></div>
+        <div class="hi"><code>85 %</code><b>122 pts</b><span>the line for a commitment</span></div>
+        <div><code>95 %</code><b>110 pts</b><span>the safe floor</span></div>
+      </div>
+      <p class="mut" style="margin:8px 0 0">Total throughput at 85 % is <b>283 points</b>. Only
+        <b>43.2 %</b> of it has historically reached BUILD - the rest went to RUN and TECH. The
+        roadmap assumes the whole team; the record says otherwise, and that gap is the single most
+        useful thing to know before the room fills up.</p>
+
+      <h4 style="margin-top:16px">The list, walked in priority order</h4>
+      <div class="tablewrap">
+      <table class="rm">
+        <tr><th>#</th><th>Initiative</th><th>Size</th><th>Basis</th><th>Cumulative</th><th>Verdict</th></tr>
+        <tr>
+          <td class="n">1</td><td>Live ETA for dispatchers</td><td class="n">44</td>
+          <td class="mut">3 comparable epics</td><td class="n">44</td>
+          <td><span class="vd go">commit</span></td>
+        </tr>
+        <tr>
+          <td class="n">2</td><td>Driver app refresh</td><td class="n">61</td>
+          <td class="mut">2 comparables, both overran</td><td class="n">105</td>
+          <td><span class="vd go">commit</span></td>
+        </tr>
+        <tr>
+          <td class="n">3</td><td>Billing export rework</td><td class="n">33</td>
+          <td class="mut">1 comparable - wide</td><td class="n">138</td>
+          <td><span class="vd str">stretch</span></td>
+        </tr>
+        <tr>
+          <td class="n">4</td><td>Partner API for 3PL carriers</td><td class="n">-</td>
+          <td class="mut">no comparable in the record</td><td class="n">-</td>
+          <td><span class="vd unk">unsized</span></td>
+        </tr>
+      </table>
+      </div>
+      <p class="mut" style="margin:8px 0 0"><b class="ink">Three fit, two are committable.</b>
+        Items 1 and 2 sit inside the 85 % line. Item 3 clears 50 % but not 85 %, which is exactly
+        what SAFe already calls an <em>uncommitted objective</em> - it goes on the board as stretch,
+        not as a promise. Item 4 is not "too big": it is <b>unknown</b>, and that is a different
+        problem with a different fix.</p>
+
+      <h4 style="margin-top:16px">What to take into the room</h4>
+      <ul class="qs">
+        <li>Item 3 is the first stretch. If the team wants to commit to it anyway - <b>what comes
+          off the list?</b> Ask it before the room decides by drift.</li>
+        <li>Item 2 rests on two comparables and <b>both overran</b>. What was different about them,
+          and is it different this time?</li>
+        <li>Item 4 has no comparable. Ask for a spike before it carries a rank - a priority on an
+          unsized item is a decision made without information.</li>
+        <li>Billing export touches the component with the highest carryover in the record. That is
+          a dependency you can raise <b>now</b>, not on day two of the event.</li>
+      </ul>
+
+      <div class="limits">
+        <b>What this cannot see, and does not pretend to:</b> next quarter's absences, a reorg, or
+        the real scope of anything product management has not yet described. And it does not
+        replace the team - PI Planning still decides. This is a challenge pack, not a plan.
+      </div>
+    </div>
+  </div>
+
+  <h2 class="sec"><b>What horizon 3 would hand you</b> · less detail on purpose</h2>
+  <p class="sub" style="margin-bottom:12px">The same walk, four PIs out, and only the large
+  initiatives. The further out, the coarser - and the label says which of them is a forecast and
+  which is only a scenario.</p>
+
+  <div class="preview">
+    <div class="pvbar">
+      <span class="pvtag">roadmap.md</span>
+      <span class="pvnote">preview of a proposed artifact · illustrative</span>
+    </div>
+    <div class="pvbody">
+      <div class="bands">
+        <div class="band b1"><span class="lbl">PI-4 · forecast</span><b>Live ETA</b><b>Driver app</b>
+          <i>Billing export - stretch</i></div>
+        <div class="band b2"><span class="lbl">PI-5 · forecast</span><b>Partner API</b>
+          <i>carry-in from PI-4, if any</i></div>
+        <div class="band b3"><span class="lbl">PI-6 · scenario</span><b>Depot planning</b>
+          <i>one large initiative, not two</i></div>
+        <div class="band b4"><span class="lbl">PI-7 · beyond the record</span>
+          <i>The team's history does not reach this far. Anything placed here is a wish with a
+            border around it.</i></div>
+      </div>
+      <p class="mut" style="margin:10px 0 0">Two things the annual view adds that the quarter does
+        not need: <b>buffers sized from this team's measured variability</b> instead of a flat
+        percentage added at the end, and the <b>seasonality already in the record</b> - the weeks
+        this team is reliably smaller, which surprises the roadmap every single year.</p>
+      <div class="limits">
+        <b>The honest part is the last band.</b> A roadmap that fades out where the evidence ends
+        is more useful than one that runs confidently to December, because the reader can see
+        which promises are load-bearing.
+      </div>
+    </div>
   </div>
 
   <h2 class="sec"><b>Why the order matters</b> · the cost of a wrong answer, by room</h2>
