@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BibHorizon - One record, three rooms</title>
+<style>
+:root{
+  --bg:#fafafa; --card:#fff; --border:#e4e4e7; --ink:#09090b; --muted:#71717a;
+  --secondary:#f4f4f5; --green:#16a34a; --amber:#d97706; --red:#dc2626; --blue:#2563eb;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace; --radius:8px;
+}
+*{box-sizing:border-box}
+body{font:13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  margin:0;background:var(--bg);color:var(--ink)}
+
+header{padding:12px 24px;border-bottom:1px solid var(--border);background:var(--card);
+  display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;position:sticky;top:0;z-index:5}
+.eyebrow{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+header h1{font-size:17px;font-weight:600;letter-spacing:-.02em;margin:0}
+header p{margin:0;color:var(--muted);font-size:12.5px;flex:1;min-width:180px}
+header a{font-size:12px;color:var(--ink);text-decoration:none;border:1px solid var(--border);
+  border-radius:99px;padding:2px 11px;background:var(--card);white-space:nowrap}
+header a:hover{background:var(--secondary)}
+header a:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+.wrap{max-width:1180px;margin:0 auto;padding:22px 24px 40px}
+.lede{font-size:15.5px;line-height:1.55;max-width:70ch;margin:0 0 4px}
+.lede b{font-weight:600}
+.sub{color:var(--muted);font-size:13px;max-width:70ch;margin:8px 0 0}
+
+h2.sec{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+  margin:34px 0 12px;padding-top:14px;border-top:1px solid var(--border)}
+h2.sec b{color:var(--ink)}
+
+/* ---------- the three horizons ---------- */
+.rooms{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;align-items:stretch}
+.room{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:14px 16px 15px;display:flex;flex-direction:column;box-shadow:0 1px 2px #0000000d}
+.room.live{border-color:#bbf7d0;box-shadow:0 1px 2px #16a34a1a}
+.rhead{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:2px}
+.rhead .n{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.state{font:9.5px var(--mono);letter-spacing:.08em;border-radius:99px;padding:1px 9px;white-space:nowrap}
+.state.on{color:var(--green);background:#f0fdf4;border:1px solid #bbf7d0}
+.state.off{color:var(--muted);background:var(--card);border:1px dashed var(--border)}
+.room h3{font-size:15px;font-weight:600;margin:0 0 1px;letter-spacing:-.01em}
+.when{font:10.5px var(--mono);color:var(--muted);margin-bottom:9px}
+.q{font-size:13.5px;font-weight:600;border-left:3px solid var(--ink);padding-left:9px;margin:0 0 10px}
+.pair{margin:0 0 9px}
+.pair dt{font:9.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.pair dd{margin:2px 0 0;font-size:12.5px}
+.pair dd.now{color:var(--muted)}
+.pair dd.ev{color:var(--ink)}
+.cost{margin-top:auto;padding-top:10px;border-top:1px dashed var(--border);font-size:12px}
+.cost b{display:block;font:9.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--red);font-weight:600;margin-bottom:2px}
+.room .go{margin-top:10px;display:inline-block;font:10.5px var(--mono);color:var(--ink);
+  text-decoration:none;border:1px solid var(--border);border-radius:99px;padding:2px 10px}
+.room .go:hover{background:var(--secondary)}
+
+/* ---------- rising cost ---------- */
+.stairs{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;align-items:end;
+  height:132px;margin-top:4px}
+.stair{background:var(--card);border:1px solid var(--border);border-top-width:3px;
+  border-radius:6px 6px 0 0;padding:8px 11px;display:flex;flex-direction:column;justify-content:flex-end}
+.stair.s1{height:34%;border-top-color:#d4d4d8}
+.stair.s2{height:64%;border-top-color:var(--amber)}
+.stair.s3{height:100%;border-top-color:var(--red)}
+.stair b{font-size:12.5px;font-weight:600}
+.stair span{font-size:11.5px;color:var(--muted)}
+
+/* ---------- through line ---------- */
+.spine{display:grid;grid-template-columns:1fr auto 1.5fr;gap:16px;align-items:center;
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
+.spine .one{border:1px dashed var(--border);border-radius:var(--radius);padding:10px 12px}
+.spine .one h4{margin:0 0 3px;font-size:13px}
+.spine .one p{margin:0;font-size:11.5px;color:var(--muted)}
+.spine .arrow{font:11px var(--mono);color:var(--muted);text-align:center;line-height:1.3}
+.fanout{display:grid;gap:6px}
+.fanout div{display:grid;grid-template-columns:auto 1fr;gap:9px;align-items:baseline;font-size:12px}
+.fanout code{font:10px var(--mono);background:var(--secondary);border:1px solid var(--border);
+  border-radius:4px;padding:0 6px;white-space:nowrap}
+.fanout span{color:var(--muted)}
+
+/* ---------- constants ---------- */
+.consts{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.consts .v{border:1px solid var(--border);border-radius:var(--radius);padding:9px 12px;background:var(--card)}
+.consts b{display:block;font-size:12.5px;font-weight:600;margin-bottom:2px}
+.consts p{margin:0;font-size:11.5px;color:var(--muted)}
+
+.today{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:13px 16px;font-size:12.5px;margin-top:12px}
+.today b{font-weight:600}
+.today ul{margin:7px 0 0;padding-left:18px;color:var(--muted)}
+.today li{margin:3px 0}
+.foot{margin-top:26px;font-size:11px;color:var(--muted);display:flex;justify-content:space-between;
+  gap:14px;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:10px}
+
+@media (max-width:980px){
+  .rooms,.consts{grid-template-columns:1fr 1fr}
+  .spine{grid-template-columns:1fr}
+  .spine .arrow{transform:rotate(90deg)}
+}
+@media (max-width:640px){
+  .rooms,.consts,.stairs{grid-template-columns:1fr}
+  .stairs{height:auto}
+  .stair{height:auto !important}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="eyebrow">BibHorizon · the bigger picture</span>
+  <h1>One record, three rooms</h1>
+  <p>Where this goes, and what is actually running today.</p>
+  <a href="flow.html">How it works →</a>
+  <a href="demo.html">Watch the demo →</a>
+<a href="/kvnsky">&larr; kvnsky</a>
+</header>
+
+<div class="wrap">
+
+  <p class="lede">The same twenty sprints answer three different rooms: the team every two weeks,
+  the ART every quarter, and the business once a year. <b>What changes between them is the zoom,
+  not the evidence.</b></p>
+  <p class="sub">Each room asks its question today and gets an answer from someone's confidence.
+  The record already contains a better one. Below: what each room would get instead, what it costs
+  to be wrong there, and - stated plainly - which of the three exists right now.</p>
+
+  <h2 class="sec"><b>Three rooms</b> · one question each</h2>
+  <div class="rooms">
+
+    <div class="room live">
+      <div class="rhead"><span class="n">Horizon 1</span><span class="state on">running</span></div>
+      <h3>Sprint Planning</h3>
+      <div class="when">the team · every two weeks</div>
+      <p class="q">"Can we take this on?"</p>
+      <dl class="pair">
+        <dt>answered today by</dt>
+        <dd class="now">A number the room feels good about, carried by whoever sounds most certain.</dd>
+      </dl>
+      <dl class="pair">
+        <dt>answered from the record</dt>
+        <dd class="ev">A range with a confidence level, plus the odds on the exact number being
+          proposed. 95 points is not "ambitious" - it lands 25.7 % of the time.</dd>
+      </dl>
+      <div class="cost"><b>cost of being wrong</b>
+        One sprint. Recoverable, and everyone watches it happen - which is why this room is the
+        cheapest place to prove the method.</div>
+      <a class="go" href="demo.html">see this running →</a>
+    </div>
+
+    <div class="room">
+      <div class="rhead"><span class="n">Horizon 2</span><span class="state off">proposed</span></div>
+      <h3>PI Planning</h3>
+      <div class="when">the ART · once a quarter, two days, everyone in the room</div>
+      <p class="q">"How much of this fits in the PI?"</p>
+      <dl class="pair">
+        <dt>answered today by</dt>
+        <dd class="now">Team-by-team feel on the day, turned into a commitment nobody re-checks
+          until the quarter is over.</dd>
+      </dl>
+      <dl class="pair">
+        <dt>answered from the record</dt>
+        <dd class="ev">How many of these features fit at 85 % confidence - and which items are
+          historically too large to finish in one sprint, so the split happens <em>before</em> the
+          event instead of eating the first morning of it.</dd>
+      </dl>
+      <div class="cost"><b>cost of being wrong</b>
+        A quarter of misplaced work, and every dependency other teams drew on top of it. Nobody
+        finds out in week two.</div>
+    </div>
+
+    <div class="room">
+      <div class="rhead"><span class="n">Horizon 3</span><span class="state off">proposed</span></div>
+      <h3>The annual roadmap</h3>
+      <div class="when">product management and the business · once a year</div>
+      <p class="q">"When will this be delivered?"</p>
+      <dl class="pair">
+        <dt>answered today by</dt>
+        <dd class="now">Dates, and a buffer someone added at the end because it felt thin.</dd>
+      </dl>
+      <dl class="pair">
+        <dt>answered from the record</dt>
+        <dd class="ev">Buffers sized from measured variability rather than a flat percentage, the
+          estimation bias the team already has (points against actual cycle time), and the
+          seasonality that shows up every year and surprises everyone every year.</dd>
+      </dl>
+      <div class="cost"><b>cost of being wrong</b>
+        A year - and the standing of everyone who presented it. This is the only room where being
+        wrong is remembered by name.</div>
+    </div>
+
+  </div>
+
+  <h2 class="sec"><b>Why the order matters</b> · the cost of a wrong answer, by room</h2>
+  <div class="stairs">
+    <div class="stair s1"><b>One sprint</b><span>visible, recoverable, nobody is surprised</span></div>
+    <div class="stair s2"><b>One quarter</b><span>plus every dependency drawn on it</span></div>
+    <div class="stair s3"><b>One year</b><span>plus the credibility of the people who presented it</span></div>
+  </div>
+  <p class="sub">The effort to answer well is roughly the same in all three rooms - it is the same
+  record, read at a different zoom. The cost of answering badly is not. That asymmetry is the whole
+  case for doing this at all, and it is also why horizon one is built first: it is the cheapest
+  place to find out the method is wrong.</p>
+
+  <h2 class="sec"><b>You do not buy three tools</b></h2>
+  <div class="spine">
+    <div class="one">
+      <h4>One export, one mapping file</h4>
+      <p>What the team closed, and which type counts as BUILD, TECH or RUN. Everything below is
+        read from that. No second integration, no new instrumentation, nothing for the team to
+        maintain.</p>
+    </div>
+    <div class="arrow">read at<br>three zooms<br>▸</div>
+    <div class="fanout">
+      <div><code>2 weeks</code><span>can we take this on, and at what odds</span></div>
+      <div><code>1 quarter</code><span>how much fits, and what needs splitting first</span></div>
+      <div><code>1 year</code><span>which dates survive contact with this team's actual variability</span></div>
+    </div>
+  </div>
+
+  <h2 class="sec"><b>What holds at every horizon</b></h2>
+  <div class="consts">
+    <div class="v"><b>Never one number</b><p>A single figure becomes a commitment within a week and
+      a measuring stick shortly after. Every answer carries its confidence.</p></div>
+    <div class="v"><b>The model never computes</b><p>Simulation runs in a script with a fixed seed.
+      The model writes the sentences and none of the numbers.</p></div>
+    <div class="v"><b>Refusal is an output</b><p>Too little history, no forecast - stated as such.
+      A tool that answers every team is a tool whose answers mean nothing.</p></div>
+    <div class="v"><b>Nothing about a person</b><p>No individual velocity, no ranking, in any
+      artifact. Capacity is a property of a system.</p></div>
+  </div>
+
+  <div class="today">
+    <b>What exists today, without rounding up:</b>
+    <ul>
+      <li><b>Horizon 1 is running.</b> A script with no dependencies and a self-check, verified on
+        two teams - one that gets a forecast and one that is refused. Every number in its output
+        traces to a single JSON file.</li>
+      <li><b>Horizons 2 and 3 are the shape, not the build.</b> They stand on the same extract, and
+        the order is a data dependency rather than a roadmap preference: the quarter needs the
+        sprint record, the year needs the quarter's patterns.</li>
+      <li><b>Nothing here has touched a real system.</b> The demo runs on a synthetic fixture whose
+        shape copies a Jira export and whose content is invented.</li>
+    </ul>
+  </div>
+
+  <div class="foot">
+    <span>Read-only by design. No write-back at any horizon.</span>
+    <span>BibHorizon · internal PoC · 2026</span>
+  </div>
+</div>
+
+</body>
+</html>

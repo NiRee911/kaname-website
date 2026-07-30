@@ -70,6 +70,7 @@ const projects = [
     links: [
       { label: "Data flow", href: "/kvnsky/bibhorizon/flow.html" },
       { label: "Live demo", href: "/kvnsky/bibhorizon/demo.html" },
+      { label: "Bigger picture", href: "/kvnsky/bibhorizon/horizons.html" },
     ],
   },
 ]
