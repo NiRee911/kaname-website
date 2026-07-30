@@ -48,6 +48,18 @@ const projects = [
       { label: "Live demo", href: "/kvnsky/bibgauge/demo.html" },
     ],
   },
+  {
+    tag: "BibTrace",
+    year: "2026",
+    status: "PoC",
+    oneLiner: "From symptom to suspect, with evidence",
+    description:
+      "A bug lands and the trail is followed before the first person opens it. Output is ranked hypotheses, never a verdict, and each one carries the cheapest check that kills it: a wrong hypothesis costs two minutes, a wrong answer costs two hours. A script counts how many classes of evidence actually exist, so below the threshold nothing is written at all. And because the shared helper has other callers, the analysis names them too.",
+    links: [
+      { label: "Data flow", href: "/kvnsky/bibtrace/flow.html" },
+      { label: "Live demo", href: "/kvnsky/bibtrace/demo.html" },
+    ],
+  },
 ]
 
 export default function KvnskyPage() {

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BibTrace - From symptom to suspect</title>
+<style>
+:root{
+  --bg:#fafafa; --card:#fff; --border:#e4e4e7; --ink:#09090b; --muted:#71717a;
+  --secondary:#f4f4f5; --green:#16a34a; --amber:#d97706; --red:#dc2626; --blue:#2563eb;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace; --radius:8px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{font:13px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  margin:0;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
+
+/* ---------- header ---------- */
+header{padding:12px 24px;border-bottom:1px solid var(--border);background:var(--card);
+  display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.eyebrow{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+header h1{font-size:17px;font-weight:600;letter-spacing:-.02em;margin:0}
+header p{margin:0;color:var(--muted);font-size:12.5px;flex:1}
+.modes{display:flex;gap:5px}
+.modes span{font:10px var(--mono);border:1px solid var(--border);background:var(--secondary);
+  color:#3f3f46;border-radius:99px;padding:1px 9px}
+.modes span.hot{border-color:#bbf7d0;background:#f0fdf4;color:var(--green)}
+.modes span.cold{border-color:#e4e4e7;background:var(--card);color:var(--muted);border-style:dashed}
+header a{font-size:12px;color:var(--ink);text-decoration:none;border:1px solid var(--border);
+  border-radius:99px;padding:2px 11px;background:var(--card);white-space:nowrap}
+header a:hover{background:var(--secondary)}
+header a:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+/* ---------- flow ---------- */
+.wrap{position:relative;flex:1;min-height:0;overflow-y:auto}
+#wires{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.flow{display:grid;grid-template-columns:1.05fr .95fr 1fr 1.15fr;gap:38px;
+  padding:12px 24px;align-items:start;height:100%}
+.col>h2{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 7px}
+.col>h2 b{color:var(--ink)}
+.subhead{font:10px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+  margin:12px 0 6px;display:flex;align-items:baseline;gap:6px}
+.subhead:first-of-type{margin-top:0}
+.subhead em{font-style:normal;color:#a1a1aa;letter-spacing:0;text-transform:none;font-family:inherit;font-size:11px}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:8px 12px;margin-bottom:8px;box-shadow:0 1px 2px #0000000d}
+.card h3{font-size:13px;font-weight:600;margin:0}
+.card p{margin:1px 0 0;font-size:11.5px;color:var(--muted)}
+.badge{display:inline-block;font:10px var(--mono);background:var(--secondary);
+  border:1px solid var(--border);color:#3f3f46;border-radius:99px;padding:0 8px;margin-top:5px}
+.badge.ro{color:var(--red);border-color:#fecaca;background:#fef2f2}
+.value{font-size:11.5px;color:var(--green);margin-top:4px}
+.value::before{content:"↳ "}
+.gap{display:inline-block;font:10px var(--mono);color:var(--amber);background:#fffbeb;
+  border:1px dashed var(--amber);border-radius:6px;padding:0 8px;margin-top:5px}
+.note{font-size:11px;color:var(--muted);border:1px dashed var(--border);
+  border-radius:var(--radius);padding:6px 10px;margin-bottom:8px}
+
+/* signal list inside the gate */
+.sig{display:grid;grid-template-columns:auto 1fr;gap:2px 9px;margin-top:6px;font-size:11px}
+.sig code{font:10px var(--mono);color:#3f3f46;background:var(--secondary);
+  border-radius:4px;padding:0 5px;justify-self:start}
+.sig span{color:var(--muted)}
+.sig code.key{color:var(--ink);border:1px solid var(--border);background:var(--card);font-weight:600}
+
+/* ---------- gate (dark) ---------- */
+.cell{background:#09090b;color:#a1a1aa;border-radius:12px;padding:13px 13px 10px}
+.cell .agent{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;
+  text-align:center;color:#e4e4e7;margin-bottom:9px}
+.meter{display:flex;gap:3px;margin:0 0 8px}
+.meter i{flex:1;height:6px;border-radius:2px;background:#27272a}
+.meter i.on{background:var(--green)}
+.gatebox{background:var(--card);color:var(--ink);border:1px solid var(--border);
+  border-radius:9px;padding:8px 9px;text-align:center}
+.gatebox h3{margin:0;font-size:12.5px;font-weight:600;font-family:var(--mono)}
+.gatebox .sub{font-size:10px;color:var(--muted);line-height:1.3;margin-top:1px}
+.forks{display:grid;grid-template-columns:1fr auto 1fr;gap:7px;align-items:center;margin-top:9px}
+.fork{border-radius:8px;padding:6px 7px;text-align:center;font:10px var(--mono);letter-spacing:.06em}
+.fork.go{background:#f0fdf4;border:1px solid #bbf7d0;color:var(--green)}
+.fork.stop{background:#18181b;border:1px dashed #52525b;color:#a1a1aa}
+.fork b{display:block;font-size:11px;letter-spacing:0;font-family:inherit}
+.orr{font:9.5px var(--mono);color:#52525b;letter-spacing:.1em}
+.rules{list-style:none;margin:9px 0 0;padding:0;font-size:11.5px}
+.rules li{margin:4px 0;padding-left:14px;position:relative}
+.rules li::before{content:"";position:absolute;left:1px;top:6px;width:5px;height:5px;
+  border-radius:99px;background:var(--green)}
+.cell .one{margin:9px 2px 0;font-size:11px;color:#71717a;text-align:center}
+
+/* ---------- agents ---------- */
+.ag h3::before{content:"◆ ";color:var(--ink);font-size:10px;vertical-align:1px}
+.par{font:10px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+  text-align:center;border:1px dashed var(--border);border-radius:99px;padding:1px 0;margin-bottom:8px}
+.tags{display:grid;gap:5px;margin-top:2px}
+.tg{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:baseline;font-size:11px}
+.tg b{font:9.5px var(--mono);letter-spacing:.05em;border-radius:4px;padding:1px 7px;
+  white-space:nowrap;font-weight:600}
+.tg.fact b{color:var(--green);background:#f0fdf4;border:1px solid #bbf7d0}
+.tg.obs b{color:var(--blue);background:#eff6ff;border:1px solid #bfdbfe}
+.tg.assum b{color:var(--amber);background:#fffbeb;border:1px solid #fde68a}
+.tg.corr b{color:var(--red);background:#fef2f2;border:1px solid #fecaca}
+.tg.unk b{color:var(--muted);background:var(--secondary);border:1px dashed var(--border)}
+.tg span{color:var(--muted)}
+
+/* ---------- outputs ---------- */
+.out h3{font-family:var(--mono);font-size:12px}
+.hyp{border-left:3px solid var(--ink)}
+.silent{border-style:dashed;background:var(--secondary)}
+.falsify{font:10.5px var(--mono);background:#09090b;color:#e4e4e7;border-radius:6px;
+  padding:5px 8px;margin-top:6px;overflow-x:auto;white-space:pre}
+.kill{font-size:11px;margin-top:5px}
+.kill b{color:var(--green)}
+.kill i{color:var(--red);font-style:normal}
+
+/* ---------- bottom ---------- */
+.bottom{border-top:1px solid var(--border);background:var(--card);padding:8px 24px 10px}
+.strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.strip .v{border:1px solid var(--border);border-radius:var(--radius);padding:6px 11px}
+.strip b{display:block;font-size:12px;font-weight:600}
+.strip p{margin:0;font-size:11px;color:var(--muted)}
+.meta-row{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:8px}
+details summary{cursor:pointer;font:10px var(--mono);letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);list-style:none}
+details summary::before{content:"▸ "}
+details[open] summary::before{content:"▾ "}
+.tablewrap{overflow-x:auto}
+table{border-collapse:separate;border-spacing:0;width:100%;background:var(--card);
+  border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;font-size:12px;margin-top:6px}
+th,td{border-bottom:1px solid var(--border);padding:4px 11px;text-align:left}
+th{background:var(--secondary);font-size:11px;font-weight:600}
+tr:last-child td{border-bottom:none}
+code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radius:4px}
+.foot{font-size:11px;color:var(--muted);white-space:nowrap}
+
+@media (max-width:1050px){
+  .flow{grid-template-columns:1fr 1fr;height:auto}
+  #wires{display:none}
+  body{height:auto}
+}
+@media (max-width:640px){
+  .flow{grid-template-columns:1fr;gap:16px}
+  .strip{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="eyebrow">BibTrace · internal PoC</span>
+  <h1>From symptom to suspect</h1>
+  <p>A bug lands. Before the first person opens it, the trail is already followed - and if there is no trail, nothing is written.</p>
+  <div class="modes" aria-label="Outcomes">
+    <span class="hot">analyse</span><span class="cold">silence</span>
+  </div>
+  <a href="demo.html">Watch the demo →</a>
+<a href="/kvnsky">&larr; kvnsky</a>
+</header>
+
+<div class="wrap">
+<svg id="wires" aria-hidden="true"></svg>
+<div class="flow">
+
+  <div class="col" id="inputs">
+    <h2><b>Three sources of trail</b> · read-only</h2>
+
+    <div class="subhead">What is reported <em>- and who wrote it</em></div>
+    <div class="card src">
+      <h3>The ticket</h3>
+      <p>Summary, description, comments, stack trace. Who is affected and - more useful - who explicitly is not.</p>
+      <span class="badge ro">untrusted: written by customers and support</span>
+      <div class="value">quoted as data, never followed as instruction</div>
+    </div>
+
+    <div class="subhead">What the code says <em>- and when it changed</em></div>
+    <div class="card src">
+      <h3>Repo, blame, deploys</h3>
+      <p>Files behind the trace frames, the commits that wrote those lines, and three separate clocks: when the code changed, when it shipped, when the process last restarted.</p>
+      <span class="badge">commit hash, never an author name</span>
+      <div class="value">a release that restarted a different service cannot be the cause</div>
+    </div>
+
+    <div class="subhead">What already happened <em>- eight months back</em></div>
+    <div class="card src">
+      <h3>Resolved bugs</h3>
+      <p>Same shape, not same words. The prize is a ticket closed <em>without</em> a cause found - empty commit list, "could not reproduce", a runbook step instead of a fix.</p>
+      <span class="badge">fix or only stopped?</span>
+      <span class="gap">missing source = recorded gap, never a guess</span>
+      <div class="value">nobody reads eight months of history per bug. This does, every time.</div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2><b>Signal gate</b> · the trust core</h2>
+    <div class="cell" id="core">
+      <div class="agent">Script - not the model</div>
+      <div class="meter" aria-label="seven evidence classes">
+        <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i>
+      </div>
+      <div class="gatebox">
+        <h3>signals.py</h3>
+        <div class="sub">counts how many classes of evidence actually exist, then decides whether anything gets written at all</div>
+      </div>
+      <div class="sig">
+        <code class="key">stack_trace</code><span>a traceback in the ticket</span>
+        <code class="key">file_located</code><span>a frame path that is a real tracked file</span>
+        <code>recent_change</code><span>a commit touching it inside the window</span>
+        <code>precedent</code><span>a resolved bug sharing vocabulary</span>
+        <code>blast_radius</code><span>other callers of the same code</span>
+        <code>deploy_timeline</code><span>releases and restarts around the incident</span>
+        <code>test_coverage</code><span>a test that could have caught it</span>
+      </div>
+      <div class="forks">
+        <div class="fork go"><b>≥ 3 signals</b>and one that locates code</div>
+        <div class="orr">OR</div>
+        <div class="fork stop"><b>below that</b>silence, and why</div>
+      </div>
+      <ul class="rules">
+        <li>The model never states a confidence. The script states how much ground it had.</li>
+        <li>No number anywhere that is not in <code>signals.json</code>.</li>
+        <li>Silence is a result, not a failure.</li>
+      </ul>
+      <p class="one">A bot that comments on everything gets ignored within a week.</p>
+    </div>
+  </div>
+
+  <div class="col" id="agentcol">
+    <h2><b>Three agents</b> · own context, read-only</h2>
+    <div class="par">parallel - one message, three calls</div>
+
+    <div class="card ag">
+      <h3>ticket-reader</h3>
+      <p>Symptom verbatim, who is affected and who is not, timing, reproduction cases. Never guesses a cause - that is somebody else's column.</p>
+      <span class="badge">flags instructions aimed at automation</span>
+    </div>
+    <div class="card ag">
+      <h3>code-archeolog</h3>
+      <p>Locates the frames, reads blame, separates change from deploy from restart, checks whether a test existed - and names every other place that shares the suspect code.</p>
+      <span class="badge">blast radius is mandatory</span>
+    </div>
+    <div class="card ag">
+      <h3>precedent</h3>
+      <p>Same shape in the history, and the one question that matters: was it fixed, or only stopped? A restart is a mitigation, so the defect is still there.</p>
+      <span class="badge">empty commit list = nothing was fixed</span>
+    </div>
+
+    <div class="subhead">Every claim carries one tag</div>
+    <div class="tags">
+      <div class="tg fact"><b>FACT</b><span>has an artefact - file, line, commit</span></div>
+      <div class="tg obs"><b>OBSERVATION</b><span>somebody saw it, no artefact</span></div>
+      <div class="tg assum"><b>ASSUMPTION</b><span>a working theory, said out loud</span></div>
+      <div class="tg corr"><b>CORRELATION</b><span>happened at the same time - not a cause</span></div>
+      <div class="tg unk"><b>KNOWN UNKNOWN</b><span>we know we don't know; obtainable</span></div>
+      <div class="tg unk"><b>TIMELINE GAP</b><span>no data exists; nobody can obtain it</span></div>
+    </div>
+    <div class="note">The last two look alike and are not. One means ask somebody. The other means fix the monitoring.</div>
+  </div>
+
+  <div class="col" id="outputs">
+    <h2><b>What comes out</b> · two shapes</h2>
+
+    <div class="card out hyp">
+      <h3>analysis.md</h3>
+      <p>Up to three ranked hypotheses. Each one carries its evidence, what stands against it, and the cheapest check that kills it.</p>
+      <div class="falsify">kubectl exec &lt;pod&gt; -- python -c \
+  "from geofence.tz import _offset; print(_offset('Europe/Madrid'))"</div>
+      <div class="kill"><b>1:00:00</b> confirms it · <i>2:00:00</i> kills it. Two minutes, no deploy.</div>
+      <div class="value">a wrong hypothesis costs two minutes; a wrong answer costs two hours</div>
+    </div>
+
+    <div class="card out">
+      <h3>comment.md</h3>
+      <p>Exactly what would be posted to the ticket - labelled AI-generated, hypotheses not verdict, signal count included.</p>
+      <span class="badge ro">not posted anywhere in this PoC</span>
+      <div class="value">production: internal comment only - a support bug is a JSM ticket</div>
+    </div>
+
+    <div class="card out">
+      <h3>questions.md</h3>
+      <p>What the reporter still has to answer, and separately what nobody could have told us. Across dozens of runs this becomes a map of what bug reports systematically miss.</p>
+      <span class="badge">two lists, deliberately</span>
+    </div>
+
+    <div class="card silent" id="silentcard">
+      <h3>the silent one</h3>
+      <p>Gate closed: no hypothesis, not even a careful one. Just which signals are missing and what to attach so the next run has something to stand on.</p>
+      <span class="gap">2/7 - nothing locates code</span>
+      <div class="value">this is the output that buys trust for all the others</div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<div class="bottom">
+  <div class="strip">
+    <div class="v"><b>Falsification, not a verdict</b><p>Every hypothesis ships with the command that kills it.</p></div>
+    <div class="v"><b>Silence is a result</b><p>Below the signal threshold, nothing is written.</p></div>
+    <div class="v"><b>Blast radius</b><p>The ticket names one path. Shared code has more.</p></div>
+    <div class="v"><b>The ticket is data</b><p>Customer text is quoted, never executed.</p></div>
+  </div>
+  <div class="meta-row">
+    <details>
+      <summary>PoC versus production</summary>
+      <div class="tablewrap">
+      <table>
+        <tr><th>Area</th><th>PoC (mock data)</th><th>Production</th></tr>
+        <tr><td>Trigger</td><td>you type <code>trace MCF-4471</code></td><td>Jira Automation on <code>issuetype = Bug</code>, one web request</td></tr>
+        <tr><td>Where it runs</td><td>Claude Code in this folder</td><td>Bitbucket Agentic Pipelines, <code>provider: claude</code> - it has the repo clone, which is why a Rovo agent called from a rule cannot do this</td></tr>
+        <tr><td>Sources</td><td>files in <code>mock/&lt;target&gt;/</code></td><td>Jira REST v3, repo clone, <code>search/jql</code> history, deployments export - same evidence locker</td></tr>
+        <tr><td>Write-back</td><td><code>comment.md</code>, posted nowhere</td><td>internal ADF comment, dedicated service account, label <code>ai-triaged</code></td></tr>
+        <tr><td>Measurement</td><td>two fixtures</td><td><code>CALIBRATION.md</code> - dev marks useful / misleading, against a Rovo baseline</td></tr>
+      </table>
+      </div>
+    </details>
+    <span class="foot">BibTrace · internal PoC · 2026</span>
+  </div>
+</div>
+
+<script>
+(function(){
+  const svg=document.getElementById('wires'), NS='http://www.w3.org/2000/svg';
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function el(n,a){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);return e;}
+  function draw(){
+    if(getComputedStyle(svg).display==='none')return;
+    svg.innerHTML='';
+    const R=svg.getBoundingClientRect();
+    const core=document.getElementById('core').getBoundingClientRect();
+    const cy=core.top-R.top+core.height/2;
+    let i=0;
+    function wire(x1,y1,x2,y2,dashed){
+      const mx=(x1+x2)/2, d=`M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
+      const a={d,fill:'none',stroke:'#d4d4d8','stroke-width':1.5,id:'w'+i};
+      if(dashed)a['stroke-dasharray']='4 3';
+      const p=el('path',a);
+      svg.appendChild(p);
+      if(!reduced){
+        for(let j=0;j<2;j++){
+          const dot=el('circle',{r:2.4,fill:'#18181b',opacity:.75});
+          const m=el('animateMotion',{dur:'2.8s',repeatCount:'indefinite',begin:(i*0.33+j*1.4)+'s'});
+          m.appendChild(el('mpath',{href:'#w'+i}));
+          dot.appendChild(m); svg.appendChild(dot);
+        }
+      }
+      i++;
+    }
+    // three sources of trail feed the gate
+    document.querySelectorAll('#inputs .src').forEach(c=>{
+      const r=c.getBoundingClientRect();
+      wire(r.right-R.left, r.top-R.top+18, core.left-R.left, cy, false);
+    });
+    // gate -> agents (the open branch)
+    const ags=[...document.querySelectorAll('#agentcol .ag')];
+    ags.forEach(c=>{
+      const r=c.getBoundingClientRect();
+      wire(core.right-R.left, cy, r.left-R.left, r.top-R.top+18, false);
+    });
+    // agents -> artifacts
+    if(ags.length){
+      const ar=ags[0].getBoundingClientRect();
+      const ax=ar.right-R.left, ay=ar.top-R.top+18;
+      document.querySelectorAll('#outputs .out').forEach(c=>{
+        const r=c.getBoundingClientRect();
+        wire(ax, ay, r.left-R.left, r.top-R.top+18, false);
+      });
+    }
+    // gate -> silence, dashed, bypassing the agents entirely. This is the signature:
+    // the second branch never touches an agent, because nothing gets analysed.
+    const s=document.getElementById('silentcard');
+    if(s){
+      const r=s.getBoundingClientRect();
+      wire(core.right-R.left, cy, r.left-R.left, r.top-R.top+18, true);
+    }
+  }
+  addEventListener('load',draw);
+  let t;addEventListener('resize',()=>{clearTimeout(t);t=setTimeout(draw,150)});
+})();
+</script>
+</body>
+</html>

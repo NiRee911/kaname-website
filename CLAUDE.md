@@ -83,7 +83,9 @@ for src,dst in [
  ('/Users/kavinsky/Documents/Obsidian/PROJECTS/BibRelay/flow.html','public/kvnsky/bibrelay/flow.html'),
  ('/Users/kavinsky/Documents/Obsidian/PROJECTS/BibRelay/demo.html','public/kvnsky/bibrelay/demo.html'),
  ('/Users/kavinsky/Documents/Obsidian/PROJECTS/BibGauge/flow.html','public/kvnsky/bibgauge/flow.html'),
- ('/Users/kavinsky/Documents/Obsidian/PROJECTS/BibGauge/demo.html','public/kvnsky/bibgauge/demo.html')]:
+ ('/Users/kavinsky/Documents/Obsidian/PROJECTS/BibGauge/demo.html','public/kvnsky/bibgauge/demo.html'),
+ ('/Users/kavinsky/Documents/Obsidian/PROJECTS/BibTrace/flow.html','public/kvnsky/bibtrace/flow.html'),
+ ('/Users/kavinsky/Documents/Obsidian/PROJECTS/BibTrace/demo.html','public/kvnsky/bibtrace/demo.html')]:
     t=pathlib.Path(src).read_text().replace(chr(8212),'-')
     t=t.replace('<head>','<head>\n<meta name=\"robots\" content=\"noindex, nofollow\">',1)
     t=t.replace('</header>','<a href=\"/kvnsky\">&larr; kvnsky</a>\n</header>',1)
