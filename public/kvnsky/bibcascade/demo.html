@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BibCascade - Live demo: where does weighbridge leak?</title>
+<style>
+:root{
+  --bg:#0b0d10; --panel:#12151a; --panel2:#171b21; --border:#242a32;
+  --ink:#e6e8eb; --muted:#8b939e; --dim:#5c6570;
+  --good:#34d399; --warn:#fbbf24; --bad:#f87171; --acc:#7dd3fc;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace; --radius:10px;
+}
+*{box-sizing:border-box}
+body{font:13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  margin:0;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+
+header{padding:12px 24px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.eyebrow{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+header h1{font-size:16px;font-weight:600;letter-spacing:-.01em;margin:0}
+header p{margin:0;color:var(--muted);font-size:12px;flex:1;min-width:200px}
+header a{font-size:12px;color:var(--ink);text-decoration:none;border:1px solid var(--border);
+  border-radius:99px;padding:3px 12px}
+header a:hover{background:var(--panel2)}
+button{font:12.5px inherit;color:var(--bg);background:var(--ink);border:0;border-radius:99px;
+  padding:5px 16px;cursor:pointer;font-weight:600}
+button.ghost{background:transparent;color:var(--muted);border:1px solid var(--border);font-weight:400}
+button:hover{opacity:.9}
+button.ghost:hover{color:var(--ink);opacity:1}
+button:focus-visible,header a:focus-visible,.tab:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+button[disabled]{opacity:.4;cursor:default}
+.sigbadge{font:10px var(--mono);color:var(--dim);letter-spacing:.06em;white-space:nowrap}
+.sigbadge b{color:var(--bad);font-weight:400}
+
+main{flex:1;display:grid;grid-template-columns:minmax(360px,42%) 1fr;gap:16px;padding:16px 24px;min-height:0}
+
+.term{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+  display:flex;flex-direction:column;min-height:420px;max-height:calc(100vh - 140px);overflow:hidden}
+.term-bar{display:flex;align-items:center;gap:6px;padding:9px 13px;border-bottom:1px solid var(--border)}
+.term-bar i{width:10px;height:10px;border-radius:99px;background:var(--border);display:inline-block}
+.term-bar span{font:11px var(--mono);color:var(--dim);margin-left:8px}
+.term-body{font:12px/1.7 var(--mono);padding:12px 15px;overflow-y:auto;flex:1;white-space:pre-wrap;word-break:break-word}
+.tl{opacity:0;transform:translateY(2px);transition:opacity .25s,transform .25s;display:block}
+.tl.on{opacity:1;transform:none}
+.tl.cmd{color:var(--ink)} .tl.cmd::before{content:"$ ";color:var(--dim)}
+.tl.human{color:var(--acc)} .tl.human::before{content:"⌨ ";color:var(--dim)}
+.tl.ok{color:var(--good)}
+.tl.gap{color:var(--warn)}
+.tl.dim{color:var(--muted)}
+.tl.hot{color:var(--bad)}
+.cursor{display:inline-block;width:7px;height:14px;background:var(--acc);vertical-align:-2px;
+  animation:blink 1.1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+@media (prefers-reduced-motion: reduce){.cursor{animation:none}.tl{transition:none}}
+
+.side{display:flex;flex-direction:column;min-height:0}
+.tabs{display:flex;gap:5px;margin-bottom:9px;flex-wrap:wrap}
+.tab{font:11px var(--mono);letter-spacing:.05em;color:var(--muted);background:var(--panel);
+  border:1px solid var(--border);border-radius:99px;padding:4px 13px;cursor:pointer}
+.tab[aria-selected="true"]{color:var(--bg);background:var(--ink);border-color:var(--ink);font-weight:600}
+.tab.fresh::after{content:"";display:inline-block;width:5px;height:5px;border-radius:99px;
+  background:var(--acc);margin-left:6px;vertical-align:1px}
+.pane{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+  padding:15px 17px;overflow-y:auto;flex:1;min-height:0}
+.pane h2{font:11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+.pane h3{font-size:13.5px;margin:14px 0 3px}
+.pane h3:first-of-type{margin-top:8px}
+.mut{color:var(--muted);font-size:12px}
+.reveal{opacity:0;transform:translateY(3px);transition:opacity .3s,transform .3s}
+.reveal.on{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){.reveal{transition:none}}
+
+/* kaskada */
+.crow{margin-bottom:6px}
+.chead{display:flex;justify-content:space-between;gap:8px;font:10px var(--mono);
+  color:var(--muted);margin-bottom:2px}
+.chead b{color:var(--ink);letter-spacing:.06em;text-transform:uppercase}
+.cbar{height:18px;border-radius:3px;display:flex;overflow:hidden;background:#1b2027;
+  border:1px solid var(--border)}
+.cbar i{display:block;height:100%}
+.cbar i.kept{background:var(--acc)}
+.cbar i.thru{background:repeating-linear-gradient(45deg,#171b21 0 4px,#1f242b 4px 8px)}
+.cbar.esc{border-color:#5b2b2b}
+.cbar.esc i.kept{background:var(--bad)}
+
+table{border-collapse:separate;border-spacing:0;width:100%;font-size:12px;margin-top:7px}
+th,td{border-bottom:1px solid var(--border);padding:4px 8px;text-align:left}
+th{color:var(--muted);font:10px var(--mono);letter-spacing:.08em;text-transform:uppercase;font-weight:400}
+td.n{font-family:var(--mono);text-align:right}
+tr:last-child td{border-bottom:none}
+tr.hot td{color:var(--bad)}
+tr.weak td{color:var(--dim);font-style:italic}
+
+.callout{border:1px solid var(--border);border-radius:8px;padding:9px 12px;margin-top:11px;
+  background:var(--panel2);font-size:12px}
+.callout.bad{border-color:#5b2b2b;background:#1a1113}.callout.bad b{color:var(--bad)}
+.callout.warn{border-color:#5b4a1f;background:#1a1710}.callout.warn b{color:var(--warn)}
+.callout.good{border-color:#2b5b47;background:#101a16}.callout.good b{color:var(--good)}
+
+.gatebar{border:1px solid var(--border);border-radius:var(--radius);background:var(--panel2);
+  padding:11px 14px;margin-top:11px;display:none;align-items:center;gap:12px;flex-wrap:wrap}
+.gatebar.on{display:flex}
+.gatebar p{margin:0;flex:1;min-width:200px;font-size:12px}
+.gatebar p b{color:var(--warn)}
+.decided{display:none;margin-top:11px}.decided.on{display:block}
+.ph{color:var(--dim);font-size:12.5px;text-align:center;padding:38px 10px}
+
+footer{border-top:1px solid var(--border);padding:9px 24px;display:flex;justify-content:space-between;
+  gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--dim)}
+footer b{color:var(--muted);font-weight:400}
+
+@media (max-width:900px){
+  main{grid-template-columns:1fr}
+  /* bez stropu terminal pocas behu rastie a tlaci obsah pod sebou nizsie */
+  .term{min-height:300px;max-height:60vh}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="eyebrow">BibCascade · demo</span>
+  <h1 id="hdr">weighbridge - where does it leak?</h1>
+  <p>A scripted replay of one run. Nothing is fetched, nothing is written back.</p>
+  <span class="sigbadge">reached the customer <b id="esc">-</b></span>
+  <button id="run">Run</button>
+  <button id="skip" class="ghost">Skip to the result</button>
+  <a href="flow.html">← How it works</a>
+<a href="/kvnsky">&larr; kvnsky</a>
+</header>
+
+<main>
+  <section class="term">
+    <div class="term-bar"><i></i><i></i><i></i><span>claude - BibCascade</span></div>
+    <div class="term-body" id="term"><span class="cursor" id="cur"></span></div>
+  </section>
+
+  <section class="side">
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" data-tab="cont" aria-selected="true">containment.md</button>
+      <button class="tab" role="tab" data-tab="pat" aria-selected="false">patterns.md</button>
+      <button class="tab" role="tab" data-tab="q" aria-selected="false">questions.md</button>
+    </div>
+
+    <div class="pane">
+      <div class="ph" id="placeholder">Press <b>Run</b> to replay the run - or <b>Skip to the result</b>.</div>
+
+      <div data-pane="cont" hidden>
+        <h2>where the net leaks</h2>
+        <div class="reveal" data-r="c1">
+          <h3>The cascade</h3>
+          <p class="mut" style="margin:0 0 6px">403 classified defects. Each phase keeps some; the
+            rest flows down.</p>
+          <div class="crow"><div class="chead"><b>Code review</b><span>403 in · 92 caught</span></div>
+            <div class="cbar" style="width:100%"><i class="kept" style="width:22.8%"></i><i class="thru" style="width:77.2%"></i></div></div>
+          <div class="crow"><div class="chead"><b>In test</b><span>311 in · 113 caught</span></div>
+            <div class="cbar" style="width:77.2%"><i class="kept" style="width:36.3%"></i><i class="thru" style="width:63.7%"></i></div></div>
+          <div class="crow"><div class="chead"><b>Staging</b><span>198 in · 44 caught</span></div>
+            <div class="cbar" style="width:49.1%"><i class="kept" style="width:22.2%"></i><i class="thru" style="width:77.8%"></i></div></div>
+          <div class="crow"><div class="chead"><b>Production</b><span>154 in · 44 caught</span></div>
+            <div class="cbar" style="width:38.2%"><i class="kept" style="width:28.6%"></i><i class="thru" style="width:71.4%"></i></div></div>
+          <div class="crow"><div class="chead"><b style="color:var(--bad)">Customer</b><span>110 reached them</span></div>
+            <div class="cbar esc" style="width:27.3%"><i class="kept" style="width:100%"></i></div></div>
+        </div>
+        <div class="reveal" data-r="c2">
+          <div class="callout bad"><b>Removal efficiency 72.7 %.</b> Read the middle rows rather
+            than the ends: in test - the phase built for exactly this - holds only 36.3 % of what
+            reaches it, and by staging every remaining defect has already cost a build, a deploy
+            and someone's attention twice.</div>
+        </div>
+        <div class="reveal" data-r="c3">
+          <h3>Where the escapes concentrate</h3>
+          <table>
+            <tr><th>Component</th><th>Escapes</th><th>of escapes</th><th>of all</th><th>×</th></tr>
+            <tr class="hot"><td>billing-export</td><td class="n">52</td><td class="n">47.3 %</td><td class="n">27.8 %</td><td class="n">1.70</td></tr>
+            <tr><td>reporting</td><td class="n">18</td><td class="n">16.4 %</td><td class="n">17.9 %</td><td class="n">0.92</td></tr>
+            <tr><td>driver-app</td><td class="n">15</td><td class="n">13.6 %</td><td class="n">18.1 %</td><td class="n">0.75</td></tr>
+            <tr><td>weigh-station</td><td class="n">14</td><td class="n">12.7 %</td><td class="n">19.8 %</td><td class="n">0.64</td></tr>
+            <tr><td>dispatch-api</td><td class="n">11</td><td class="n">10.0 %</td><td class="n">16.5 %</td><td class="n">0.61</td></tr>
+          </table>
+          <p class="mut" style="margin-top:7px">The other four sit at or below their base rate.
+            <b style="color:var(--ink)">That is the useful half:</b> the leak is local, not a
+            property of the pipeline.</p>
+        </div>
+      </div>
+
+      <div data-pane="pat" hidden>
+        <h2>levers, and what is not a pattern</h2>
+        <div class="reveal" data-r="p1">
+          <h3>Escapes travel with unfinished testing</h3>
+          <div class="callout warn"><b>CORRELATION</b> - sprints ending with more than 2 items in
+            <code>Test Blocked</code> leak at <b>41.2 %</b>; the rest at <b>13.0 %</b>.
+            Three times the rate, and <b>not a cause</b>: unfinished testing may let defects
+            through, or the same pressure may produce both. This run tested neither direction.</div>
+        </div>
+        <div class="reveal" data-r="p2">
+          <h3>Declined: three tickets are not a pattern</h3>
+          <table>
+            <tr><th>Candidate</th><th>N</th><th>Threshold</th><th>Reported</th></tr>
+            <tr class="hot"><td>billing-export over-represented</td><td class="n">52</td><td class="n">8</td><td>yes</td></tr>
+            <tr class="weak"><td>shared label <code>flaky-e2e</code></td><td class="n">3</td><td class="n">8</td><td>declined</td></tr>
+          </table>
+          <p class="mut" style="margin-top:7px">Listed so nobody finds it later and thinks the run
+            missed it. It did not - it declined to report it. At eight it becomes a finding.</p>
+          <div class="callout" style="margin-top:10px">The failure mode of this kind of tool is not
+            missing things. It is producing confident clusters that are not there, and being
+            believed.</div>
+        </div>
+
+        <div class="gatebar" id="gate">
+          <p><b>Human decision.</b> One lever is proposed, with the test that would kill it. The
+            tool does not adopt it.</p>
+          <button id="adoptBtn">Adopt as experiment</button>
+          <button id="skipBtn" class="ghost">Not now</button>
+        </div>
+        <div class="decided" id="decided"><div class="callout good" id="decidedTxt"></div></div>
+      </div>
+
+      <div data-pane="q" hidden>
+        <h2>what this run could not answer</h2>
+        <div class="reveal" data-r="q1">
+          <div class="callout warn"><b>22 defects have no usable trail</b> - no transitions, no
+            environment. Counted as UNKNOWN, excluded from every percentage, never distributed into
+            the nearest phase. That is <b>5.2 %</b> of the record.</div>
+          <p class="mut" style="margin-top:8px">The headline 72.7 % is computed over the 403 that
+            could be placed. Counting the 22 as well, the true figure sits between
+            <b style="color:var(--ink)">68.9 %</b> and <b style="color:var(--ink)">74.1 %</b>.
+            Both are correct; they answer different questions.</p>
+        </div>
+        <div class="reveal" data-r="q2">
+          <h3>Not in the record at all</h3>
+          <p class="mut" style="margin:0"><b style="color:var(--ink)">Severity.</b> Every escape
+            counts the same here. One customer-facing data error and one cosmetic misalignment are
+            the same row, which is certainly wrong and cannot be fixed without a severity field
+            that is used consistently.</p>
+          <p class="mut" style="margin:7px 0 0"><b style="color:var(--ink)">Cost.</b> Nothing
+            prices a defect by the phase it was caught in - so "shift left" cannot be argued from
+            this data, even where it is obviously right.</p>
+          <p class="mut" style="margin:7px 0 0"><b style="color:var(--ink)">What was prevented.</b>
+            The record holds defects that were found. It is silent about the ones a review caught
+            before anything was written down, which is exactly the work this would most want to
+            credit.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span><b>Synthetic fixture.</b> Shape copied from a Jira export, content invented. No real project data appears here.</span>
+  <span><b>Nothing about a person.</b> The escape is a property of the net, and there is no field here to name anyone from.</span>
+</footer>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const term=$('#term'), cur=$('#cur');
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let timer=null, running=false, started=false, offered=false, decided=false;
+
+const S=[
+ ['cmd','cascade weighbridge',420],
+ ['dim','reading mock/weighbridge/jira.json - 425 defects, 20 sprints',340],
+ ['dim','deriving the phase from type, environment and status transitions',340],
+ ['dim','(no "found in phase" field exists - nobody fills that in, anywhere)',340],
+ ['ok','403 defects placed into a phase',300,'c1'],
+ ['gap','22 have no trail at all -> UNKNOWN, excluded from every percentage',420,'q1'],
+ ['dim','step 2 - building the cascade',300],
+ ['dim','code review  403 in ->  92 caught, 311 pass',260],
+ ['dim','in test      311 in -> 113 caught, 198 pass',260],
+ ['dim','staging      198 in ->  44 caught, 154 pass',260],
+ ['dim','production   154 in ->  44 caught, 110 pass',260],
+ ['hot','customer     110 defects were found by someone outside the team',480,'c2'],
+ ['dim','removal efficiency 72.7% (68.9-74.1% counting the unclassifiable)',380],
+ ['dim','step 3 - where do the escapes concentrate',300],
+ ['hot','billing-export  52 escapes  47.3% of escapes vs 27.8% of all  x1.70',460,'c3'],
+ ['ok','the other four sit at or below base rate - the leak is local',380],
+ ['dim','step 4 - what moves with it',300],
+ ['gap','CORRELATION  test_blocked > 2 at sprint end -> 41.2% vs 13.0%',460,'p1'],
+ ['dim','tagged, not claimed. neither direction of cause was tested.',360],
+ ['dim','step 5 - candidate patterns',300],
+ ['dim','shared label flaky-e2e: N=3, threshold 8 -> DECLINED',420,'p2'],
+ ['ok','1 lever proposed, with the test that would kill it',420,null,'pause']
+];
+
+function tail(choice){
+  const first = choice==='adopt'
+    ? [['human','adopt as experiment',380],
+       ['ok','recorded with its falsification test and a review date one quarter out',460]]
+    : [['human','not now',380],
+       ['dim','left in patterns.md as proposed. The run does not argue twice.',420]];
+  return first.concat([
+   ['dim','nothing was written to Jira. every artifact is a file.',400],
+   ['dim',' ',240],
+   ['ok','containment.md · patterns.md · questions.md written',380,'q2'],
+   ['dim','done. 425 defects, 1 leak located, 1 candidate declined.',320]
+  ]);
+}
+
+function line(cls,txt){
+  // sledovanie konca len ked je citatel uz dole - inak mu replay kradne scroll
+  const stick=term.scrollHeight-term.scrollTop-term.clientHeight<32;
+  const el=document.createElement('span');
+  el.className='tl '+cls; el.textContent=txt;
+  term.insertBefore(el,cur);
+  void el.offsetWidth; el.classList.add('on');
+  if(stick) term.scrollTop=term.scrollHeight;
+}
+function fresh(tab){
+  const el=$('.tab[data-tab="'+tab+'"]');
+  if(el.getAttribute('aria-selected')!=='true') el.classList.add('fresh');
+}
+function reveal(key){
+  if(!key)return;
+  $('#placeholder').hidden=true;
+  const sel=$('.tab[aria-selected="true"]').dataset.tab;
+  $('[data-pane="'+sel+'"]').hidden=false;
+  $$('[data-r="'+key+'"]').forEach(e=>e.classList.add('on'));
+  if(key[0]==='c') fresh('cont');
+  if(key[0]==='p') fresh('pat');
+  if(key[0]==='q') fresh('q');
+  if(key==='c2') $('#esc').textContent='110';
+}
+function play(list,i,after){
+  if(i>=list.length){ if(after)after(); return; }
+  const [cls,txt,d,key,flag]=list[i];
+  line(cls,txt); reveal(key);
+  if(flag==='pause'){
+    offered=true; $('#gate').classList.add('on'); fresh('pat');
+    // timer je null: co drzi replay je clovek, nie cakanie
+    if(!decided){ timer=null; return; }
+  }
+  timer=setTimeout(()=>play(list,i+1,after), reduced?0:d);
+}
+function doDecide(choice){
+  if(decided||!offered)return false;
+  decided=true;
+  $('#gate').classList.remove('on');
+  $('#decidedTxt').innerHTML = choice==='adopt'
+    ? '<b>Adopted as an experiment.</b> If the cause is local to billing-export, its escape share falls towards 27.8 % within two quarters while the other four stay flat. If every component moves together instead, the finding was wrong and the record will say so.'
+    : '<b>Left as proposed.</b> It stays in patterns.md with its falsification test attached, so the next run can pick it up unchanged rather than rediscovering it.';
+  $('#decided').classList.add('on'); fresh('pat');
+  return true;
+}
+function bindGate(id,choice){
+  $(id).addEventListener('click',()=>{
+    // guard: klik pred otvorenim gate by spustil tail paralelne s hlavnym skriptom
+    if(!offered)return;
+    const wasRunning=running;
+    if(doDecide(choice) && wasRunning) play(tail(choice),0,finish);
+  });
+}
+bindGate('#adoptBtn','adopt'); bindGate('#skipBtn','skip');
+
+function finish(){ running=false; timer=null; $('#run').textContent='Replay'; $('#run').disabled=false; }
+function reset(){
+  clearTimeout(timer); decided=false; offered=false;
+  $$('.tl').forEach(e=>e.remove());
+  $$('.reveal').forEach(e=>e.classList.remove('on'));
+  $$('[data-pane]').forEach(e=>e.hidden=true);
+  $$('.tab').forEach(t=>t.classList.remove('fresh'));
+  $('#placeholder').hidden=false;
+  $('#gate').classList.remove('on');
+  $('#decided').classList.remove('on');
+  $('#esc').textContent='-';
+  started=false; selectTab('cont');
+}
+$('#run').addEventListener('click',()=>{
+  if(running)return;
+  reset(); running=true; started=true; $('#run').disabled=true;
+  play(S,0,()=>{});
+});
+$('#skip').addEventListener('click',()=>{
+  clearTimeout(timer);
+  // kto pride studeny, ma byt jeden klik od vysledku
+  if(!started){ reset(); started=true; }
+  const rest=list=>list.forEach(([cls,txt,,key])=>{ line(cls,txt); reveal(key); });
+  $$('.tl').forEach(e=>e.remove());
+  rest(S); offered=true; doDecide('adopt'); rest(tail('adopt'));
+  finish();
+});
+function selectTab(name){
+  $$('.tab').forEach(t=>{
+    t.setAttribute('aria-selected', t.dataset.tab===name?'true':'false');
+    if(t.dataset.tab===name)t.classList.remove('fresh');
+  });
+  $$('[data-pane]').forEach(p=>{ p.hidden=!(p.dataset.pane===name&&started); });
+  $('#placeholder').hidden=started;
+}
+$$('.tab').forEach(t=>t.addEventListener('click',()=>selectTab(t.dataset.tab)));
+})();
+</script>
+</body>
+</html>

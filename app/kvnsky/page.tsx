@@ -73,6 +73,18 @@ const projects = [
       { label: "Bigger picture", href: "/kvnsky/bibhorizon/horizons.html" },
     ],
   },
+  {
+    tag: "BibCascade",
+    year: "2026",
+    status: "PoC",
+    oneLiner: "Where the net leaks",
+    description:
+      "Every defect passed through gates meant to stop it, and when one reaches a customer the team fixes the defect rather than the gate. The phase a defect was caught in is not a field anywhere, so it is derived from the trail the work already left. What comes back is a cascade: how many each gate held, how many it passed on, and the number at the bottom that nobody in the team found. A pattern needs eight cases, and one below the threshold is reported as declined rather than quietly dropped, because the failure mode here is not missing things but confident clusters that are not there.",
+    links: [
+      { label: "Data flow", href: "/kvnsky/bibcascade/flow.html" },
+      { label: "Live demo", href: "/kvnsky/bibcascade/demo.html" },
+    ],
+  },
 ]
 
 export default function KvnskyPage() {

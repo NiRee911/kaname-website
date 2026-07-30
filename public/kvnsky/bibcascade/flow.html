@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BibCascade - Where the net leaks</title>
+<style>
+:root{
+  --bg:#fafafa; --card:#fff; --border:#e4e4e7; --ink:#09090b; --muted:#71717a;
+  --secondary:#f4f4f5; --green:#16a34a; --amber:#d97706; --red:#dc2626; --blue:#2563eb;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace; --radius:8px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{font:13px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  margin:0;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
+
+header{padding:12px 24px;border-bottom:1px solid var(--border);background:var(--card);
+  display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.eyebrow{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+header h1{font-size:17px;font-weight:600;letter-spacing:-.02em;margin:0}
+header p{margin:0;color:var(--muted);font-size:12.5px;flex:1;min-width:180px}
+.modes{display:flex;gap:5px}
+.modes span{font:10px var(--mono);border:1px solid var(--border);background:var(--secondary);
+  color:#3f3f46;border-radius:99px;padding:1px 9px}
+.modes span.hot{border-color:#fecaca;background:#fef2f2;color:var(--red)}
+.modes span.cold{border-color:#e4e4e7;background:var(--card);color:var(--muted);border-style:dashed}
+header a{font-size:12px;color:var(--ink);text-decoration:none;border:1px solid var(--border);
+  border-radius:99px;padding:2px 11px;background:var(--card);white-space:nowrap}
+header a:hover{background:var(--secondary)}
+header a:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+.wrap{position:relative;flex:1;min-height:0;overflow-y:auto}
+#wires{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.flow{display:grid;grid-template-columns:.95fr .85fr 1.35fr 1fr;gap:34px;
+  padding:12px 24px;align-items:start;height:100%}
+.col>h2{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 7px}
+.col>h2 b{color:var(--ink)}
+.subhead{font:10px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+  margin:12px 0 6px}
+.subhead:first-of-type{margin-top:0}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:8px 12px;margin-bottom:8px;box-shadow:0 1px 2px #0000000d}
+.card h3{font-size:13px;font-weight:600;margin:0}
+.card p{margin:1px 0 0;font-size:11.5px;color:var(--muted)}
+.badge{display:inline-block;font:10px var(--mono);background:var(--secondary);
+  border:1px solid var(--border);color:#3f3f46;border-radius:99px;padding:0 8px;margin-top:5px}
+.badge.ro{color:var(--red);border-color:#fecaca;background:#fef2f2}
+.value{font-size:11.5px;color:var(--green);margin-top:4px}
+.value::before{content:"↳ "}
+.gap{display:inline-block;font:10px var(--mono);color:var(--amber);background:#fffbeb;
+  border:1px dashed var(--amber);border-radius:6px;padding:0 8px;margin-top:5px}
+
+/* .src nema styl - je to len selektor pre kreslenie wires v skripte */
+
+/* ---------- derivation cell (dark) ---------- */
+.cell{background:#09090b;color:#a1a1aa;border-radius:12px;padding:13px 13px 10px}
+.cell .agent{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;
+  text-align:center;color:#e4e4e7;margin-bottom:9px}
+.derive{display:grid;gap:4px;font:10.5px var(--mono)}
+.derive div{display:grid;grid-template-columns:1fr auto;gap:8px;padding:3px 0;
+  border-bottom:1px solid #27272a}
+.derive div:last-child{border-bottom:none}
+.derive i{font-style:normal;color:#71717a}
+.derive b{color:#e4e4e7;font-weight:600;white-space:nowrap}
+.derive b.unk{color:var(--amber)}
+.rules{list-style:none;margin:10px 0 0;padding:0;font-size:11.5px}
+.rules li{margin:4px 0;padding-left:14px;position:relative}
+.rules li::before{content:"";position:absolute;left:1px;top:6px;width:5px;height:5px;
+  border-radius:99px;background:var(--green)}
+.cell .one{margin:9px 2px 0;font-size:11px;color:#71717a;text-align:center}
+
+/* ---------- the cascade: this is the signature ---------- */
+.casc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:12px 14px 10px;box-shadow:0 1px 2px #0000000d}
+.crow{margin-bottom:7px}
+.chead{display:flex;justify-content:space-between;align-items:baseline;gap:8px;
+  font:10px var(--mono);color:var(--muted);margin-bottom:2px}
+.chead b{color:var(--ink);letter-spacing:.06em;text-transform:uppercase}
+.cbar{height:20px;border-radius:3px;display:flex;overflow:hidden;background:var(--secondary);
+  border:1px solid var(--border)}
+.cbar i{display:block;height:100%}
+.cbar i.kept{background:#18181b}
+.cbar i.thru{background:repeating-linear-gradient(45deg,#f4f4f5 0 4px,#e4e4e7 4px 8px)}
+.cbar.esc{border-color:#fecaca}
+.cbar.esc i.kept{background:var(--red)}
+.cnum{font:10.5px var(--mono);color:var(--muted)}
+.cnum b{color:var(--ink)}
+.cfoot{border-top:1px dashed var(--border);margin-top:9px;padding-top:8px;font-size:11.5px}
+.cfoot b{color:var(--red)}
+.dre{font-size:12px;margin-top:5px;color:var(--muted)}
+.dre b{color:var(--ink);font-size:15px;letter-spacing:-.02em}
+
+/* ---------- outputs ---------- */
+.out h3{font-family:var(--mono);font-size:12px}
+.hit{border-left:3px solid var(--red)}
+.corr{border-left:3px solid var(--amber)}
+.rej{border-style:dashed;background:var(--secondary)}
+.tg{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:baseline;font-size:11px;margin-top:5px}
+.tg b{font:9.5px var(--mono);letter-spacing:.05em;border-radius:4px;padding:1px 7px;white-space:nowrap}
+.tg.corr2 b{color:var(--red);background:#fef2f2;border:1px solid #fecaca}
+.tg span{color:var(--muted)}
+
+.bottom{border-top:1px solid var(--border);background:var(--card);padding:8px 24px 10px}
+.strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.strip .v{border:1px solid var(--border);border-radius:var(--radius);padding:6px 11px}
+.strip b{display:block;font-size:12px;font-weight:600}
+.strip p{margin:0;font-size:11px;color:var(--muted)}
+.meta-row{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:8px}
+details summary{cursor:pointer;font:10px var(--mono);letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);list-style:none}
+details summary::before{content:"▸ "}
+details[open] summary::before{content:"▾ "}
+.tablewrap{overflow-x:auto}
+table{border-collapse:separate;border-spacing:0;width:100%;background:var(--card);
+  border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;font-size:12px;margin-top:6px}
+th,td{border-bottom:1px solid var(--border);padding:4px 11px;text-align:left}
+th{background:var(--secondary);font-size:11px;font-weight:600}
+tr:last-child td{border-bottom:none}
+code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radius:4px}
+.foot{font-size:11px;color:var(--muted);white-space:nowrap}
+
+@media (max-width:1050px){
+  .flow{grid-template-columns:1fr 1fr;height:auto}
+  #wires{display:none}
+  body{height:auto}
+}
+@media (max-width:640px){
+  .flow{grid-template-columns:1fr;gap:16px}
+  .strip{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="eyebrow">BibCascade · internal PoC</span>
+  <h1>Where the net leaks</h1>
+  <p>Every defect passed through gates meant to stop it. This asks which gate let it through, across the whole record rather than one ticket.</p>
+  <div class="modes" aria-label="Outcomes">
+    <span class="hot">leak located</span><span class="cold">not a pattern</span>
+  </div>
+  <a href="demo.html">Watch the demo →</a>
+<a href="/kvnsky">&larr; kvnsky</a>
+</header>
+
+<div class="wrap">
+<svg id="wires" aria-hidden="true"></svg>
+<div class="flow">
+
+  <div class="col" id="inputs">
+    <h2><b>The record</b> · read-only</h2>
+
+    <div class="subhead">What was found</div>
+    <div class="card src">
+      <h3>425 defects, 20 sprints</h3>
+      <p>Bugs and support tickets with their status history. The phase each one was caught in is
+        <b>not a field</b> - nobody fills that in, in any organisation.</p>
+      <span class="badge ro">no severity, no cost - see the limits</span>
+    </div>
+
+    <div class="subhead">What the workflow already records</div>
+    <div class="card src">
+      <h3>Transitions and environment</h3>
+      <p>Code review, in test, staging, production. The trail a defect left is enough to place it,
+        which means this needs no new field and no change to how anyone works.</p>
+      <div class="value">the phase is derived, never asked for</div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2><b>Derivation</b> · deterministic</h2>
+    <div class="cell" id="core">
+      <div class="agent">scripts/cascade.py</div>
+      <div class="derive">
+        <div><i>support ticket</i><b>CUSTOMER</b></div>
+        <div><i>reached staging, env production</i><b>PRODUCTION</b></div>
+        <div><i>reached staging, env staging</i><b>STAGING</b></div>
+        <div><i>reached in test</i><b>IN TEST</b></div>
+        <div><i>code review only</i><b>CODE REVIEW</b></div>
+        <div><i>no trail at all</i><b class="unk">UNKNOWN</b></div>
+      </div>
+      <ul class="rules">
+        <li>UNKNOWN is never rounded into the nearest phase</li>
+        <li>a pattern needs 8 cases; three tickets are not a pattern</li>
+        <li>every claim carries N and its counterexamples</li>
+      </ul>
+      <p class="one">The model names what it means. It never counts.</p>
+    </div>
+  </div>
+
+  <div class="col" id="casccol">
+    <h2><b>The cascade</b> · 403 classified</h2>
+    <div class="casc" id="cascbox">
+      <div class="crow">
+        <div class="chead"><b>Code review</b><span class="cnum">403 in · <b>92</b> caught</span></div>
+        <div class="cbar" style="width:100%"><i class="kept" style="width:22.8%"></i><i class="thru" style="width:77.2%"></i></div>
+      </div>
+      <div class="crow">
+        <div class="chead"><b>In test</b><span class="cnum">311 in · <b>113</b> caught</span></div>
+        <div class="cbar" style="width:77.2%"><i class="kept" style="width:36.3%"></i><i class="thru" style="width:63.7%"></i></div>
+      </div>
+      <div class="crow">
+        <div class="chead"><b>Staging</b><span class="cnum">198 in · <b>44</b> caught</span></div>
+        <div class="cbar" style="width:49.1%"><i class="kept" style="width:22.2%"></i><i class="thru" style="width:77.8%"></i></div>
+      </div>
+      <div class="crow">
+        <div class="chead"><b>Production</b><span class="cnum">154 in · <b>44</b> caught</span></div>
+        <div class="cbar" style="width:38.2%"><i class="kept" style="width:28.6%"></i><i class="thru" style="width:71.4%"></i></div>
+      </div>
+      <div class="crow">
+        <div class="chead"><b style="color:var(--red)">Customer</b><span class="cnum"><b>110</b> reached them</span></div>
+        <div class="cbar esc" style="width:27.3%"><i class="kept" style="width:100%"></i></div>
+      </div>
+
+      <div class="cfoot">
+        <b>110 of 425 were found by someone outside the team.</b>
+        <div class="dre">Removal efficiency <b>72.7 %</b> - and read the middle rows, not the ends:
+          in test, the phase built for this, holds 36.3 % of what reaches it.</div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:9px">
+      <h3>22 could not be placed</h3>
+      <p>No transitions, no environment. Counted as UNKNOWN and excluded from every percentage.</p>
+      <span class="gap">true efficiency is between 68.9 % and 74.1 %</span>
+    </div>
+  </div>
+
+  <div class="col" id="outputs">
+    <h2><b>What comes back</b></h2>
+
+    <div class="card out hit" id="hitcard">
+      <h3>containment.md</h3>
+      <p><b>billing-export</b> produces 27.8 % of defects and <b>47.3 % of everything the customer
+        sees</b> - ×1.70 over its base rate, on 52 escapes.</p>
+      <div class="value">the other four sit at or below base rate: the leak is local, not the pipeline</div>
+    </div>
+
+    <div class="card out corr">
+      <h3>patterns.md</h3>
+      <div class="tg corr2"><b>CORRELATION</b><span>sprints ending with more than 2 items in
+        <code>Test Blocked</code> leak at <b>41.2 %</b> against <b>13.0 %</b></span></div>
+      <p style="margin-top:6px">Three times the rate - and not a cause. Unfinished testing may let
+        defects through, or the same pressure may produce both. This run tested neither.</p>
+      <div class="value">every lever ships with the test that would kill it</div>
+    </div>
+
+    <div class="card out rej" id="rejcard">
+      <h3>Or: not a pattern</h3>
+      <p>Three escapes share a label. Three is not a pattern, so it is listed as declined rather
+        than reported. The failure mode of this kind of tool is not missing things - it is
+        confident clusters that are not there.</p>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<div class="bottom">
+  <div class="strip">
+    <div class="v"><b>The leak is a property of the net</b><p>Never of a person or a role. No name appears in any artifact, and there is no field to produce one from.</p></div>
+    <div class="v"><b>UNKNOWN is not zero</b><p>Zero means nothing escaped. Unknown means we cannot see. Merging them is the difference between measuring and theatre.</p></div>
+    <div class="v"><b>Eight cases or it is not reported</b><p>A pattern below the threshold is named as declined, so nobody thinks the run missed it.</p></div>
+    <div class="v"><b>No target invented</b><p>Nothing here says 72.7 % is good or bad. A tool that writes its own standard is not measuring anything.</p></div>
+  </div>
+
+  <div class="meta-row">
+    <details>
+      <summary>PoC versus production</summary>
+      <div class="tablewrap">
+      <table>
+        <tr><th>Area</th><th>PoC (synthetic fixture)</th><th>Production</th></tr>
+        <tr><td>Input</td><td><code>mock/weighbridge/jira.json</code>, generated with a fixed seed</td><td>Jira export with <code>expand=changelog</code> - same shape</td></tr>
+        <tr><td>Phase derivation</td><td>type, environment, transitions</td><td>same three, mapped to the real workflow's status names in config</td></tr>
+        <tr><td>Severity and cost</td><td>absent</td><td>the two fields that would make this argue for investment, and neither is reliable today</td></tr>
+        <tr><td>First real output</td><td>the cascade</td><td>how much of the record is UNKNOWN - expect it to be higher than 5.2 %</td></tr>
+        <tr><td>Write-back</td><td>none</td><td>none. Read-only by design.</td></tr>
+      </table>
+      </div>
+    </details>
+    <span class="foot">BibCascade · internal PoC · 2026</span>
+  </div>
+</div>
+
+<script>
+(function(){
+  const svg=document.getElementById('wires'), NS='http://www.w3.org/2000/svg';
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function el(n,a){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);return e;}
+  function draw(){
+    if(getComputedStyle(svg).display==='none')return;
+    svg.innerHTML='';
+    const R=svg.getBoundingClientRect();
+    const core=document.getElementById('core').getBoundingClientRect();
+    const cy=core.top-R.top+core.height/2;
+    let i=0;
+    function wire(x1,y1,x2,y2,dashed){
+      const mx=(x1+x2)/2, d=`M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
+      const a={d,fill:'none',stroke:'#d4d4d8','stroke-width':1.5,id:'w'+i};
+      if(dashed)a['stroke-dasharray']='4 3';
+      svg.appendChild(el('path',a));
+      if(!reduced){
+        for(let j=0;j<2;j++){
+          const dot=el('circle',{r:2.4,fill:'#18181b',opacity:.75});
+          const m=el('animateMotion',{dur:'2.8s',repeatCount:'indefinite',begin:(i*0.33+j*1.4)+'s'});
+          m.appendChild(el('mpath',{href:'#w'+i}));
+          dot.appendChild(m); svg.appendChild(dot);
+        }
+      }
+      i++;
+    }
+    document.querySelectorAll('#inputs .src').forEach(c=>{
+      const r=c.getBoundingClientRect();
+      wire(r.right-R.left, r.top-R.top+18, core.left-R.left, cy, false);
+    });
+    // jadro -> kaskada. Jedina hruba linka: vsetko tecie cez nu.
+    const cb=document.getElementById('cascbox');
+    if(cb){
+      const r=cb.getBoundingClientRect();
+      wire(core.right-R.left, cy, r.left-R.left, r.top-R.top+22, false);
+      // kaskada -> vystupy; ciarkovana vetva je odmietnuty vzor
+      const cx=r.right-R.left, cyy=r.top-R.top+22;
+      ['hitcard','rejcard'].forEach(id=>{
+        const o=document.getElementById(id); if(!o)return;
+        const orr=o.getBoundingClientRect();
+        wire(cx, cyy, orr.left-R.left, orr.top-R.top+18, id==='rejcard');
+      });
+    }
+  }
+  addEventListener('load',draw);
+  let t;addEventListener('resize',()=>{clearTimeout(t);t=setTimeout(draw,150)});
+})();
+</script>
+</body>
+</html>
