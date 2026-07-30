@@ -99,6 +99,51 @@ table.rm tr:last-child td{border-bottom:none}
   font-size:11.5px;color:var(--muted);background:var(--secondary)}
 .limits b{color:var(--ink)}
 
+/* kategorie */
+.cats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px}
+.cats div{border:1px solid var(--border);border-radius:6px;padding:8px 11px}
+.cats b{display:block;font:11px var(--mono);letter-spacing:.08em;font-weight:600}
+.cats span{display:block;font-size:11.5px;color:var(--muted);margin:2px 0 4px}
+.cats i{font-style:normal;font:9.5px var(--mono);color:var(--ink);border:1px solid var(--border);
+  border-radius:99px;padding:0 7px;background:var(--secondary)}
+table.rm td.ok{color:var(--green)}
+table.rm td.bad{color:var(--red)}
+table.rm s{text-decoration:none;font-size:10.5px;color:var(--muted)}
+
+/* ---------- gantt ---------- */
+/* pas navrchu je rezervovany pre popisky markerov - inak leza na prvom riadku */
+.gwrap{position:relative;margin-top:8px;padding-top:24px;padding-bottom:2px}
+/* overlay musi byt NAD barmi: prienik 85% ciary s barom 3 je cela pointa grafu */
+.gover{position:absolute;left:132px;right:0;top:24px;bottom:20px;pointer-events:none;z-index:2}
+.mk{position:absolute;top:0;bottom:0;width:0;border-left:1.5px solid var(--ink)}
+.mk.m50{border-left-style:dashed;border-left-color:var(--muted)}
+.mk span{position:absolute;bottom:100%;left:4px;padding-bottom:2px;font:9px var(--mono);color:var(--muted);
+  line-height:1.15;white-space:nowrap}
+.mk.m85 span{color:var(--ink)}
+.grow{display:grid;grid-template-columns:132px 1fr;gap:9px;align-items:center;margin-bottom:5px}
+.grow .lab{font:10.5px var(--mono);color:var(--muted);text-align:right;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.track{position:relative;height:22px;border-radius:4px;
+  /* iteracne ciary: 30.5 z 160 bodov = 19.0625 % */
+  background:repeating-linear-gradient(to right,
+    var(--secondary) 0, var(--secondary) calc(19.0625% - 1px),
+    var(--border) calc(19.0625% - 1px), var(--border) 19.0625%)}
+.bar{position:absolute;top:2px;bottom:2px;border-radius:3px;display:flex;align-items:center;
+  padding:0 7px;font:10.5px var(--mono);font-weight:600;overflow:hidden;white-space:nowrap}
+.bar.go{background:#dcfce7;border:1px solid var(--green);color:#14532d}
+.bar.str{background:#fef3c7;border:1px solid var(--amber);color:#78350f}
+.bar.unk{background:repeating-linear-gradient(45deg,transparent 0 5px,#e4e4e7 5px 10px);
+  border:1px dashed var(--border);color:var(--muted);font-weight:400}
+.track.y4{background:repeating-linear-gradient(to right,
+    var(--secondary) 0, var(--secondary) calc(25% - 1px),
+    var(--border) calc(25% - 1px), var(--border) 25%)}
+.bar.sce{background:transparent;border:1px dashed #a1a1aa;color:var(--muted);font-weight:400}
+.pihatch{position:absolute;top:0;bottom:0;right:0;left:75%;
+  background:repeating-linear-gradient(45deg,transparent 0 6px,#f4f4f5 6px 12px);
+  border-left:1.5px dashed var(--border)}
+.gaxis{position:relative;height:14px;margin-left:141px}
+.gaxis span{position:absolute;top:0;font:9px var(--mono);color:#a1a1aa;white-space:nowrap}
+
 .bands{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .band{border:1px solid var(--border);border-radius:6px;padding:9px 11px;display:flex;
   flex-direction:column;gap:2px}
@@ -265,7 +310,33 @@ table.rm tr:last-child td{border-bottom:none}
     </div>
 
     <div class="pvbody">
-      <h4>BUILD capacity in this PI</h4>
+      <h4>What the three categories are</h4>
+      <div class="cats">
+        <div><b>BUILD</b><span>Initiatives. What reaches the customer as value.</span><i>target 50 %</i></div>
+        <div><b>TECH</b><span>Technical debt and improvements the codebase needs - a framework
+          upgrade, a migration.</span><i>target 25 %</i></div>
+        <div><b>RUN</b><span>Bugs, and work outside the initiatives - including work still landing
+          on initiatives from previous quarters.</span><i>target 25 %</i></div>
+      </div>
+      <p class="mut" style="margin:8px 0 0">The 50 / 25 / 25 split is a target <b>for the quarter</b>,
+        not for a sprint. RUN arrives in waves; a single sprint above or below the line means
+        nothing, and measuring the target per sprint raises alarms where there are none.</p>
+
+      <h4 style="margin-top:16px">The last four quarters against that target</h4>
+      <div class="tablewrap">
+      <table class="rm">
+        <tr><th>PI</th><th>Points</th><th>BUILD</th><th>TECH</th><th>RUN</th></tr>
+        <tr><td>PI-1</td><td class="n">365</td><td class="n ok">55.1 <s>+5.1</s></td><td class="n ok">26.6 <s>+1.6</s></td><td class="n">18.4 <s>-6.6</s></td></tr>
+        <tr><td>PI-2</td><td class="n">395</td><td class="n">49.1 <s>-0.9</s></td><td class="n bad">19.5 <s>-5.5</s></td><td class="n">31.4 <s>+6.4</s></td></tr>
+        <tr><td>PI-3</td><td class="n">352</td><td class="n bad">41.8 <s>-8.2</s></td><td class="n bad">17.9 <s>-7.1</s></td><td class="n">36.4 <s>+11.4</s></td></tr>
+        <tr><td>PI-4</td><td class="n">438</td><td class="n bad">41.3 <s>-8.7</s></td><td class="n bad">13.5 <s>-11.5</s></td><td class="n">45.2 <s>+20.2</s></td></tr>
+      </table>
+      </div>
+      <p class="mut" style="margin:8px 0 0">Not noise - a slide. The target was met once, four
+        quarters ago. Since then RUN has taken 18 points of every hundred away from the other two,
+        and TECH has absorbed most of it. <b class="ink">Nobody decided this.</b></p>
+
+      <h4 style="margin-top:16px">BUILD capacity for the next PI</h4>
       <p class="mut" style="margin:0 0 7px">Four development iterations. The IP iteration is not
         counted - planning commitment across all five is a 20 % overrun before anything starts.</p>
       <div class="caps">
@@ -274,41 +345,42 @@ table.rm tr:last-child td{border-bottom:none}
         <div><code>95 %</code><b>110 pts</b><span>the safe floor</span></div>
       </div>
       <p class="mut" style="margin:8px 0 0">Total throughput at 85 % is <b>283 points</b>. Only
-        <b>43.2 %</b> of it has historically reached BUILD - the rest went to RUN and TECH. The
-        roadmap assumes the whole team; the record says otherwise, and that gap is the single most
-        useful thing to know before the room fills up.</p>
+        <b>43.2 %</b> of it has reached BUILD across the window. The roadmap assumes the whole team;
+        the record says otherwise, and that gap is the single most useful thing to know before the
+        room fills up.</p>
 
-      <h4 style="margin-top:16px">The list, walked in priority order</h4>
-      <div class="tablewrap">
-      <table class="rm">
-        <tr><th>#</th><th>Initiative</th><th>Size</th><th>Basis</th><th>Cumulative</th><th>Verdict</th></tr>
-        <tr>
-          <td class="n">1</td><td>Live ETA for dispatchers</td><td class="n">44</td>
-          <td class="mut">3 comparable epics</td><td class="n">44</td>
-          <td><span class="vd go">commit</span></td>
-        </tr>
-        <tr>
-          <td class="n">2</td><td>Driver app refresh</td><td class="n">61</td>
-          <td class="mut">2 comparables, both overran</td><td class="n">105</td>
-          <td><span class="vd go">commit</span></td>
-        </tr>
-        <tr>
-          <td class="n">3</td><td>Billing export rework</td><td class="n">33</td>
-          <td class="mut">1 comparable - wide</td><td class="n">138</td>
-          <td><span class="vd str">stretch</span></td>
-        </tr>
-        <tr>
-          <td class="n">4</td><td>Partner API for 3PL carriers</td><td class="n">-</td>
-          <td class="mut">no comparable in the record</td><td class="n">-</td>
-          <td><span class="vd unk">unsized</span></td>
-        </tr>
-      </table>
+      <h4 style="margin-top:16px">PI-5 · the roadmap this capacity supports</h4>
+      <div class="gwrap">
+        <div class="gover" aria-hidden="true">
+          <i class="mk m85" style="left:76.25%"><span>85 %<br>122 pts</span></i>
+          <i class="mk m50" style="left:88.75%"><span>50 %<br>142</span></i>
+        </div>
+
+        <div class="grow"><span class="lab">1 · Live ETA</span>
+          <div class="track"><b class="bar go" style="left:0%;width:27.5%">44</b></div></div>
+        <div class="grow"><span class="lab">2 · Driver app</span>
+          <div class="track"><b class="bar go" style="left:27.5%;width:38.125%">61</b></div></div>
+        <div class="grow"><span class="lab">3 · Billing export</span>
+          <div class="track"><b class="bar str" style="left:65.625%;width:20.625%">33</b></div></div>
+        <div class="grow"><span class="lab">4 · Partner API</span>
+          <div class="track"><b class="bar unk" style="left:0%;width:100%">no comparable in the record - cannot be placed</b></div></div>
+
+        <div class="gaxis" aria-hidden="true">
+          <span style="left:0%">it 1</span><span style="left:19.06%">it 2</span>
+          <span style="left:38.13%">it 3</span><span style="left:57.19%">it 4</span>
+          <span style="left:76.25%">end of PI</span>
+        </div>
       </div>
-      <p class="mut" style="margin:8px 0 0"><b class="ink">Three fit, two are committable.</b>
-        Items 1 and 2 sit inside the 85 % line. Item 3 clears 50 % but not 85 %, which is exactly
-        what SAFe already calls an <em>uncommitted objective</em> - it goes on the board as stretch,
-        not as a promise. Item 4 is not "too big": it is <b>unknown</b>, and that is a different
-        problem with a different fix.</p>
+      <p class="mut" style="margin:10px 0 0"><b class="ink">Three fit, two are committable.</b>
+        Bars 1 and 2 finish before the 85 % line. Bar 3 crosses it and stops before 50 % - that is
+        what SAFe already calls an <em>uncommitted objective</em>, so it goes on the board as
+        stretch, not as a promise. Bar 4 has no length because nothing in the record resembles it:
+        it is not "too big", it is <b>unknown</b>, and that is a different problem with a different
+        fix.</p>
+      <p class="mut" style="margin:6px 0 0"><b class="ink">This is not a schedule.</b> The bars are
+        laid end to end by capacity consumed, not by sequence. Real work runs in parallel, waits on
+        other teams, and reorders itself - the chart shows how far the capacity reaches, and the
+        team decides what happens inside it.</p>
 
       <h4 style="margin-top:16px">What to take into the room</h4>
       <ul class="qs">
@@ -341,16 +413,24 @@ table.rm tr:last-child td{border-bottom:none}
       <span class="pvnote">preview of a proposed artifact · illustrative</span>
     </div>
     <div class="pvbody">
-      <div class="bands">
-        <div class="band b1"><span class="lbl">PI-4 · forecast</span><b>Live ETA</b><b>Driver app</b>
-          <i>Billing export - stretch</i></div>
-        <div class="band b2"><span class="lbl">PI-5 · forecast</span><b>Partner API</b>
-          <i>carry-in from PI-4, if any</i></div>
-        <div class="band b3"><span class="lbl">PI-6 · scenario</span><b>Depot planning</b>
-          <i>one large initiative, not two</i></div>
-        <div class="band b4"><span class="lbl">PI-7 · beyond the record</span>
-          <i>The team's history does not reach this far. Anything placed here is a wish with a
-            border around it.</i></div>
+      <div class="gwrap">
+        <div class="gover" aria-hidden="true">
+          <i class="pihatch" style="left:75%"></i>
+        </div>
+        <div class="grow"><span class="lab">Live ETA</span>
+          <div class="track y4"><b class="bar go" style="left:0%;width:25%">PI-5</b></div></div>
+        <div class="grow"><span class="lab">Driver app</span>
+          <div class="track y4"><b class="bar go" style="left:0%;width:25%">PI-5</b></div></div>
+        <div class="grow"><span class="lab">Billing export</span>
+          <div class="track y4"><b class="bar str" style="left:0%;width:50%">PI-5 stretch, likely lands PI-6</b></div></div>
+        <div class="grow"><span class="lab">Partner API</span>
+          <div class="track y4"><b class="bar unk" style="left:25%;width:50%">unsized - placement is a guess until it is scoped</b></div></div>
+        <div class="grow"><span class="lab">Depot planning</span>
+          <div class="track y4"><b class="bar sce" style="left:50%;width:25%">PI-7 scenario</b></div></div>
+        <div class="gaxis" aria-hidden="true">
+          <span style="left:0%">PI-5 · forecast</span><span style="left:25%">PI-6 · forecast</span>
+          <span style="left:50%">PI-7 · scenario</span><span style="left:75%">PI-8 · beyond the record</span>
+        </div>
       </div>
       <p class="mut" style="margin:10px 0 0">Two things the annual view adds that the quarter does
         not need: <b>buffers sized from this team's measured variability</b> instead of a flat
