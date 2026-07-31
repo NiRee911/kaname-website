@@ -4,7 +4,7 @@
 <meta name="robots" content="noindex, nofollow">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BibValve - One constraint, with evidence</title>
+<title>BibValve - One thing to do, out of twenty-three looked at</title>
 <style>
 :root{
   --bg:#fafafa; --card:#fff; --border:#e4e4e7; --ink:#09090b; --muted:#71717a;
@@ -131,10 +131,10 @@ code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radi
 
 <header>
   <span class="eyebrow">BibValve · internal PoC</span>
-  <h1>One constraint, with evidence</h1>
-  <p>Not a list of what looks bad. One place the work stops, the smallest thing that would move it, and the result that would prove the diagnosis wrong.</p>
+  <h1>One thing to do, out of twenty-three looked at</h1>
+  <p>A catalogue of signals across four areas of team health - and one recommendation at the end, which is usually not the loudest number on the page.</p>
   <div class="modes" aria-label="Outputs">
-    <span class="hot">one constraint</span><span class="cold">withheld</span>
+    <span class="hot">14 measured</span><span class="cold">9 unreadable</span>
   </div>
   <a href="demo.html">Watch the demo →</a>
 <a href="/kvnsky">&larr; kvnsky</a>
@@ -182,39 +182,45 @@ code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radi
         <li>everything else is subtraction between timestamps</li>
         <li>a metric with no decision attached is not reported</li>
       </ul>
-      <p class="one">The model names the constraint. It never counts the hours.</p>
+      <p class="one">The model reads the catalogue. It never counts the hours.</p>
     </div>
   </div>
 
   <div class="col" id="effcol">
-    <h2><b>Work against waiting</b> · 260 items in the window</h2>
+    <h2><b>The catalogue</b> · 23 signals</h2>
     <div class="eff" id="effbox">
-      <div class="big">17.2 %<span> flow efficiency</span></div>
+      <div class="big">17.2 %<span> flow efficiency - a ratio of <b>states</b>, not of effort</span></div>
 
-      <div class="lifebar" role="img" aria-label="Where elapsed time went: Awaiting Test holds 72.1 percent">
-        <i class="work" style="width:11.3%"></i>
-        <i class="wait" style="width:11.1%"></i>
-        <i class="wait" style="width:70.0%PLACE"></i>
-        <i class="jam" style="width:70.0%"></i>
+      <div class="lifebar" role="img" aria-label="Awaiting Test holds 70.1 percent of elapsed time">
+        <i class="work" style="width:11.3%"></i><i class="wait" style="width:11.1%"></i>
+        <i class="wait" style="width:1.7%"></i><i class="jam" style="width:70.0%"></i>
         <i class="work" style="width:5.9%"></i>
       </div>
       <div class="lkey">
-        <s><em style="background:#18181b"></em>work 11.3 + 5.9 %</s>
+        <s><em style="background:#18181b"></em>active states 11.3 + 5.9 %</s>
         <s><em style="background:#e4e4e7"></em>review 11.1 · blocked 1.7</s>
         <s><em style="background:#fecdd3"></em>awaiting test 70.1 %</s>
       </div>
 
       <div class="two">
-        <div><b>27.3 h</b><span>the median item is worked on</span></div>
-        <div class="hot"><b>122.5 h</b><span>and the median item waits</span></div>
+        <div><b>14</b><span>measured from the record</span></div>
+        <div class="hot"><b>9</b><span>cannot be read from it at all</span></div>
       </div>
 
       <div class="jamnote">
-        <b>6 848.2 hours of work. 32 930.2 hours of waiting.</b>
-        <p style="margin:3px 0 0;color:var(--muted);font-size:11.5px">Asking the team to work
-          faster addresses the black segments. Everything else is queueing, and a queue is a
-          property of the system rather than of effort.</p>
+        <b>Four of the five team-dynamics signals are blind.</b>
+        <p style="margin:3px 0 0;color:var(--muted);font-size:11.5px">Sentiment, retro
+          follow-through, recurring themes, who speaks and who stops. A tool built on the issue
+          tracker sees neither what management sees nor what the person in the room sees - and
+          the catalogue says so rather than filling the gap with something adjacent.</p>
       </div>
+    </div>
+
+    <div class="card" style="margin-top:9px;border-left:3px solid var(--blue)">
+      <h3>Four areas, thresholds visible</h3>
+      <p>delivery · quality · process · dynamics. Every threshold is a number someone chose, and
+        it sits in <code>signals/*.yaml</code> so it can be argued with.</p>
+      <div class="value">adding a signal is a YAML entry, not a code change</div>
     </div>
   </div>
 
@@ -222,42 +228,37 @@ code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radi
     <h2><b>What comes back</b> · one thing</h2>
 
     <div class="card out one2" id="onecard">
-      <h3>constraint.md</h3>
-      <p><b>Awaiting Test</b> holds <b>70.1 %</b> of all elapsed time. Work sits there
-        <b>107.2 h</b> on average. Testing itself takes <b>9.0 h</b>.</p>
-      <div class="value">the queue in front of the step is twelve times the step</div>
+      <h3>The loudest signal is not the constraint</h3>
+      <p><code>Awaiting Test</code> holds <b>70.1 %</b> of elapsed time. Every instinct says
+        bottleneck. The Theory of Constraints test disagrees.</p>
+      <div class="fals">dwell   137.2 → 106.5 → 95.9 → 82.1 h
+arrivals   60      60     60     60
+ratio 0.6 - work leaves as fast as it arrives</div>
+      <div class="value">not bounding throughput: long dwell, no growth = a batching policy</div>
     </div>
 
     <div class="card out exp">
-      <h3>The smallest experiment</h3>
-      <p>Limit work in <code>Awaiting Test</code> to 3 items. No new role, no new meeting,
-        reversible in a day.</p>
-      <div class="fals">falsified if, in 3 sprints:
-  queue shortens AND flow efficiency stays flat
-  -> the waiting moved, it did not go
-  throughput falls
-  -> the limit starves the team; remove it</div>
+      <h3>Therefore: do not add a WIP limit</h3>
+      <p>A WIP limit is the lever for a <b>demand</b> constraint. On a stable batching queue it
+        changes nothing at best, and starves the upstream steps at worst.</p>
+      <p style="margin-top:5px"><b>Ask why testing happens in batches.</b> Shared environment,
+        a nightly run, a policy nobody revisited - each has a different fix and none of them is
+        a WIP limit.</p>
+      <div class="value">the record shows the queue; it cannot say which of those it is</div>
     </div>
 
-    <div class="card out" style="border-left:3px solid var(--blue)">
-      <h3>Two bases, not one average</h3>
-      <p>Whole window: <b>17.2 %</b> flow efficiency, <b>107.2 h</b> in the queue.<br>
-        After the team change: <b>18.3 %</b>, <b>97.8 h</b> - 21 sprints, one team.</p>
-      <div class="value">same constraint on both sides: the jam is structural, not personal</div>
-    </div>
-
-    <div class="card out" style="border-left:3px solid var(--amber)">
-      <h3>improvements.md</h3>
-      <p><b>34 raised, 6 closed</b> (17.6 %). Median age of the open ones <b>166 days</b>, and
-        <b>18 of 28</b> never entered a sprint.</p>
-      <div class="value">a proposal that goes the way of the other 28 changes no number</div>
+    <div class="card out" style="border-left:3px solid var(--amber)" id="dispcard">
+      <h3>disputed.yaml</h3>
+      <p>"We batch on purpose, the environment reset costs half a day." That objection keeps the
+        verdict and removes the signal from the recommendation.</p>
+      <div class="value">without it the first objection kills the tool permanently</div>
     </div>
 
     <div class="card out held" id="heldcard">
-      <h3>Withheld on purpose</h3>
-      <p>Lead time variance, <b>63.5 h</b>. Computed and left out: no decision attaches to it.
-        Listed so it is clear the run is not silent out of ignorance.</p>
-      <div class="value">a report full of furniture stops being read</div>
+      <h3>Five signals need a habit, not a tool</h3>
+      <p>A day-one sprint snapshot, a yes/no against the sprint goal, a four-question poll, retro
+        actions as items. Minutes per sprint, and each unlocks a blind signal permanently.</p>
+      <div class="value">that list is more useful than another number</div>
     </div>
   </div>
 
@@ -266,10 +267,10 @@ code{font:11px var(--mono);background:var(--secondary);padding:0 4px;border-radi
 
 <div class="bottom">
   <div class="strip">
-    <div class="v"><b>One constraint per run</b><p>A system has one at a time. Five findings is the same as none, because nobody knows where to start.</p></div>
+    <div class="v"><b>Breadth in measuring, discipline in advising</b><p>23 signals looked at, one thing recommended. Five findings is the same as none.</p></div>
     <div class="v"><b>No metric without a decision</b><p>Every number in the report has a "and therefore". The rest is named as withheld.</p></div>
     <div class="v"><b>Nothing about a person</b><p>The record holds states and timestamps. There is no field here to name anyone from.</p></div>
-    <div class="v"><b>The diagnosis can be killed</b><p>Every finding ships with the result that would disprove it, before anyone tries it.</p></div>
+    <div class="v"><b>What cannot be seen is listed</b><p>Nine signals are marked unreadable with the reason. A blind spot named beats a number invented.</p></div>
   </div>
 
   <div class="meta-row">

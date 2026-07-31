@@ -4,7 +4,7 @@
 <meta name="robots" content="noindex, nofollow">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BibValve - Live demo: where does coldchain jam?</title>
+<title>BibValve - Live demo: 23 signals, one recommendation</title>
 <style>
 :root{
   --bg:#0b0d10; --panel:#12151a; --panel2:#171b21; --border:#242a32;
@@ -119,9 +119,9 @@ footer b{color:var(--muted);font-weight:400}
 
 <header>
   <span class="eyebrow">BibValve · demo</span>
-  <h1 id="hdr">coldchain - where does it jam?</h1>
+  <h1 id="hdr">coldchain - 23 signals, one recommendation</h1>
   <p>A scripted replay of one run. Nothing is fetched, nothing is written back.</p>
-  <span class="sigbadge">flow efficiency <b id="fe">-</b></span>
+  <span class="sigbadge">measured <b id="fe">-</b> · unreadable <b id="nb">-</b></span>
   <button id="run">Run</button>
   <button id="skip" class="ghost">Skip to the result</button>
   <a href="flow.html">← How it works</a>
@@ -136,7 +136,8 @@ footer b{color:var(--muted);font-weight:400}
 
   <section class="side">
     <div class="tabs" role="tablist">
-      <button class="tab" role="tab" data-tab="con" aria-selected="true">constraint.md</button>
+      <button class="tab" role="tab" data-tab="rad" aria-selected="true">radar.md</button>
+      <button class="tab" role="tab" data-tab="con" aria-selected="false">constraint.md</button>
       <button class="tab" role="tab" data-tab="q" aria-selected="false">questions.md</button>
       <button class="tab" role="tab" data-tab="i" aria-selected="false">improvements</button>
       <button class="tab" role="tab" data-tab="w" aria-selected="false">withheld</button>
@@ -145,6 +146,34 @@ footer b{color:var(--muted);font-weight:400}
     <div class="pane">
       <div class="ph" id="placeholder">Press <b>Run</b> to replay the run - or <b>Skip to the result</b>.</div>
 
+      <div data-pane="rad" hidden>
+        <h2>the catalogue</h2>
+        <div class="reveal" data-r="r1">
+          <div class="two">
+            <div><b>14</b><span>measured from the record</span></div>
+            <div class="hot"><b>9</b><span>cannot be read from it at all</span></div>
+          </div>
+          <table>
+            <tr><th>Area</th><th>Signals</th><th>Attention</th><th>Blind</th></tr>
+            <tr><td>delivery</td><td class="n">5</td><td class="n">0</td><td class="n">3</td></tr>
+            <tr class="hot"><td>quality</td><td class="n">6</td><td class="n">2</td><td class="n">1</td></tr>
+            <tr class="hot"><td>process</td><td class="n">7</td><td class="n">4</td><td class="n">1</td></tr>
+            <tr class="hot"><td>dynamics</td><td class="n">5</td><td class="n">1</td><td class="n">4</td></tr>
+          </table>
+        </div>
+        <div class="reveal" data-r="r2">
+          <div class="callout bad"><b>Four of five dynamics signals are blind.</b> Sentiment,
+            retro follow-through, recurring themes, who speaks and who stops. A tool built on the
+            issue tracker sees neither what management sees nor what the person in the room sees -
+            and the catalogue says so instead of substituting something adjacent.</div>
+          <h3>Five of them need a habit, not a tool</h3>
+          <p class="mut" style="margin:0">A day-one sprint snapshot · a yes/no against the sprint
+            goal · a four-question poll · retro actions as items. Minutes per sprint, and each one
+            unlocks a signal permanently. <b style="color:var(--ink)">That list is more useful than
+            another number.</b></p>
+        </div>
+      </div>
+
       <div data-pane="con" hidden>
         <h2>one constraint</h2>
         <div class="reveal" data-r="c0">
@@ -152,9 +181,9 @@ footer b{color:var(--muted);font-weight:400}
             A record reaching back years describes teams that no longer exist. And this window
             still spans a change of team - overlap between blocks drops to <b>0.43</b>.</div>
           <table>
-            <tr><th>Basis</th><th>Sprints</th><th>Items</th><th>Flow eff.</th><th>Awaiting Test</th></tr>
-            <tr><td>whole window</td><td class="n">26</td><td class="n">260</td><td class="n">17.2 %</td><td class="n">107.2 h</td></tr>
-            <tr class="hot"><td>after the change</td><td class="n">21</td><td class="n">210</td><td class="n">18.3 %</td><td class="n">97.8 h</td></tr>
+            <tr><th>Basis</th><th>Sprints</th><th>Items</th><th>Flow eff.</th><th>Median lead</th></tr>
+            <tr><td>whole window</td><td class="n">26</td><td class="n">260</td><td class="n">17.2 %</td><td class="n">150.3 h</td></tr>
+            <tr class="hot"><td>after the change</td><td class="n">21</td><td class="n">210</td><td class="n">18.3 %</td><td class="n">142.8 h</td></tr>
           </table>
           <p class="mut" style="margin-top:7px">Both are given because neither is wrong - they
             answer different questions, and averaging them answers neither.
@@ -198,30 +227,39 @@ footer b{color:var(--muted);font-weight:400}
           </table>
           <p class="mut" style="margin-top:7px">Work sits in <b style="color:var(--ink)">Awaiting
             Test for 107.2 hours</b> on average. Testing itself takes <b style="color:var(--ink)">9.0</b>.
-            <b style="color:var(--ink)">The queue in front of the step is twelve times the step.</b></p>
+            <b style="color:var(--ink)">Every instinct says bottleneck.</b></p>
+          <div class="callout warn" style="margin-top:9px"><b>The Theory of Constraints test says
+            otherwise.</b> Exit rate against entry rate - dwell 137.2 → 106.5 → 95.9 → 82.1 h with
+            arrivals flat at 60. Ratio <b>0.6</b>: work leaves at least as fast as it arrives, so
+            the step is <b>not bounding throughput</b>. Long dwell without a growing queue is a
+            <b>batching policy</b>, and that is latency, not throughput.</div>
         </div>
 
         <div class="reveal" data-r="c4">
           <h3>The smallest experiment</h3>
-          <div class="callout good"><b>Limit work in <code>Awaiting Test</code> to 3 items.</b>
-            No new role, no new meeting, no reorganisation. When the limit is reached, the next
-            person to finish development picks up testing instead of starting something new.
-            Reversible in a day.</div>
-          <div class="fals">falsified if, within 3 sprints:
+          <div class="callout bad"><b>Do not add a WIP limit.</b> That is the lever for a
+            <b>demand</b> constraint. On a stable batching queue it changes nothing at best, and
+            starves the upstream steps at worst.<br><br>
+            <b>Ask why testing happens in batches.</b> Shared environment, a nightly run, a policy
+            nobody revisited - each has a different fix, and none of them is a WIP limit. The
+            record shows the queue; it cannot say which of those it is.</div>
+          <div class="fals">this reading flips if:
 
-  queue shortens AND flow efficiency stays flat
-      -> the waiting relocated, it did not go
-  throughput falls
-      -> the limit starves the team rather than focusing it; remove it</div>
+  arrivals rise while dwell stays flat
+      -> it becomes a demand constraint after all,
+         and a WIP limit is the right lever
+  the batching turns out deliberate and priced
+      -> PRO-02 measures a decision, not a fault.
+         That objection belongs in disputed.yaml</div>
           <p class="mut" style="margin-top:7px">Both outcomes are worth more than the experiment
             quietly succeeding, because both are answers.</p>
         </div>
 
         <div class="gatebar" id="gate">
-          <p><b>Human decision.</b> The run proposes one experiment and its falsification. It does
-            not adopt it.</p>
-          <button id="adoptBtn">Adopt the experiment</button>
-          <button id="laterBtn" class="ghost">Not now</button>
+          <p><b>Human decision.</b> The run recommends asking a question, not making a change.
+            It does not ask it.</p>
+          <button id="adoptBtn">Take it to the team</button>
+          <button id="laterBtn" class="ghost">Dispute the signal</button>
         </div>
         <div class="decided" id="decided"><div class="callout good" id="decidedTxt"></div></div>
       </div>
@@ -287,7 +325,7 @@ footer b{color:var(--muted);font-weight:400}
             <b style="color:var(--ink)">ASSUMPTION</b> shown next to the titles it came from.</p>
           <div class="callout" style="margin-top:10px"><b>On a freshly introduced type, expect a
             refusal.</b> Below 12 improvements the close rate is not computed - one closed out of
-            three is not 33 %, it is nothing. These figures come from a fixture with enough history
+            three is not a rate, it is nothing. These figures come from a fixture with enough history
             to show the shape of the signal.</div>
         </div>
       </div>
@@ -326,6 +364,10 @@ let timer=null, running=false, started=false, offered=false, decided=false;
 
 const S=[
  ['cmd','valve coldchain',420],
+ ['dim','catalogue: signals/*.yaml - 23 signals across 4 areas of team health',360],
+ ['ok','14 measured from the record',300,'r1'],
+ ['gap','9 cannot be read from a Jira export at all - listed with the reason',460,'r2'],
+ ['dim','4 of the 5 team-dynamics signals are blind. that is the honest boundary.',420],
  ['dim','reading mock/coldchain/jira.json - 60 sprints in the record',340],
  ['gap','window = last 26 sprints. 340 items excluded, not down-weighted.',420],
  ['hot','the window still spans a change of team - block overlap 0.43',480,'c0'],
@@ -333,16 +375,20 @@ const S=[
  ['dim','why it changed is not in a changelog. that has to come from a person.',400],
  ['dim','so: two bases. whole window 17.2%, after the change 18.3% (21 sprints, one team)',440],
  ['dim','subtracting timestamps: hours spent in every state',340],
- ['dim','Blocked is set on 45 of 600 - "where it waits" is not readable from status',380],
+ ['dim','Blocked seen on 13 items - "where it waits" is not readable from status',380],
  ['dim','so waiting is taken from the gaps, not from a field',340],
- ['hot','flow efficiency 17.2%',520,'c1'],
+ ['hot','flow efficiency 17.2% - a ratio of STATES, not of effort',520,'c1'],
  ['dim','6848.2 h of work. 32930.2 h of waiting.',420,'c2'],
  ['dim','median item: 150.3 h alive, 27.3 h worked on, 122.5 h waiting',420],
  ['dim','step 2 - where does the time go',300],
  ['hot','Awaiting Test   27868.5 h   70.1% of all elapsed time',480,'c3'],
  ['dim','Code Review      4402.3 h   11.1%',240],
  ['dim','Blocked           659.4 h    1.9%',240],
- ['ok','one constraint named: Awaiting Test (107.2 h per item, testing takes 9.0)',460],
+ ['dim','step 3 - is that queue actually a constraint?',300],
+ ['cmd','ToC test: exit rate against entry rate',420],
+ ['dim','dwell 137.2 -> 106.5 -> 95.9 -> 82.1 h   arrivals 60 60 60 60',420],
+ ['ok','ratio 0.6 - work leaves as fast as it arrives. NOT a throughput constraint.',520],
+ ['hot','type: process (steady) - long dwell, no growth = a batching policy',460],
  ['dim','2 further waiting states ranked - NOT reported as findings',420,'q1'],
  ['dim','a system has one constraint at a time; five findings is the same as none',400],
  ['dim','step 3 - knowledge concentration',300],
@@ -353,15 +399,15 @@ const S=[
  ['hot','34 improvements raised, 6 closed. 18 of 28 open ones never entered a sprint.',480,'i1'],
  ['dim','targets_the_constraint: null - that is a question about text, not timestamps',420,'i2'],
  ['gap','lead time variance 63.5 h -> WITHHELD, no decision attaches to it',460,'w1'],
- ['ok','1 experiment proposed, with the result that would disprove it',440,'c4','pause']
+ ['hot','recommendation: do NOT add a WIP limit. ask why testing is batched.',480,'c4','pause']
 ];
 
 function tail(choice){
   const first = choice==='adopt'
-    ? [['human','adopt the experiment',380],
-       ['ok','WIP limit 3 on Awaiting Test, recorded with its falsification and a 3-sprint check',480]]
-    : [['human','not now',380],
-       ['dim','left in constraint.md as proposed, falsification attached. The run does not argue twice.',460]];
+    ? [['human','take it to the team',380],
+       ['ok','question recorded: why is testing batched? not a change to the board.',480]]
+    : [['human','dispute the signal',380],
+       ['dim','recorded in disputed.yaml. verdict stays, signal drops out of the recommendation.',460]];
   return first.concat([
    ['dim','nothing was written to Jira. every artifact is a file.',400],
    ['dim',' ',240],
@@ -393,7 +439,8 @@ function reveal(key){
   if(key[0]==='q') fresh('q');
   if(key[0]==='w') fresh('w');
   if(key[0]==='i') fresh('i');
-  if(key==='c1') $('#fe').textContent='17.2 %';
+  if(key[0]==='r') fresh('rad');
+  if(key==='r1'){ $('#fe').textContent='14'; $('#nb').textContent='9'; }
 }
 function play(list,i,after){
   if(i>=list.length){ if(after)after(); return; }
@@ -411,8 +458,8 @@ function doDecide(choice){
   decided=true;
   $('#gate').classList.remove('on');
   $('#decidedTxt').innerHTML = choice==='adopt'
-    ? '<b>Adopted.</b> WIP limit 3 on Awaiting Test, recorded together with what would disprove it: if the queue shortens and flow efficiency stays flat, the waiting relocated and the diagnosis was wrong. Checked in three sprints, not defended.'
-    : '<b>Left as proposed.</b> It stays in constraint.md with its falsification attached, so the next run picks it up unchanged rather than rediscovering it.';
+    ? '<b>Taken to the team.</b> The question is why testing happens in batches - not a change to the board. If the answer is that the environment reset costs half a day, the finding was measuring a decision, and the catalogue is what needs fixing rather than the team.'
+    : '<b>Disputed.</b> Recorded in disputed.yaml with who and why. The verdict stays visible, the signal drops out of the recommendation, and the next run picks up the objection instead of repeating itself.';
   $('#decided').classList.add('on'); fresh('con');
   return true;
 }
